@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652028603500",
+    "project_id": "medquest-3bfe2",
+    "storage_bucket": "medquest-3bfe2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652028603500:android:1ee05d2b41b25a8860bc49",
+        "android_client_info": {
+          "package_name": "com.example.medquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3TCUsHytJ-DCD8sKDyylJp3nP1F3WBbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

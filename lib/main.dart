@@ -1,6 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // --- TESTE RÁPIDO DE CONEXÃO ---
+  try {
+    // Tenta escrever um documento de teste na coleção 'test'
+    await FirebaseFirestore.instance.collection('test').doc('conexao').set({
+      'status': 'sucesso',
+      'data': DateTime.now().toString(),
+    });
+    print("Firebase/Firestore conectado com sucesso!");
+  } catch (e) {
+    print("Erro ao conectar ao Firestore: $e");
+  }
+  // -------------------------------
+
   runApp(const MyApp());
 }
 
