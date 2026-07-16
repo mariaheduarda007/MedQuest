@@ -1,18 +1,33 @@
 import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
-  final String id;
+  final String uid;
   final String name;
   final String email;
 
   const User({
-    required this.id,
+    required this.uid,
     required this.name,
     required this.email,
   });
 
+  User copyWith({
+    String? uid,
+    String? name,
+    String? email,
+  }) {
+    return User(
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      email: email ?? this.email,
+    );
+  }
+
   @override
-  List<Object?> get props => [id, name, email];
+  List<Object?> get props => [uid, name, email];
+
+  @override
+  String toString() => 'User(uid: $uid, name: $name, email: $email)';
 }
 
 class Token extends Equatable {

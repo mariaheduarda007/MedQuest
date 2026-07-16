@@ -12,6 +12,15 @@ import 'package:medquest/auth/domain/facades/i_auth_usecase_facade.dart';
 import 'package:medquest/auth/domain/usecases/auth_usecases_impl.dart';
 import 'package:medquest/auth/domain/usecases/i_auth_usecases.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
+import 'package:medquest/userContext/user/data/repositories/i_user_repository.dart';
+import 'package:medquest/userContext/user/data/repositories/user_repository_impl.dart';
+import 'package:medquest/userContext/user/data/services/remote/i_user_remote_service.dart';
+import 'package:medquest/userContext/user/domain/facades/i_user_facade_usecases.dart';
+import 'package:medquest/userContext/user/domain/facades/user_facade_usecases_impl.dart';
+import 'package:medquest/userContext/user/domain/usecases/i_user_usecases.dart';
+import 'package:medquest/userContext/user/domain/usecases/user_usecases_impl.dart';
+import 'package:medquest/userContext/user/presentation/controllers/user_viewmodel.dart';
+import 'package:medquest/userContext/user/data/services/remote/firestore_user_remote_service.dart';
 
 final injector = AutoInjector();
 
@@ -67,6 +76,42 @@ void setupDependencyInjection() {
       injector.get<IAuthRepository>(),
       injector.get<IAuthUseCaseFacade>(),
     ),
+  );
+
+// --- USER ---
+  
+  injector.addSingleton<IUserRemoteService>(FirestoreUserService.new); 
+
+  injector.addSingleton<IUserRepository>(
+    () => UserRepositoryImpl(
+      remoteService: injector.get<IUserRemoteService>(),
+    ),
+  );
+
+  injector.addSingleton<IGetUserUseCase>(
+    () => GetUserUseCaseImpl(repository: injector.get<IUserRepository>()),
+  );
+  injector.addSingleton<ISaveUserUseCase>(
+    () => SaveUserUseCaseImpl(repository: injector.get<IUserRepository>()),
+  );
+  injector.addSingleton<IUpdateUserUseCase>(
+    () => UpdateUserUseCaseImpl(repository: injector.get<IUserRepository>()),
+  );
+  injector.addSingleton<IDeleteUserUseCase>(
+    () => DeleteUserUseCaseImpl(repository: injector.get<IUserRepository>()),
+  );
+
+  injector.addSingleton<IUserFacadeUseCases>(
+    () => UserFacadeUsecasesImpl(
+      getUserUseCase: injector.get<IGetUserUseCase>(),
+      saveUserUseCase: injector.get<ISaveUserUseCase>(),
+      updateUserUseCase: injector.get<IUpdateUserUseCase>(),
+      deleteUserUseCase: injector.get<IDeleteUserUseCase>(),
+    ),
+  );
+
+  injector.addSingleton<UserViewModel>(
+    () => UserViewModel(injector.get<IUserFacadeUseCases>()),
   );
 
   injector.commit();

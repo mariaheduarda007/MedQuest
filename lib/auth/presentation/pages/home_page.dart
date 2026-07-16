@@ -82,14 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         : const Text('Desconectar'),
               );
             }),
-
-            ElevatedButton(
-              onPressed: () async {
-                await authController.commands.signOut();
-                context.goNamed(AuthRouteNames.login);
-              },
-              child: Text('Desconectar'),
-            ),
           ],
         ),
       ),

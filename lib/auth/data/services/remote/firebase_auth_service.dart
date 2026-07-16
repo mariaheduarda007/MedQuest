@@ -53,7 +53,7 @@ class FirebaseAuthService implements IAuthService {
 
     final session = AuthSession(
       user: User(
-        id: user.uid,
+        uid: user.uid,
         name: user.displayName ?? '',
         email: user.email ?? '',
       ),
@@ -62,7 +62,7 @@ class FirebaseAuthService implements IAuthService {
 
     // salva sessão local
     final sessionToken = SessionToken(
-      uid: session.user.id,
+      uid: session.user.uid,
       name: session.user.name,
       email: session.user.email,
       value: tokenStr,
@@ -112,7 +112,7 @@ class FirebaseAuthService implements IAuthService {
         // Cria objeto AuthSession
         final session = AuthSession(
           user: User(
-            id: user.uid,
+            uid: user.uid,
             name: user.displayName ?? '',
             email: user.email ?? '',
           ),
@@ -121,7 +121,7 @@ class FirebaseAuthService implements IAuthService {
 
         // Cria SessionToken para armazenamento local
         final sessionToken = SessionToken(
-          uid: session.user.id,
+          uid: session.user.uid,
           name: session.user.name,
           email: session.user.email,
           value: tokenStr,
@@ -236,7 +236,7 @@ class FirebaseAuthService implements IAuthService {
 
         final session = AuthSession(
           user: User(
-            id: user.uid,
+            uid: user.uid,
             name: name ?? user.displayName ?? '',
             email: user.email ?? '',
           ),
@@ -244,7 +244,7 @@ class FirebaseAuthService implements IAuthService {
         );
 
         final sessionToken = SessionToken(
-          uid: session.user.id,
+          uid: session.user.uid,
           name: session.user.name,
           email: session.user.email,
           value: tokenStr,
@@ -287,7 +287,7 @@ class FirebaseAuthService implements IAuthService {
       // Se existe um token válido, cria sessão temporária
       _currentSessionSignal.value = AuthSession(
         user: User(
-          id: token.uid,
+          uid: token.uid,
           name: token.name ?? '',
           email: token.email ?? '',
         ),

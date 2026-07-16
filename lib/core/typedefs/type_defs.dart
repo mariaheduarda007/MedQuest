@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:medquest/auth/domain/models/auth_entities.dart';
 import '../failure/failure.dart';
-// import '../../account/domain/models/account_entity.dart';
 // import '../../account/domain/models/character_entity.dart';
 import '../patterns/result.dart';
 
 // typedefs para tipo Result
 typedef VoidResult = Result<void, Failure>;
-// typedef AccountResult = Result<Account, Failure>;
+typedef UserResult = Result<User, Failure>;
 // typedef CharacterResult = Result<Character,Failure>;
 // typedef ListCharacterResult = Result<List<Character>, Failure>;
 
@@ -20,7 +19,7 @@ typedef SignUpParams =
     ({String? name,String email, String password});
 
 // typedfs para parâmetros
-// typedef AccountParams = ({Account account});
+typedef UserParams = ({User user});
 
 /// tipos usadoos Conta de Usuario
 typedef NoParams = ();
