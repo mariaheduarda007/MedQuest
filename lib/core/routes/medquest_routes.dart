@@ -3,7 +3,7 @@ import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.da
 import 'package:medquest/auth/presentation/pages/home_page.dart';
 import 'package:medquest/auth/presentation/pages/signin_page.dart'; 
 import 'package:medquest/core/di/dependency_injection.dart';
-
+import 'package:medquest/userContext/user/presentation/views/profile_view.dart';
 
 final List<RouteBase> appRoutes = [
   GoRoute(
@@ -26,5 +26,10 @@ final List<RouteBase> appRoutes = [
         session: authSession, 
       );
     },
+  ),
+  GoRoute(
+    path: '/profile',
+    name: 'profile',
+    builder: (context, state) => const ProfileView(),
   ),
 ];

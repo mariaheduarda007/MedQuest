@@ -9,13 +9,14 @@ import 'i_auth_service.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/patterns/result.dart';
 
 /// Serviço de autenticação que utiliza o FirebaseAuth.
 class FirebaseAuthService implements IAuthService {
   /// Instância do FirebaseAuth (injetYável para testes)
   final fb.FirebaseAuth _firebaseAuth;
-
+  final FirebaseFirestore _firestore;
   /// Gerenciador de sessão local
   final AuthLocalSessionManager _localSession;
 
@@ -27,7 +28,9 @@ class FirebaseAuthService implements IAuthService {
   FirebaseAuthService({
     fb.FirebaseAuth? firebaseAuth,
     required AuthLocalSessionManager localSession,
+    FirebaseFirestore? firestore,
   }) : _firebaseAuth = firebaseAuth ?? fb.FirebaseAuth.instance,
+       _firestore = firestore ?? FirebaseFirestore.instance,
        _localSession = localSession {
     _firebaseAuth.authStateChanges().listen(_onAuthStateChanged);
   }
@@ -144,71 +147,6 @@ class FirebaseAuthService implements IAuthService {
     }
   }
 
-  /// Login com conta do Google
-  // @override
-  // Future<AuthSessionResult> signInWithGoogle() async {
-  //   try {
-  //     // Inicia o fluxo de autenticação do Google
-  //     //final googleUser = await GoogleSignIn().signIn();
-
-  //     // Obtém a instância global do GoogleSignIn
-  //     final googleSignIn = GoogleSignIn.instance;
-  //     // Inicializa se necessário
-  //     await googleSignIn.initialize();
-  //     // Inicia o fluxo de login
-  //     final googleUser = await googleSignIn.authenticate();
-
-  //     final googleAuth = googleUser.authentication;
-
-  //     // Cria a credencial para o Firebase
-  //     final credential = fb.GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.idToken,
-  //       // accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-
-  //     // Autentica no Firebase com a credencial do Google
-  //     final userCredential = await _firebaseAuth.signInWithCredential(
-  //       credential,
-  //     );
-  //     final user = userCredential.user;
-  //     if (user == null) {
-  //       return Error(DefaultFailure('Falha ao autenticar com o Google.'));
-  //     }
-
-  //     final tokenStr = await user.getIdToken() ?? '';
-  //     final tokenExp = DateTime.now().add(const Duration(hours: 1));
-
-  //     // Cria objeto AuthSession
-  //     final session = AuthSession(
-  //       user: User(
-  //         id: user.uid,
-  //         name: user.displayName ?? '',
-  //         email: user.email ?? '',
-  //       ),
-  //       token: Token(value: tokenStr, expiresAt: tokenExp),
-  //     );
-
-  //     // Cria e salva sessão local
-  //     final sessionToken = SessionToken(
-  //       uid: session.user.id,
-  //       name: session.user.name,
-  //       email: session.user.email,
-  //       value: tokenStr,
-  //       expiresAt: tokenExp,
-  //       refreshToken: null,
-  //       provider: AuthProvider.google,
-  //     );
-
-  //     // Salva sessão localmente
-  //     await _localSession.setToken(sessionToken);
-
-  //     return Success(session);
-  //   } catch (e) {
-  //     return Error(DefaultFailure(e.toString()));
-  //   }
-  // }
-
   /// Registro com email, senha e nome opcional
   @override
   Future<AuthSessionResult> signUp({
@@ -217,7 +155,6 @@ class FirebaseAuthService implements IAuthService {
     required String password,
   }) async {
     try {
-      // Cria usuário no Firebase
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -225,10 +162,17 @@ class FirebaseAuthService implements IAuthService {
 
       final user = credential.user;
       if (user != null) {
-        // Atualiza displayName se nome foi fornecido
+        // precisa verificar se nao é null pra chamar o updateDisplayName
         if (name != null && name.isNotEmpty) {
           await user.updateDisplayName(name);
         }
+
+        await _firestore.collection('User').doc(user.uid).set({
+          'uid': user.uid,
+          'name': name,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
 
         // Obtém token e cria sessão
         final tokenStr = await user.getIdToken() ?? '';

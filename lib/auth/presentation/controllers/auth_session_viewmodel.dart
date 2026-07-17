@@ -1,5 +1,5 @@
 import 'package:signals_flutter/signals_flutter.dart';
-
+import 'package:flutter/material.dart';
 import '../../data/repositories/i_auth_repository.dart';
 import '../../domain/facades/i_auth_usecase_facade.dart';
 import '../commands/auth_commands.dart';
@@ -8,7 +8,7 @@ import 'auth_session_state_viewmodel.dart';
 
 /// ViewModel responsável por gerenciar o estado de autenticação
 /// Mantém o estado da sessão e o loading de forma reativa usando signals
-class AuthViewModel {
+class AuthViewModel extends ChangeNotifier {
   /// repositoty necessário para saber o estado da sessão
   final IAuthRepository _repository;
 
@@ -48,6 +48,12 @@ class AuthViewModel {
 
     // Signal para indicar operações em andamento (login, registro, logout)
     _loading = signal(false);
+
+    effect(() {
+      final user = _session.session.value;
+      debugPrint("Sessão mudou, notificando ouvintes: $user");
+      notifyListeners();
+    });
   }
 
   // --- Comandos expostos ---
@@ -56,4 +62,9 @@ class AuthViewModel {
   //     _commands.signInWithGoogleCommand;
   SignOutCommand get signOutCommand => commands.signOutCommand;
   SignUpCommand get signUpCommand => commands.signUpCommand;
+
+@override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
 }

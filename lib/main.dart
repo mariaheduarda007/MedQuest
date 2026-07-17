@@ -11,7 +11,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // --- TESTE RÁPIDO DE CONEXÃO ---
+  // --- teste conexao ---
   try {
     // Tenta escrever um documento de teste na coleção 'test'
     await FirebaseFirestore.instance.collection('test').doc('conexao').set({

@@ -1,5 +1,6 @@
 import 'package:auto_injector/auto_injector.dart';
 import '../theme/theme_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medquest/auth/data/repositories/auth_repository_impl.dart';
 import 'package:medquest/auth/data/repositories/i_auth_repository.dart';
 import 'package:medquest/auth/data/services/local/auth_local_session_manager.dart';
@@ -28,6 +29,7 @@ void setupDependencyInjection() {
   // Regristração de dependências do Core
   injector.addSingleton<ThemeController>(ThemeController.new);
 
+  injector.addSingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   // --- AUTH ---
   // injector.addSingleton<IAccountRemoteService>(() => FirestoreAccountService());
   injector.addSingleton<ILocalSessionStore>(SharedPrefLocalSessionService.new);
@@ -36,7 +38,12 @@ void setupDependencyInjection() {
     () => AuthLocalSessionManager(injector.get<ILocalSessionStore>()),
   );
 
-  injector.addSingleton<IAuthService>(FirebaseAuthService.new);
+  injector.addSingleton<IAuthService>(
+    () => FirebaseAuthService(
+      localSession: injector.get<AuthLocalSessionManager>(),
+      firestore: injector.get<FirebaseFirestore>(),
+    ),
+  );
 
   injector.addSingleton<IAuthRepository>(
     () => AuthRepositoryImpl(
