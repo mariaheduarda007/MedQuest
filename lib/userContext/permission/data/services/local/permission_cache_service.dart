@@ -3,14 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class PermissionCacheService {
   final FirebaseFirestore _firestore;
 
-  // Mapa que guardará as permissões usando o nome do papel como chave:
-  // Ex: { 'Coordinator': { 'createResearch': true, ... } }
   Map<String, Map<String, dynamic>>? _permissionsCache;
 
   PermissionCacheService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Busca todos os documentos da coleção Permission independentemente do ID aleatório
   Future<void> loadPermissions() async {
     if (_permissionsCache != null) return;
 
@@ -32,7 +29,6 @@ class PermissionCacheService {
     }
   }
 
-  /// Verifica a permissão usando o nome do papel (ex: 'Coordinator')
   bool hasPermission(String roleName, String permissionKey) {
     if (_permissionsCache == null) return false;
 
