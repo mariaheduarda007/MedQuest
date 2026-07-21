@@ -25,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
     // Timer simulando carregamento
     Timer(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      context.go('/');
+      context.go('/home');
     });
   }
 

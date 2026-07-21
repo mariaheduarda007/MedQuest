@@ -22,6 +22,7 @@ import 'package:medquest/userContext/user/domain/usecases/i_user_usecases.dart';
 import 'package:medquest/userContext/user/domain/usecases/user_usecases_impl.dart';
 import 'package:medquest/userContext/user/presentation/controllers/user_viewmodel.dart';
 import 'package:medquest/userContext/user/data/services/remote/firestore_user_remote_service.dart';
+import 'package:medquest/userContext/permission/data/services/local/permission_cache_service.dart';
 
 final injector = AutoInjector();
 
@@ -84,6 +85,12 @@ void setupDependencyInjection() {
       injector.get<IAuthUseCaseFacade>(),
     ),
   );
+
+// --- PERMISSION ---
+
+injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
+  firestore: injector.get<FirebaseFirestore>(),
+));
 
 // --- USER ---
   

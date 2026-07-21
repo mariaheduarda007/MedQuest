@@ -4,26 +4,24 @@ import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:medquest/core/routes/app_routes.dart';
 import 'package:medquest/core/di/dependency_injection.dart';
+import 'package:medquest/userContext/permission/data/services/local/permission_cache_service.dart';
+import 'dart:developer';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  setupDependencyInjection();
 
-  // --- teste conexao ---
+  final permissionService = injector.get<PermissionCacheService>();
+
+  // --- teste permissoes ---
   try {
-    // Tenta escrever um documento de teste na coleção 'test'
-    await FirebaseFirestore.instance.collection('test').doc('conexao').set({
-      'status': 'sucesso',
-      'data': DateTime.now().toString(),
-    });
-    print("Firebase/Firestore conectado com sucesso!");
+    await permissionService.loadPermissions();
+    log('${permissionService.allPermissions}', name: 'Permission Check');
   } catch (e) {
-    print("Erro ao conectar ao Firestore: $e");
+    log('Erro ao carregar permissoes: $e', name: 'Permission Check');
   }
   // -------------------------------
-  setupDependencyInjection();
 
   runApp(const MyApp());
 }
