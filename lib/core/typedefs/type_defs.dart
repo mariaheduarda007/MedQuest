@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:medquest/domain/models/patient_entity.dart';
 import '../failure/failure.dart';
 
 import '../patterns/result.dart';
 
 // typedefs para tipo Result
 typedef VoidResult = Result<void, Failure>;
-// typedef AccountResult = Result<Account, Failure>;
+typedef PatientResult = Result<Patient, Failure>;
 
 
 // typedfs para parâmetros
-// typedef AccountParams = ({Account account});
+typedef PatientParams = ({Patient patient, String researchId, String groupId});
+typedef PatientIdParams = ({String researchId, String groupId, String patientId});
 
-/// tipos usadoos Conta de Usuario
 typedef NoParams = ();
-// typedef AccountNameParams = ({String accountName});
-/// tipos usados para Personagem
 
 
 /// typedefs para ser usados em componentes de UI
@@ -23,10 +22,6 @@ typedef FormFieldControl = ({
   FocusNode focus,
   TextEditingController controller,
 });
-
-
-// typedefs para tipo Result
-// typedefs para autenticação
 
 
 // typedfs para parâmetros
