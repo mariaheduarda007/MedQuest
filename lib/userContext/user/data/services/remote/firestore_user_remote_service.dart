@@ -1,19 +1,17 @@
-// ignore_for_file: avoid_print
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:medquest/auth/domain/models/auth_entities.dart';
-
 import 'package:medquest/userContext/user/domain/models/user_model.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/result.dart'; 
 import 'i_user_remote_service.dart';
+import 'dart:developer';
 
 class FirestoreUserService implements IUserRemoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirestoreUserService() {
-    print("LOG_CRÍTICO: FirestoreUserService foi instanciado!");
+    log("LOG_CRÍTICO: FirestoreUserService foi instanciado!");
   }
   @override
   Future<VoidResult> saveUser(User user) async {
@@ -66,22 +64,19 @@ class FirestoreUserService implements IUserRemoteService {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       final data = UserModel(uid: user.uid, name: user.name, email: user.email).toMap();
-      // ignore: avoid_print
-      print("DOC_ID_ALVO: $uid");
-      // ignore: avoid_print
-      print("DADOS_ENVIADOS: $data");
+      log("DOC_ID_ALVO: $uid");
+      log("DADOS_ENVIADOS: $data");
       final docSnapshot = await _firestore
           .collection('User')
           .doc(uid)
           .get();
-      // ignore: avoid_print
-      print("O DOCUMENTO EXISTE NO BANCO? ${docSnapshot.exists}");
+      log("O DOCUMENTO EXISTE NO BANCO? ${docSnapshot.exists}");
 
       await _firestore.collection('User').doc(uid).update(data);
 
       return Success(null);
     } catch (e) {
-      print("DEBUG: Erro no update: $e");
+      log("DEBUG: Erro no update: $e");
       return Error(DefaultFailure(e.toString()));
     }
   }

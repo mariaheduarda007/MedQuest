@@ -7,7 +7,6 @@ class UserModel extends User {
     required super.email,
   });
 
-
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
