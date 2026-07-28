@@ -6,10 +6,10 @@ import '../../domain/models/patient_entity.dart';
 /// implementação do repositório para Patient
 
 final class PatientRepositoryImpl implements IPatientRepository {
-  final IPatientFirestore _localStorage;
+  final IPatientFirestore _firestore;
 
-  PatientRepositoryImpl({required IPatientFirestore localStorage})
-    : _localStorage = localStorage;
+  PatientRepositoryImpl({required IPatientFirestore firestore})
+    : _firestore = firestore;
 
   @override
   Future<PatientResult> createPatient(
@@ -17,7 +17,7 @@ final class PatientRepositoryImpl implements IPatientRepository {
     String researchId,
     String groupId,
   ) {
-    return _localStorage.createPatient(patient, researchId, groupId);
+    return _firestore.createPatient(patient, researchId, groupId);
   }
 
   @override
@@ -26,7 +26,7 @@ final class PatientRepositoryImpl implements IPatientRepository {
     String groupId,
     String patientId,
   ) {
-    return _localStorage.getPatient(researchId, groupId, patientId);
+    return _firestore.getPatient(researchId, groupId, patientId);
   }
 
   @override
@@ -35,7 +35,7 @@ final class PatientRepositoryImpl implements IPatientRepository {
     String researchId,
     String groupId,
   ) {
-    return _localStorage.updatePatient(patient, researchId, groupId);
+    return _firestore.updatePatient(patient, researchId, groupId);
   }
 
   @override
@@ -44,6 +44,6 @@ final class PatientRepositoryImpl implements IPatientRepository {
     String groupId,
     String patientId,
   ) {
-    return _localStorage.deletePatient(researchId, groupId, patientId);
+    return _firestore.deletePatient(researchId, groupId, patientId);
   }
 }

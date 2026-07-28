@@ -5,35 +5,35 @@ import '../commands/patient_commands.dart';
 import 'patient_state_viewmodel.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
-class PatientCommandsViewmodel {
+class PatientCommandsViewModel {
   final PatientStateViewModel state;
   final GetPatientCommand _getPatientCommand;
   final CreatePatientCommand _createPatientCommand;
   final UpdatePatientCommand _updatePatientCommand;
   final DeletePatientCommand _deletePatientCommand;
 
-  PatientCommandsViewmodel({
+  PatientCommandsViewModel({
     required this.state,
-    required GetPatientCommand getPatientCommand,
     required CreatePatientCommand createPatientCommand,
+    required GetPatientCommand getPatientCommand,
     required UpdatePatientCommand updatePatientCommand,
     required DeletePatientCommand deletePatientCommand,
-  }) : _getPatientCommand = getPatientCommand,
-       _createPatientCommand = createPatientCommand,
+  }) : _createPatientCommand = createPatientCommand,
+       _getPatientCommand = getPatientCommand,
        _updatePatientCommand = updatePatientCommand,
        _deletePatientCommand = deletePatientCommand {
     // Observers para cada comando
-    _observeGetPatient();
-    _observeDeletePatient();
     _observeCreatePatient();
+    _observeGetPatient();
     _observeUpdatePatient();
+    _observeDeletePatient();
   }
 
   // ========================================================
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
-  GetPatientCommand get getPatientCommand => _getPatientCommand;
   CreatePatientCommand get createPatientCommand => _createPatientCommand;
+  GetPatientCommand get getPatientCommand => _getPatientCommand;
   UpdatePatientCommand get updatePatientCommand => _updatePatientCommand;
   DeletePatientCommand get deletePatientCommand => _deletePatientCommand;
 

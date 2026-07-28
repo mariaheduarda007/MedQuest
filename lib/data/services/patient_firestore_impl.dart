@@ -6,12 +6,12 @@ import 'package:medquest/domain/models/patient_mapper.dart';
 import '../../core/failure/failure.dart';
 import '../../core/patterns/result.dart';
 
-final class PatientFireStoreService implements IPatientFirestore {
+final class PatientFirestoreService implements IPatientFirestore {
   static const String _collection = 'Patient';
 
   final FirebaseFirestore _firestore;
 
-  PatientFireStoreService({required FirebaseFirestore firestore})
+  PatientFirestoreService({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
   @override
