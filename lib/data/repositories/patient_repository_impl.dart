@@ -30,6 +30,11 @@ final class PatientRepositoryImpl implements IPatientRepository {
   }
 
   @override
+  Future<PatientsResult> getPatients(String researchId, String groupId) {
+    return _firestore.getPatients(researchId, groupId);
+  }
+
+  @override
   Future<PatientResult> updatePatient(
     Patient patient,
     String researchId,

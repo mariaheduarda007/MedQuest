@@ -20,6 +20,10 @@ final class GroupRepositoryImpl implements IGroupRepository {
   Future<GroupResult> getGroup(String researchId, String groupId) {
     return _firestore.getGroup(researchId, groupId);
   }
+  @override
+  Future<GroupsResult> getGroups(String researchId) {
+    return _firestore.getGroups(researchId);
+  }
 
   @override
   Future<VoidResult> deleteGroup(String researchId, String groupId) {

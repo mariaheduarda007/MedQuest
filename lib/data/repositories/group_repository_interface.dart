@@ -10,6 +10,9 @@ abstract interface class IGroupRepository {
     String researchId,
     String groupId,
   );
+   Future<GroupsResult> getGroups(
+    String researchId
+  );
   Future<VoidResult> deleteGroup(
     String researchId,
     String groupId,

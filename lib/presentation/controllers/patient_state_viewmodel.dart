@@ -7,6 +7,8 @@ enum PatientSuccessEvent { created, updated, deleted }
 class PatientStateViewModel {
   final state = Signal<Patient?>(null);
 
+  final patientsState = Signal<List<Patient>>([]);
+
   final message = signal<String?>(null);
 
   /// Evento de sucesso para operações de conta, inicializado como nulo
@@ -23,6 +25,7 @@ class PatientStateViewModel {
   // Métodos auxiliares
   // ----------------------------------------------------------
   void setPatient(Patient? patient) => state.value = patient;
+  void setPatients(List<Patient> patients) => patientsState.value = patients;
 
   void clearMessage() => message.value = null;
 

@@ -36,6 +36,21 @@ final class GetGroupCommand
   }
 }
 
+final class GetGroupsCommand
+    extends ParameterizedCommand<List<Group>, Failure, ResearchIdParams> {
+  final IGroupFacadeUseCases _groupFacadeUseCases;
+
+  GetGroupsCommand(this._groupFacadeUseCases);
+
+  @override
+  Future<GroupsResult> execute() async {
+    if (parameter == null) {
+      return Error(InputFailure('Parametro nulo para buscar grupos.'));
+    }
+    return await _groupFacadeUseCases.getGroups(parameter!);
+  }
+}
+
 final class DeleteGroupCommand
     extends ParameterizedCommand<void, Failure, GroupIdParams> {
   final IGroupFacadeUseCases _groupFacadeUseCases;

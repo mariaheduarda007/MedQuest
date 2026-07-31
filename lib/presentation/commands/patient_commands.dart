@@ -36,6 +36,21 @@ final class GetPatientCommand
   }
 }
 
+final class GetPatientsCommand
+    extends ParameterizedCommand<List<Patient>, Failure, GroupIdParams> {
+  final IPatientFacadeUseCases _patientFacadeUseCases;
+
+  GetPatientsCommand(this._patientFacadeUseCases);
+
+  @override
+  Future<PatientsResult> execute() async {
+    if (parameter == null) {
+      return Error(InputFailure('Parametro nulo para buscar pacientes.'));
+    }
+    return await _patientFacadeUseCases.getPatients(parameter!);
+  }
+}
+
 final class UpdatePatientCommand
     extends ParameterizedCommand<Patient, Failure, PatientParams> {
   final IPatientFacadeUseCases _patientFacadeUseCases;

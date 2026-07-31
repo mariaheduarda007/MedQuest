@@ -8,6 +8,7 @@ import 'package:signals_flutter/signals_flutter.dart';
 class PatientCommandsViewModel {
   final PatientStateViewModel state;
   final GetPatientCommand _getPatientCommand;
+  final GetPatientsCommand _getPatientsCommand;
   final CreatePatientCommand _createPatientCommand;
   final UpdatePatientCommand _updatePatientCommand;
   final DeletePatientCommand _deletePatientCommand;
@@ -16,15 +17,18 @@ class PatientCommandsViewModel {
     required this.state,
     required CreatePatientCommand createPatientCommand,
     required GetPatientCommand getPatientCommand,
+    required GetPatientsCommand getPatientsCommand,
     required UpdatePatientCommand updatePatientCommand,
     required DeletePatientCommand deletePatientCommand,
   }) : _createPatientCommand = createPatientCommand,
        _getPatientCommand = getPatientCommand,
+       _getPatientsCommand = getPatientsCommand,
        _updatePatientCommand = updatePatientCommand,
        _deletePatientCommand = deletePatientCommand {
     // Observers para cada comando
     _observeCreatePatient();
     _observeGetPatient();
+    _observeGetPatients();
     _observeUpdatePatient();
     _observeDeletePatient();
   }
@@ -34,6 +38,7 @@ class PatientCommandsViewModel {
   // ========================================================
   CreatePatientCommand get createPatientCommand => _createPatientCommand;
   GetPatientCommand get getPatientCommand => _getPatientCommand;
+  GetPatientsCommand get getPatientsCommand => _getPatientsCommand;
   UpdatePatientCommand get updatePatientCommand => _updatePatientCommand;
   DeletePatientCommand get deletePatientCommand => _deletePatientCommand;
 
@@ -98,6 +103,19 @@ class PatientCommandsViewModel {
     );
   }
 
+  void _observeGetPatients() {
+    _observeCommand<List<Patient>>(
+      _getPatientsCommand,
+      onSuccess: (patients) {
+        state.setPatients(patients);
+        state.clearMessage();
+      },
+      onFailure: (err) {
+        state.setMessage(err.msg);
+      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+    );
+  }
+
   void _observeUpdatePatient() {
     _observeCommand<Patient>(
       _updatePatientCommand,
@@ -149,6 +167,13 @@ class PatientCommandsViewModel {
       researchId: researchId,
       groupId: groupId,
       patientId: patientId,
+    ));
+  }
+
+  Future<void> getPatients(String researchId, String groupId) async {
+    await _getPatientsCommand.executeWith((
+      researchId: researchId,
+      groupId: groupId,
     ));
   }
 

@@ -12,6 +12,10 @@ abstract interface class IPatientFirestore {
     String groupId,
     String patientId,
   );
+  Future<PatientsResult> getPatients(
+    String researchId,
+    String groupId,
+  );
   Future<PatientResult> updatePatient(
     Patient patient,
     String researchId,

@@ -7,5 +7,8 @@ abstract interface class ICreateGroupUseCase
 abstract interface class IGetGroupUseCase
     implements IUseCase<GroupResult, GroupIdParams> {}
 
+abstract interface class IGetGroupsUseCase
+    implements IUseCase<GroupsResult, ResearchIdParams> {}
+
 abstract interface class IDeleteGroupUseCase
     implements IUseCase<VoidResult, GroupIdParams> {}

@@ -38,7 +38,7 @@ class PatientMapper {
     elitism: map['elitism'] as String,
     ethnicity: map['ethnicity'] as String,
     birthPlacement: map['birthPlacement'] as String,
-    birthDate: DateTime.parse(map['birthDate'] as String),
+    birthDate: DateTime.parse(map['birthDate']),
     weight: (map['weight'] as num).toDouble(),
     height: (map['height'] as num).toDouble(),
     occupation: map['occupation'] as String,

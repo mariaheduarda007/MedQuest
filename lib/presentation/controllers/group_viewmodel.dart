@@ -37,6 +37,7 @@ class GroupViewModel {
   // --- Comandos expostos ---
   CreateGroupCommand get saveGroupCommand => commands.createGroupCommand;
   GetGroupCommand get getGroupCommand => commands.getGroupCommand;
+  GetGroupsCommand get getGroupsCommand => commands.getGroupsCommand;
   DeleteGroupCommand get deleteGroupCommand =>
       commands.deleteGroupCommand;
 

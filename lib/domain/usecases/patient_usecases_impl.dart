@@ -34,6 +34,21 @@ final class GetPatientUseCaseImpl implements IGetPatientUseCase {
   }
 }
 
+final class GetPatientsUseCaseImpl implements IGetPatientsUseCase {
+  final IPatientRepository _repository;
+
+  GetPatientsUseCaseImpl({required IPatientRepository repository})
+    : _repository = repository;
+
+  @override
+  Future<PatientsResult> call(GroupIdParams params) async {
+    return _repository.getPatients(
+      params.researchId,
+      params.groupId,
+    );
+  }
+}
+
 final class UpdatePatientUseCaseImpl implements IUpdatePatientUseCase {
   final IPatientRepository _repository;
 

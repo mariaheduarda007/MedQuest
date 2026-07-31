@@ -7,29 +7,34 @@ import 'package:signals_flutter/signals_flutter.dart';
 
 class GroupCommandsViewModel {
   final GroupStateViewModel state;
-  final GetGroupCommand _getGroupCommand;
   final CreateGroupCommand _createGroupCommand;
+  final GetGroupCommand _getGroupCommand;
+  final GetGroupsCommand _getGroupsCommand;
   final DeleteGroupCommand _deleteGroupCommand;
 
   GroupCommandsViewModel({
     required this.state,
     required GetGroupCommand getGroupCommand,
+    required GetGroupsCommand getGroupsCommand,
     required CreateGroupCommand createGroupCommand,
     required DeleteGroupCommand deleteGroupCommand,
-  }) : _getGroupCommand = getGroupCommand,
-       _createGroupCommand = createGroupCommand,
+  }) : _createGroupCommand = createGroupCommand,
+       _getGroupCommand = getGroupCommand,
+       _getGroupsCommand = getGroupsCommand,
        _deleteGroupCommand = deleteGroupCommand {
     // Observers para cada comando
     _observeCreateGroup();
     _observeGetGroup();
+    _observeGetGroups();
     _observeDeleteGroup();
   }
 
   // ========================================================
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
-  GetGroupCommand get getGroupCommand => _getGroupCommand;
   CreateGroupCommand get createGroupCommand => _createGroupCommand;
+  GetGroupCommand get getGroupCommand => _getGroupCommand;
+  GetGroupsCommand get getGroupsCommand => _getGroupsCommand;
   DeleteGroupCommand get deleteGroupCommand => _deleteGroupCommand;
 
   // ========================================================
@@ -93,6 +98,19 @@ class GroupCommandsViewModel {
     );
   }
 
+  void _observeGetGroups() {
+    _observeCommand<List<Group>>(
+      _getGroupsCommand,
+      onSuccess: (groups) {
+        state.setGroups(groups);
+        state.clearMessage();
+      },
+      onFailure: (err) {
+        state.setMessage(err.msg);
+      },
+    );
+  }
+
   void _observeDeleteGroup() {
     _observeCommand<void>(
       _deleteGroupCommand,
@@ -109,10 +127,7 @@ class GroupCommandsViewModel {
   // ========================================================
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
-  Future<void> createGroup(
-    Group group,
-    String researchId,
-  ) async {
+  Future<void> createGroup(Group group, String researchId) async {
     //só executa o command, state e suas funções são atualizados pelos observers
     await _createGroupCommand.executeWith((
       group: group,
@@ -120,24 +135,23 @@ class GroupCommandsViewModel {
     ));
   }
 
-  Future<void> getGroup(
-    String researchId,
-    String groupId,
-  ) async {
+  Future<void> getGroup(String researchId, String groupId) async {
     await _getGroupCommand.executeWith((
       researchId: researchId,
       groupId: groupId,
     ));
   }
 
-  Future<void> deleteGroup(
-    String researchId,
-    String groupId,
-  ) async {
+  Future<void> getGroups(String researchId) async {
+    await _getGroupsCommand.executeWith((
+      researchId: researchId,
+    ));
+  }
+
+  Future<void> deleteGroup(String researchId, String groupId) async {
     await _deleteGroupCommand.executeWith((
       groupId: groupId,
       researchId: researchId,
     ));
   }
-
 }

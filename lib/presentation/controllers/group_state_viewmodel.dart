@@ -6,6 +6,7 @@ enum GroupSuccessEvent { created, deleted }
 
 class GroupStateViewModel {
   final state = Signal<Group?>(null);
+  final groupsState = Signal<List<Group>?>(null);
 
   final message = signal<String?>(null);
 
@@ -23,6 +24,7 @@ class GroupStateViewModel {
   // Métodos auxiliares
   // ----------------------------------------------------------
   void setGroup(Group? group) => state.value = group;
+  void setGroups(List<Group>? groups) => groupsState.value = groups;
 
   void clearMessage() => message.value = null;
 

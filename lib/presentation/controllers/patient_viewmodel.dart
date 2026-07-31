@@ -36,6 +36,7 @@ class PatientViewModel {
   // --- Comandos expostos ---
   CreatePatientCommand get savePatientCommand => commands.createPatientCommand;
   GetPatientCommand get getPatientCommand => commands.getPatientCommand;
+  GetPatientsCommand get getPatientsCommand => commands.getPatientsCommand;
   UpdatePatientCommand get updatePatientCommand =>
       commands.updatePatientCommand;
   DeletePatientCommand get deletePatientCommand =>

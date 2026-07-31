@@ -54,6 +54,27 @@ final class GroupFirestoreService implements IGroupFirestore {
   }
 
   @override
+  Future<GroupsResult> getGroups(String researchId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('Research')
+          .doc(researchId)
+          .collection(_collection)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        return Error(EmptyResultFailure());
+      }
+
+      final groups = snapshot.docs.map((doc) => GroupMapper.fromMap(doc.data())).toList();
+
+      return Success(groups);
+    } catch (e) {
+      return Error(ApiLocalFailure('Firestore - Erro ao obter grupo: $e'));
+    }
+  }
+
+  @override
   Future<VoidResult> deleteGroup(String researchId, String groupId) async {
     try {
       await _firestore

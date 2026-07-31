@@ -2,7 +2,7 @@ import 'group_entity.dart';
 
 class GroupMapper {
   
-  static Map<String, dynamic> toMap(Group group) {
+  static Map<String, String> toMap(Group group) {
     return {
       'id': group.id,
       'name': group.name,

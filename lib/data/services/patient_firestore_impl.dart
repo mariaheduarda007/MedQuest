@@ -66,6 +66,31 @@ final class PatientFirestoreService implements IPatientFirestore {
   }
 
   @override
+  Future<PatientsResult> getPatients(String researchId, String groupId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('Research')
+          .doc(researchId)
+          .collection('Group')
+          .doc(groupId)
+          .collection(_collection)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        return Error(EmptyResultFailure());
+      }
+
+      final patients = snapshot.docs
+          .map((doc) => PatientMapper.fromMap(doc.data()))
+          .toList();
+
+      return Success(patients);
+    } catch (e) {
+      return Error(ApiLocalFailure('Firestore - Erro ao obter pacientes: $e'));
+    }
+  }
+
+  @override
   Future<PatientResult> updatePatient(
     Patient patient,
     String researchId,

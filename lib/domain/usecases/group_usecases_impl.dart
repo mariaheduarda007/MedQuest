@@ -26,6 +26,18 @@ final class GetGroupUseCaseImpl implements IGetGroupUseCase {
   }
 }
 
+final class GetGroupsUseCaseImpl implements IGetGroupsUseCase {
+  final IGroupRepository _repository;
+
+  GetGroupsUseCaseImpl({required IGroupRepository repository})
+    : _repository = repository;
+
+  @override
+  Future<GroupsResult> call(ResearchIdParams params) async {
+    return _repository.getGroups(params.researchId);
+  }
+}
+
 final class DeleteGroupUseCaseImpl implements IDeleteGroupUseCase {
   final IGroupRepository _repository;
 

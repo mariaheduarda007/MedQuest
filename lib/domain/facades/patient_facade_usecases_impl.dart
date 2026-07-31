@@ -5,15 +5,18 @@ import '../usecases/patient_usecases_interface.dart';
 final class PatientFacadeUsecasesImpl implements IPatientFacadeUseCases {
   final ICreatePatientUseCase _createPatientUseCase;
   final IGetPatientUseCase _getPatientUseCase;
+  final IGetPatientsUseCase _getPatientsUseCase;
   final IUpdatePatientUseCase _updatePatientUseCase;
   final IDeletePatientUseCase _deletePatientUseCase;
 
   PatientFacadeUsecasesImpl({
     required ICreatePatientUseCase createPatientUseCase,
     required IGetPatientUseCase getPatientUseCase,
+    required IGetPatientsUseCase getPatientsUseCase,
     required IUpdatePatientUseCase updatePatientUseCase,
     required IDeletePatientUseCase deletePatientUseCase,
   }) : _getPatientUseCase = getPatientUseCase,
+       _getPatientsUseCase = getPatientsUseCase,
        _createPatientUseCase = createPatientUseCase,
        _updatePatientUseCase = updatePatientUseCase,
        _deletePatientUseCase = deletePatientUseCase;
@@ -26,6 +29,11 @@ final class PatientFacadeUsecasesImpl implements IPatientFacadeUseCases {
   @override
   Future<PatientResult> getPatient(PatientIdParams params) {
     return _getPatientUseCase(params);
+  }
+
+  @override
+  Future<PatientsResult> getPatients(GroupIdParams params) {
+    return _getPatientsUseCase(params);
   }
 
   @override

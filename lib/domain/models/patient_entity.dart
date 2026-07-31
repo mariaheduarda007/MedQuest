@@ -65,6 +65,7 @@ class Patient extends Equatable {
   });
 
   Patient copyWith({
+    String?id,
     String? name,
     int? treatmentStartAge,
     String? sex,
@@ -85,7 +86,7 @@ class Patient extends Equatable {
     Map<String, String>? researchAttributes,
   }) {
     return Patient(
-      id: id,
+      id: id ?? this.id,
       name: name ?? this.name,
       treatmentStartAge: treatmentStartAge ?? this.treatmentStartAge,
       sex: sex ?? this.sex,
