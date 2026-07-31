@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../failure/failure.dart';
 import '../patterns/result.dart';
-import 'package:medquest/domain/models/group_entity.dart';
-import 'package:medquest/domain/models/patient_entity.dart';
-import 'package:medquest/domain/models/research_entity.dart';
+import 'package:medquest/group/domain/models/group_entity.dart';
+import 'package:medquest/patient/domain/models/patient_entity.dart';
+import 'package:medquest/research/domain/models/research_entity.dart';
 
 // typedefs para tipo Result
 typedef VoidResult = Result<void, Failure>;
