@@ -5,17 +5,14 @@ import 'i_auth_usecase_facade.dart';
 
 class AuthUseCaseFacadeImpl implements IAuthUseCaseFacade {
   final ISignInUseCase _signInUseCase;
-  // final ISignInWithGoogleUseCase _signInWithGoogleUseCase;
   final ISignOutUseCase _signOutUseCase;
   final ISignUpUseCase _signUpUseCase;
 
   AuthUseCaseFacadeImpl({
     required ISignInUseCase signInUseCase,
-    // required ISignInWithGoogleUseCase signInWithGoogleUseCase,
     required ISignOutUseCase signOutUseCase,
     required ISignUpUseCase signUpUseCase,
   }) : _signInUseCase = signInUseCase,
-      //  _signInWithGoogleUseCase = signInWithGoogleUseCase,
        _signOutUseCase = signOutUseCase,
        _signUpUseCase = signUpUseCase;
 
@@ -23,11 +20,6 @@ class AuthUseCaseFacadeImpl implements IAuthUseCaseFacade {
   Future<AuthSessionResult> signInUseCase(SignInParams params) {
     return _signInUseCase(params);
   }
-
-  // @override
-  // Future<AuthSessionResult> signInWithGoogleUseCase(NoParams params) {
-  //   return _signInWithGoogleUseCase(params);
-  // }
 
   @override
   Future<VoidResult> signOutUseCase(NoParams params) {

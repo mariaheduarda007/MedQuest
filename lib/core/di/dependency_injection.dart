@@ -1,4 +1,5 @@
 import 'package:auto_injector/auto_injector.dart';
+import 'package:medquest/userContext/userRole/domain/usecases/userRole_usecases_impl.dart';
 import '../theme/theme_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medquest/auth/data/repositories/auth_repository_impl.dart';
@@ -22,7 +23,15 @@ import 'package:medquest/userContext/user/domain/usecases/i_user_usecases.dart';
 import 'package:medquest/userContext/user/domain/usecases/user_usecases_impl.dart';
 import 'package:medquest/userContext/user/presentation/controllers/user_viewmodel.dart';
 import 'package:medquest/userContext/user/data/services/remote/firestore_user_remote_service.dart';
-import 'package:medquest/userContext/permission/data/services/local/permission_cache_service.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
+import 'package:medquest/userContext/userRole/data/services/remote/i_userRole_remote_service.dart';
+import 'package:medquest/userContext/userRole/data/services/remote/firestore_userRole_remote_service.dart';
+import 'package:medquest/userContext/userRole/data/repositories/i_userRole_repository.dart';
+import 'package:medquest/userContext/userRole/data/repositories/userRole_repository_impl.dart';
+import 'package:medquest/userContext/userRole/domain/usecases/i_userRole_usecases.dart';
+import 'package:medquest/userContext/userRole/domain/facades/i_userRole_facade_usecases.dart';
+import 'package:medquest/userContext/userRole/domain/facades/userRole_facade_usecases_impl.dart';
+import 'package:medquest/userContext/userRole/presentation/controllers/userRole_viewmodel.dart';
 
 final injector = AutoInjector();
 
@@ -31,6 +40,7 @@ void setupDependencyInjection() {
   injector.addSingleton<ThemeController>(ThemeController.new);
 
   injector.addSingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
+  
   // --- AUTH ---
   // injector.addSingleton<IAccountRemoteService>(() => FirestoreAccountService());
   injector.addSingleton<ILocalSessionStore>(SharedPrefLocalSessionService.new);
@@ -60,11 +70,6 @@ void setupDependencyInjection() {
   injector.addSingleton<ISignInUseCase>(
     () => SignInUseCase(authRepository: injector.get<IAuthRepository>()),
   );
-  // injector.addSingleton<ISignInWithGoogleUseCase>(
-  //   () => SignInWithGoogleUseCase(
-  //     authRepository: injector.get<IAuthRepository>(),
-  //   ),
-  // );
   injector.addSingleton<ISignOutUseCase>(
     () => SignOutUseCase(authRepository: injector.get<IAuthRepository>()),
   );
@@ -73,7 +78,6 @@ void setupDependencyInjection() {
     () => AuthUseCaseFacadeImpl(
       signUpUseCase: injector.get<ISignUpUseCase>(),
       signInUseCase: injector.get<ISignInUseCase>(),
-      // signInWithGoogleUseCase: injector.get<ISignInWithGoogleUseCase>(),
       signOutUseCase: injector.get<ISignOutUseCase>(),
     ),
   );
@@ -128,5 +132,43 @@ injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
     () => UserViewModel(injector.get<IUserFacadeUseCases>()),
   );
 
+// --- USER ROLE ---
+  injector.addSingleton<IUserRoleRemoteService>(
+    () => FirestoreUserRoleRemoteService(firestore: injector.get<FirebaseFirestore>()),
+  );
+
+  injector.addSingleton<IUserRoleRepository>(
+    () => UserRoleRepository(remoteService: injector.get<IUserRoleRemoteService>()),
+  );
+
+  injector.addSingleton<IGetUserRolesByUserIdUseCase>(
+    () => GetUserRolesByUserIdUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+  );
+  injector.addSingleton<IGetAllUserRolesUseCase>(
+    () => GetAllUserRolesUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+  );
+  injector.addSingleton<ICreateUserRoleUseCase>(
+    () => CreateUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+  );
+  injector.addSingleton<IUpdateUserRoleUseCase>(
+    () => UpdateUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+  );
+  injector.addSingleton<IDeleteUserRoleUseCase>(
+    () => DeleteUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+  );
+
+  injector.addSingleton<IUserRoleFacadeUseCases>(
+    () => UserRoleFacadeUsecasesImpl(
+      getUserRolesByUserIdUseCase: injector.get<IGetUserRolesByUserIdUseCase>(),
+      getAllUserRolesUseCase: injector.get<IGetAllUserRolesUseCase>(),
+      createUserRoleUseCase: injector.get<ICreateUserRoleUseCase>(),
+      updateUserRoleUseCase: injector.get<IUpdateUserRoleUseCase>(),
+      deleteUserRoleUseCase: injector.get<IDeleteUserRoleUseCase>(),
+    ),
+  );
+
+  injector.addSingleton<UserRoleViewModel>(
+    () => UserRoleViewModel(injector.get<IUserRoleFacadeUseCases>()),
+  );
   injector.commit();
 }

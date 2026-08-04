@@ -1,12 +1,9 @@
 import 'package:medquest/userContext/user/data/services/remote/i_user_remote_service.dart';
-import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/result.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'i_user_repository.dart';
 // import '../services/local/user_local_storage_interface.dart';
 import 'package:medquest/auth/domain/models/auth_entities.dart';
-
-/// implementação do repositório para User
 
 final class UserRepositoryImpl implements IUserRepository {
   // final IUserLocalStorage _localStorage;

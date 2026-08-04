@@ -11,10 +11,8 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  // Injeção de dependência via Service Locator
   late final UserViewModel _vm;
   
-  // Controllers para os campos editáveis
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
 
@@ -23,7 +21,6 @@ class _ProfileViewState extends State<ProfileView> {
     super.initState();
     _vm = injector.get<UserViewModel>();
 
-    // Busca os dados do usuário usando o padrão de Commands
     _vm.commands.fetchUser();
   }
 
@@ -42,19 +39,16 @@ class _ProfileViewState extends State<ProfileView> {
         centerTitle: true,
       ),
       body: Watch((context) {
-        // Observa o estado de execução do comando
         if (_vm.commands.getUserCommand.isExecuting.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
         final user = _vm.userState.state.value;
 
-        // Caso o usuário não seja encontrado ou não carregado
         if (user == null) {
           return const Center(child: Text("Erro ao carregar perfil."));
         }
 
-        // Sincroniza os controllers com o dado carregado
         if (_nameController.text.isEmpty) _nameController.text = user.name;
         if (_emailController.text.isEmpty) _emailController.text = user.email;
 
@@ -62,7 +56,6 @@ class _ProfileViewState extends State<ProfileView> {
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              // Avatar
               Center(
                 child: Stack(
                   children: [
@@ -103,7 +96,7 @@ class _ProfileViewState extends State<ProfileView> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  // onPressed: () => _vm.commands.logout(),
+                  //onPressed: () => _vm.commands.logout(), nao tem ainda
                   onPressed: () => null,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,

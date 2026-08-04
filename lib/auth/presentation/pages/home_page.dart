@@ -6,7 +6,6 @@ import 'package:signals_flutter/signals_flutter.dart';
 
 import '../../domain/models/auth_entities.dart';
 import '../controllers/auth_session_viewmodel.dart';
-// import '../widgets/social_login_buttons.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title, required this.session});

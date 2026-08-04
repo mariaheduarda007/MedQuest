@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:medquest/core/routes/app_routes.dart';
 import 'package:medquest/core/di/dependency_injection.dart';
-import 'package:medquest/userContext/permission/data/services/local/permission_cache_service.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
 import 'dart:developer';
 
 void main() async {

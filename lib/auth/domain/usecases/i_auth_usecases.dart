@@ -5,9 +5,6 @@ import '../../../core/patterns/i_usecases.dart';
 abstract interface class ISignInUseCase
     implements IUseCase<AuthSessionResult, SignInParams> {}
 
-// abstract interface class ISignInWithGoogleUseCase
-//     implements IUseCase<AuthSessionResult, NoParams> {}
-
 abstract interface class ISignOutUseCase
     implements IUseCase<VoidResult, NoParams> {}
 

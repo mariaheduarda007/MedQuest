@@ -1,10 +1,13 @@
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/result.dart';
-import 'package:medquest/userContext/userRoles/domain/models/userRole_model.dart';
+import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
 
-abstract class IUserRolesRepository {
-  Future<Result<List<UserRoleModel>, Failure>> getUserRolesByUserId(String userId);
+abstract interface class IUserRoleRemoteService {
+
+  Future<Result<List<UserRoleModel>, Failure>> getUserRolesByUserId(
+    String userId,
+  );
 
   Future<VoidResult> createUserRole({
     required String userId,
@@ -19,4 +22,6 @@ abstract class IUserRolesRepository {
   });
 
   Future<VoidResult> deleteUserRole(String userRoleId);
+
+  Future<Result<List<UserRoleModel>, Failure>> getAllUserRoles();
 }

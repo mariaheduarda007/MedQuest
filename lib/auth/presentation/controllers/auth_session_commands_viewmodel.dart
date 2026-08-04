@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:medquest/core/failure/failure.dart';
 import 'package:signals_flutter/signals_flutter.dart';
-
 import '../../../core/patterns/command.dart';
 import '../../data/repositories/i_auth_repository.dart';
 import '../../domain/models/auth_entities.dart';
@@ -12,7 +10,6 @@ import 'auth_session_state_viewmodel.dart';
 class AuthSessionCommands {
   final AuthSessionState state;
   final SignInCommand _signInCommand;
-  // final SignInWithGoogleCommand _signInWithGoogleCommand;
   final SignOutCommand _signOutCommand;
   final SignUpCommand _signUpCommand;
   final IAuthRepository _repository;
@@ -22,17 +19,14 @@ class AuthSessionCommands {
     required this.state,
     required IAuthRepository repository,
     required SignInCommand signInCommand,
-    // required SignInWithGoogleCommand signInWithGoogleCommand,
     required SignOutCommand signOutCommand,
     required SignUpCommand signUpCommand,
   }) : _repository = repository,
        _signInCommand = signInCommand,
-      //  _signInWithGoogleCommand = signInWithGoogleCommand,
        _signOutCommand = signOutCommand,
        _signUpCommand = signUpCommand {
     // Observadores que reagem automaticamente ao término dos comandos
     _observeSignIn();
-    // _observeSignInWithGoogle();
     _observeSignUp();
     _observeSignOut();
     _observeSession();
@@ -42,8 +36,6 @@ class AuthSessionCommands {
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
   SignInCommand get signInCommand => _signInCommand;
-  // SignInWithGoogleCommand get signInWithGoogleCommand =>
-  //     _signInWithGoogleCommand;
   SignOutCommand get signOutCommand => _signOutCommand;
   SignUpCommand get signUpCommand => _signUpCommand;
 
@@ -123,19 +115,6 @@ class AuthSessionCommands {
       },
     );
   }
-
-  // // Efetuar a sign-in com google
-  // void _observeSignInWithGoogle() {
-  //   _observeCommand<AuthSession>(
-  //     _signInWithGoogleCommand,
-  //     onSuccess: (authSession) {
-  //       state.setAuthenticated(authSession);
-  //     },
-  //     onFailure: (err) {
-  //       state.setUnauthenticated(msg: err.msg);
-  //     },
-  //   );
-  // }
 
   // Efetuar a sign-in com login e senha
   void _observeSignIn() {

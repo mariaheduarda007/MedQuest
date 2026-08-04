@@ -5,7 +5,6 @@ import 'package:medquest/core/patterns/result.dart';
 import 'package:medquest/auth/domain/models/auth_entities.dart';
 import 'package:medquest/userContext/user/domain/facades/i_user_facade_usecases.dart';
 
-
 final class SaveUserCommand extends ParameterizedCommand<void, Failure, UserParams> {
   final IUserFacadeUseCases _userFacadeUseCases;
 

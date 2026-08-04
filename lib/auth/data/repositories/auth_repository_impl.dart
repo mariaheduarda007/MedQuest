@@ -27,11 +27,6 @@ class AuthRepositoryImpl implements IAuthRepository {
   Future<AuthSessionResult> signIn(String email, String password) {
     return _authService.signIn(email, password);
   }
-  // /// Realiza login com Google
-  // @override
-  // Future<AuthSessionResult> signInWithGoogle() {
-  //   return _authService.signInWithGoogle();
-  // }
 
   /// Registro de usuário com email e senha. Name é opcional
   @override

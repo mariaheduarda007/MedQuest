@@ -1,6 +1,5 @@
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
-
 import '../../../core/patterns/command.dart';
 import '../../../core/patterns/result.dart';
 import '../../domain/facades/i_auth_usecase_facade.dart';
@@ -20,20 +19,6 @@ final class SignInCommand extends ParameterizedCommand<AuthSession, Failure, Sig
     return await _authUseCaseFacade.signInUseCase(parameter!);
   }
 }
-
-// final class SignInWithGoogleCommand extends ParameterizedCommand<AuthSession, Failure, NoParams> {
-//   final IAuthUseCaseFacade _authUseCaseFacade;
-
-//   SignInWithGoogleCommand(this._authUseCaseFacade);
-
-//   @override
-//   Future<AuthSessionResult> execute() async {
-//     if (parameter == null) {
-//       return Error(InvalidInputFailure('Parâmetros de login Gooogle inválidos.'));
-//     }
-//     return await _authUseCaseFacade.signInWithGoogleUseCase(parameter!);
-//   }
-// }
 
 final class SignOutCommand extends ParameterizedCommand<void, Failure, NoParams> {
   final IAuthUseCaseFacade _authUseCaseFacade;

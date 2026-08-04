@@ -22,16 +22,12 @@ class UserCommandsViewmodel {
        _saveUserCommand = saveUserCommand,
        _updateUserCommand = updateUserCommand,
        _deleteUserCommand = deleteUserCommand {
-    // Observers para cada comando
     _observeGetUser();
     _observeDeleteUser();
     _observeSaveUser();
     _observeUpdateUser();
   }
 
-  // ========================================================
-  //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
-  // ========================================================
   GetUserCommand get getUserCommand => _getUserCommand;
   SaveUserCommand get saveUserCommand => _saveUserCommand;
   UpdateUserCommand get updateUserCommand => _updateUserCommand;
@@ -46,24 +42,21 @@ class UserCommandsViewmodel {
     void Function(Failure err)? onFailure,
   }) {
     effect(() {
-      // 1) Ignora enquanto está executando
       if (command.isExecuting.value) return;
 
-      // 2) Ignora até existir um resultado
       final result = command.result.value;
       if (result == null) return;
 
-      // 3) Sucesso ou falha
       result.fold(
         onSuccess: (data) {
-          state.clearMessage(); // sempre limpa erros em sucesso
-          onSuccess(data); // ação específica para esse comando
-          command.clear(); // Limpa o resultado para evitar reprocessamento
+          state.clearMessage(); 
+          onSuccess(data); 
+          command.clear(); 
         },
         onFailure: (err) {
-          state.setMessage(err.msg); // registra o erro no estado
+          state.setMessage(err.msg);
           if (onFailure != null) onFailure(err);
-          command.clear(); // Limpa o resultado para evitar reprocessamento
+          command.clear();
         },
       );
     });
@@ -73,7 +66,7 @@ class UserCommandsViewmodel {
   //   OBSERVERS ESPECÍFICOS
   // ========================================================
 
-  // Recuperar User
+  // recuperar User
   void _observeGetUser() {
     _observeCommand<User>(
       _getUserCommand,
@@ -106,7 +99,7 @@ class UserCommandsViewmodel {
       _saveUserCommand,
       onSuccess: (_) {
         state.successEvent.value = UserSuccessEvent.created;
-        state.clearMessage(); // Limpa mensagens anteriores
+        state.clearMessage(); 
       },
       onFailure: (err) {
         state.setMessage(err.msg);
@@ -120,7 +113,7 @@ class UserCommandsViewmodel {
       _updateUserCommand,
       onSuccess: (_) {
         state.successEvent.value = UserSuccessEvent.updated;
-        state.clearMessage(); // Limpa mensagens anteriores
+        state.clearMessage(); 
         
       },
       onFailure: (err) {
@@ -129,27 +122,23 @@ class UserCommandsViewmodel {
     );
   }
 
-  // ========================================================
-  //   MÉTODOS PÚBLICOS (CHAMADOS PELOS WIDGETS)
-  //   que disparam os commands
-  // ========================================================
   Future<void> fetchUser() async {
-    state.clearMessage(); // Limpa mensagens anteriores
+    state.clearMessage(); 
     await _getUserCommand.executeWith(());
   }
 
   Future<void> deleteUser() async {
-    state.clearMessage(); // Limpa mensagens anteriores
+    state.clearMessage(); 
     await _deleteUserCommand.executeWith(());
   }
 
   Future<void> saveUser(User user) async {
-    state.setUser(user); // Atualiza o estado
+    state.setUser(user); 
     await _saveUserCommand.executeWith((user: user));
   }
 
   Future<void> updateUser(User user) async {
-    state.setUser(user); // Atualiza o estado
+    state.setUser(user);
     await _updateUserCommand.executeWith((user: user));
   }
 }

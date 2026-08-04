@@ -18,20 +18,6 @@ final class SignInUseCase implements ISignInUseCase {
   }
 }
 
-// final class SignInWithGoogleUseCase implements ISignInWithGoogleUseCase {
-//   final IAuthRepository _authRepository;
-  
-//   SignInWithGoogleUseCase({required IAuthRepository authRepository})
-//       : _authRepository = authRepository;
-
-//   @override
-//   Future<AuthSessionResult> call(NoParams params) async {
-//     // Simula uma chamada de rede com atraso
-//     await Future.delayed(const Duration(seconds: 1));
-//     return _authRepository.signInWithGoogle();
-//   }
-// } 
-
 final class SignOutUseCase implements ISignOutUseCase {
   final IAuthRepository _authRepository;
   

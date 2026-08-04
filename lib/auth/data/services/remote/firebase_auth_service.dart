@@ -6,7 +6,6 @@ import '../../../domain/models/session_token.dart';
 
 import '../../../domain/models/auth_entities.dart';
 import 'i_auth_service.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';

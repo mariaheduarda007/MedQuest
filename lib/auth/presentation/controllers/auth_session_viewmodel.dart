@@ -41,7 +41,6 @@ class AuthViewModel extends ChangeNotifier {
       repository: _repository,
       state: session,
       signInCommand: SignInCommand(facade),
-      // signInWithGoogleCommand: SignInWithGoogleCommand(facade),
       signOutCommand: SignOutCommand(facade),
       signUpCommand: SignUpCommand(facade),
     );
@@ -58,8 +57,6 @@ class AuthViewModel extends ChangeNotifier {
 
   // --- Comandos expostos ---
   SignInCommand get signInCommand => _commands.signInCommand;
-  // SignInWithGoogleCommand get signInWithGoogleCommand =>
-  //     _commands.signInWithGoogleCommand;
   SignOutCommand get signOutCommand => commands.signOutCommand;
   SignUpCommand get signUpCommand => commands.signUpCommand;
 

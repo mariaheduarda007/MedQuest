@@ -1,7 +1,5 @@
 import 'package:medquest/core/di/dependency_injection.dart';
-import 'package:medquest/core/routes/app_routes.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
-import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +21,6 @@ class _SignupPageState extends State<SignupPage> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
-  // bool _loading = false;
   bool _obscure = true;
 
   @override
@@ -67,8 +64,8 @@ class _SignupPageState extends State<SignupPage> {
       if (auth == null) {
         _showSnack('Falha ao cadastrar usuário.');
       } else {
-        // context.goNamed(AppRouteNames.adventureHome);
-        // context.goNamed(AppRouteNames.accountCreate, extra: auth);
+        _showSnack('Usuário cadastrado com sucesso! Bem-vindo, ${auth.user.name}.');
+        context.go(AuthRouteNames.login);
       }
     } catch (e) {
       _showSnack('Erro ao fazer login: $e');
@@ -185,7 +182,7 @@ class InputTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool obscureText;
   final TextInputType? keyboardType;
-  final Widget? suffixIcon; // 1. Adicionado aqui
+  final Widget? suffixIcon;
 
   const InputTextField({
     super.key,
@@ -194,7 +191,7 @@ class InputTextField extends StatelessWidget {
     this.validator,
     this.obscureText = false,
     this.keyboardType,
-    this.suffixIcon, // 2. Adicionado ao construtor (opcional)
+    this.suffixIcon,
   });
 
   @override
@@ -211,7 +208,6 @@ class InputTextField extends StatelessWidget {
           if (states.contains(WidgetState.error)) {
             return TextStyle(color: context.colors.error);
           }
-          // Se estiver focado, mas sem erro, você pode querer outra cor aqui
           return TextStyle(color: context.colors.onSurface);
         }),
         suffixIcon: suffixIcon,
@@ -221,7 +217,6 @@ class InputTextField extends StatelessWidget {
           if (states.contains(WidgetState.error)) {
             return TextStyle(color: context.colors.error);
           }
-          // Se estiver focado, mas sem erro, você pode querer outra cor aqui
           return TextStyle(color: context.colors.onSurface);
         }),
       ),

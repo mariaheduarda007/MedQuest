@@ -2,10 +2,7 @@ import 'package:medquest/core/di/dependency_injection.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medquest/core/routes/medquest_routes.dart';
-import 'package:medquest/core/routes/app_routes.dart';
 import 'package:signals_flutter/signals_flutter.dart';
-
 import '../../../core/theme/app_theme.dart';
 import '../controllers/auth_session_viewmodel.dart';
 import '../widgets/auth_text_form_field.dart';
@@ -144,15 +141,10 @@ class _LoginPageState extends State<LoginPage> {
                               passCtrl.text,
                             );
 
-                            // Se houve erro, o ViewModel já deve ter atualizado o 'message'
-                            // O redirect no GoRouter irá detectar que authController.session.value mudou
-                            // e enviará o usuário para a rota correta automaticamente.
-
                             if (authController.session.message.value != null) {
                               _showSnack(authController.session.message.value!);
                             }
 
-                            // NÃO precisa de context.goNamed aqui!
                           } catch (e) {
                             _showSnack('Erro ao fazer login: $e');
                           }

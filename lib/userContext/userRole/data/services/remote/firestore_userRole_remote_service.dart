@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'i_userRoles_remote_service.dart';
+import 'i_userRole_remote_service.dart';
 import 'dart:developer';
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/result.dart';
-import 'package:medquest/userContext/userRoles/domain/models/userRole_model.dart';
+import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
 
-class FirestoreUserRolesRemoteService implements IUserRolesRemoteService {
+class FirestoreUserRoleRemoteService implements IUserRoleRemoteService {
   final FirebaseFirestore _firestore;
 
-  FirestoreUserRolesRemoteService({FirebaseFirestore? firestore})
+  FirestoreUserRoleRemoteService({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   // deixei as verificações do path pq nao tenho certeza de como a app vai passar os ids
@@ -118,6 +118,26 @@ class FirestoreUserRolesRemoteService implements IUserRolesRemoteService {
       log(
         'Erro ao deletar UserRole: $e',
         name: 'Erro em deletar Roles do User',
+      );
+      return Error(DefaultFailure(e.toString()));
+    }
+  }
+
+// pegar todos os papéis de todos os usuários (pro adm)
+  @override
+  Future<Result<List<UserRoleModel>, Failure>> getAllUserRoles() async {
+    try {
+      final querySnapshot = await _firestore.collection('UserRole').get();
+
+      final roles = querySnapshot.docs.map((doc) {
+        return UserRoleModel.fromMap(doc.id, doc.data());
+      }).toList();
+
+      return Success(roles);
+    } catch (e) {
+      log(
+        'Erro ao buscar todos os papéis: $e',
+        name: 'Erro em buscar todos os UserRoles',
       );
       return Error(DefaultFailure(e.toString()));
     }

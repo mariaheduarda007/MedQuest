@@ -1,14 +1,14 @@
-import 'i_userRoles_repository.dart';
-import '../services/remote/i_userRoles_remote_service.dart';
+import 'i_userRole_repository.dart';
+import '../services/remote/i_userRole_remote_service.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/result.dart';
-import 'package:medquest/userContext/userRoles/domain/models/userRole_model.dart';
+import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
 
-class UserRolesRepository implements IUserRolesRepository {
-  final IUserRolesRemoteService _remoteService;
+class UserRoleRepository implements IUserRoleRepository {
+  final IUserRoleRemoteService _remoteService;
 
-  UserRolesRepository({required IUserRolesRemoteService remoteService})
+  UserRoleRepository({required IUserRoleRemoteService remoteService})
     : _remoteService = remoteService;
 
   @override
@@ -64,6 +64,16 @@ class UserRolesRepository implements IUserRolesRepository {
 
     return remoteResult.fold(
       onSuccess: (ok) => Success(null),
+      onFailure: (failure) => Error(failure),
+    );
+  }
+
+  @override
+  Future<Result<List<UserRoleModel>, Failure>> getAllUserRoles() async {
+    final remoteResult = await _remoteService.getAllUserRoles();
+
+    return remoteResult.fold(
+      onSuccess: (roles) => Success(roles),
       onFailure: (failure) => Error(failure),
     );
   }

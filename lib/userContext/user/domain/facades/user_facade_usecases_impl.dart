@@ -2,9 +2,6 @@ import 'package:medquest/core/typedefs/type_defs.dart';
 import 'i_user_facade_usecases.dart';
 import '../usecases/i_user_usecases.dart';
 
-/// implemantação do [IUserFacade] para
-/// chamar os usecases relacionados a User
-
 final class UserFacadeUsecasesImpl implements IUserFacadeUseCases {
   final IGetUserUseCase _getUserUseCase;
   final ISaveUserUseCase _saveUserUseCase;

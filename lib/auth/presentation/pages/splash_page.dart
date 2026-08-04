@@ -1,13 +1,7 @@
 import 'dart:async';
-
-import 'package:medquest/core/di/dependency_injection.dart';
-import 'package:medquest/core/routes/app_routes.dart';
-import 'package:medquest/core/routes/auth_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../core/theme/app_theme.dart';
-import '../controllers/auth_session_viewmodel.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

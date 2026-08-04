@@ -6,20 +6,12 @@ import 'package:medquest/userContext/user/domain/facades/i_user_facade_usecases.
 class UserViewModel {
   late final UserStateViewModel _state;
 
-  /// Getter público para acessar o estado de User
   UserStateViewModel get userState => _state;
 
-  /// dispara os commands e effects e observa as mudanças de estado
   late final UserCommandsViewmodel commands;
-
-  /// Construtor que inicializa a VieModel principal
-  /// que será consumida na UI
-  /// injeta a dependência do Facade dos casos de uso de User
-  /// o facade sera consumido pelos commands
 
   UserViewModel(IUserFacadeUseCases facade) {
     _state = UserStateViewModel();
-    // dispara os commands e effects
     commands = UserCommandsViewmodel(
       state: _state,
       saveUserCommand: SaveUserCommand(facade),
