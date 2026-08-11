@@ -5,6 +5,7 @@ import '../../../core/typedefs/type_defs.dart';
 import '../../domain/facade/patient_facade_usecases_interface.dart';
 import '../../domain/models/patient_entity.dart';
 
+
 final class CreatePatientCommand
     extends ParameterizedCommand<Patient, Failure, PatientParams> {
   final IPatientFacadeUseCases _patientFacadeUseCases;
@@ -66,7 +67,6 @@ final class UpdatePatientCommand
   }
 }
 
-
 final class DeletePatientCommand
     extends ParameterizedCommand<void, Failure, PatientIdParams> {
   final IPatientFacadeUseCases _patientFacadeUseCases;
@@ -81,3 +81,5 @@ final class DeletePatientCommand
     return await _patientFacadeUseCases.deletePatient(parameter!);
   }
 }
+
+

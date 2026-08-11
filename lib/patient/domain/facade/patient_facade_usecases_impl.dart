@@ -15,9 +15,9 @@ final class PatientFacadeUsecasesImpl implements IPatientFacadeUseCases {
     required IGetPatientsUseCase getPatientsUseCase,
     required IUpdatePatientUseCase updatePatientUseCase,
     required IDeletePatientUseCase deletePatientUseCase,
-  }) : _getPatientUseCase = getPatientUseCase,
+  }) : _createPatientUseCase = createPatientUseCase,
+       _getPatientUseCase = getPatientUseCase,
        _getPatientsUseCase = getPatientsUseCase,
-       _createPatientUseCase = createPatientUseCase,
        _updatePatientUseCase = updatePatientUseCase,
        _deletePatientUseCase = deletePatientUseCase;
 
@@ -45,4 +45,6 @@ final class PatientFacadeUsecasesImpl implements IPatientFacadeUseCases {
   Future<VoidResult> deletePatient(PatientIdParams params) {
     return _deletePatientUseCase(params);
   }
+
+  
 }

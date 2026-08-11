@@ -1,4 +1,3 @@
-import '../../domain/facade/patient_facade_usecases_interface.dart';
 import '../commands/patient_commands.dart';
 import 'patient_commands_viewmodel.dart';
 import 'patient_state_viewmodel.dart';

@@ -1,5 +1,5 @@
+import 'package:medquest/patient/data/repository/patient_repository_interface.dart';
 import '../../../core/typedefs/type_defs.dart';
-import '../../data/repository/patient_repository_interface.dart';
 import 'patient_usecases_interface.dart';
 
 final class CreatePatientUseCaseImpl implements ICreatePatientUseCase {
@@ -42,10 +42,7 @@ final class GetPatientsUseCaseImpl implements IGetPatientsUseCase {
 
   @override
   Future<PatientsResult> call(GroupIdParams params) async {
-    return _repository.getPatients(
-      params.researchId,
-      params.groupId,
-    );
+    return _repository.getPatients(params.researchId, params.groupId);
   }
 }
 
@@ -64,7 +61,6 @@ final class UpdatePatientUseCaseImpl implements IUpdatePatientUseCase {
     );
   }
 }
-
 
 final class DeletePatientUseCaseImpl implements IDeletePatientUseCase {
   final IPatientRepository _repository;

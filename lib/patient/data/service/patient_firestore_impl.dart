@@ -137,4 +137,6 @@ final class PatientFirestoreService implements IPatientFirestore {
       return Error(ApiLocalFailure('Firestore - Erro ao deletar paciente: $e'));
     }
   }
+
+  
 }

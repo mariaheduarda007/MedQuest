@@ -1,6 +1,6 @@
+import 'package:medquest/patient/data/repository/patient_repository_interface.dart';
+import 'package:medquest/patient/data/service/patient_firestore_interface.dart';
 import '../../../core/typedefs/type_defs.dart';
-import 'patient_repository_interface.dart';
-import '../service/patient_firestore_interface.dart';
 import '../../domain/models/patient_entity.dart';
 
 /// implementação do repositório para Patient

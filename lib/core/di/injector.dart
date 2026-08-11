@@ -1,4 +1,9 @@
 import 'package:auto_injector/auto_injector.dart';
+import 'package:medquest/answeredquest/domain/facade/answeredquest_facade_usecases_impl.dart';
+import 'package:medquest/answeredquest/domain/facade/answeredquest_facade_usecases_interface.dart';
+import 'package:medquest/answeredquest/domain/usecases/answeredquest_usecases_impl.dart';
+import 'package:medquest/answeredquest/domain/usecases/answeredquest_usecases_interface.dart';
+import 'package:medquest/answeredquest/presentation/commands/answeredquest_commands.dart';
 import 'package:medquest/group/data/repositories/group_repository_impl.dart';
 import 'package:medquest/group/data/repositories/group_repository_interface.dart';
 import 'package:medquest/group/data/services/group_firestore_impl.dart';
@@ -23,6 +28,10 @@ import 'package:medquest/modelquest/presentation/commands/modelquest_commands.da
 import 'package:medquest/modelquest/presentation/controllers/modelquest_commands_viewmodel.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquest_state_viewmodel.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmodel.dart';
+import 'package:medquest/answeredquest/data/repository/answeredquest_repository_impl.dart';
+import 'package:medquest/answeredquest/data/repository/answeredquest_repository_interface.dart';
+import 'package:medquest/answeredquest/data/service/answeredquest_firestore_impl.dart';
+import 'package:medquest/answeredquest/data/service/answeredquest_firestore_interface.dart';
 import 'package:medquest/patient/data/repository/patient_repository_impl.dart';
 import 'package:medquest/patient/data/repository/patient_repository_interface.dart';
 import 'package:medquest/patient/data/service/patient_firestore_impl.dart';
@@ -59,22 +68,20 @@ void setupDependencyInjection() {
 
   injector.addSingleton<IPatientFirestore>(PatientFirestoreService.new);
   injector.addSingleton<IPatientRepository>(PatientRepositoryImpl.new);
-  injector.addSingleton<IModelQuestFirestore>(ModelQuestFirestoreService.new);
-  injector.addSingleton<IModelQuestRepository>(ModelQuestRepositoryImpl.new);
   injector.addSingleton<IPatientFacadeUseCases>(PatientFacadeUsecasesImpl.new);
   injector.addSingleton<ICreatePatientUseCase>(CreatePatientUseCaseImpl.new);
   injector.addSingleton<IGetPatientUseCase>(GetPatientUseCaseImpl.new);
+  injector.addSingleton<IGetPatientsUseCase>(GetPatientsUseCaseImpl.new);
   injector.addSingleton<IUpdatePatientUseCase>(UpdatePatientUseCaseImpl.new);
   injector.addSingleton<IDeletePatientUseCase>(DeletePatientUseCaseImpl.new);
   injector.addSingleton<CreatePatientCommand>(CreatePatientCommand.new);
   injector.addSingleton<GetPatientCommand>(GetPatientCommand.new);
+  injector.addSingleton<GetPatientsCommand>(GetPatientsCommand.new);
   injector.addSingleton<UpdatePatientCommand>(UpdatePatientCommand.new);
   injector.addSingleton<DeletePatientCommand>(DeletePatientCommand.new);
   injector.addSingleton<PatientStateViewModel>(PatientStateViewModel.new);
   injector.addSingleton<PatientCommandsViewModel>(PatientCommandsViewModel.new);
   injector.addSingleton<PatientViewModel>(PatientViewModel.new);
-
-
 
   injector.addSingleton<IGroupFirestore>(GroupFirestoreService.new);
   injector.addSingleton<IGroupRepository>(GroupRepositoryImpl.new);
@@ -88,8 +95,6 @@ void setupDependencyInjection() {
   injector.addSingleton<GroupStateViewModel>(GroupStateViewModel.new);
   injector.addSingleton<GroupCommandsViewModel>(GroupCommandsViewModel.new);
   injector.addSingleton<GroupViewModel>(GroupViewModel.new);
-
-
 
   injector.addSingleton<IResearchFirestore>(ResearchFirestoreService.new);
   injector.addSingleton<IResearchRepository>(ResearchRepositoryImpl.new);
@@ -119,8 +124,6 @@ void setupDependencyInjection() {
     ResearchCommandsViewModel.new,
   );
   injector.addSingleton<ResearchViewModel>(ResearchViewModel.new);
-
-
 
   injector.addSingleton<IModelQuestFirestore>(ModelQuestFirestoreService.new);
   injector.addSingleton<IModelQuestRepository>(ModelQuestRepositoryImpl.new);
@@ -163,7 +166,37 @@ void setupDependencyInjection() {
   );
   injector.addSingleton<ModelQuestViewModel>(ModelQuestViewModel.new);
 
-  
+
+
+  injector.addSingleton<IAnsweredQuestFirestore>(AnsweredQuestFirestoreService.new);
+  injector.addSingleton<IAnsweredQuestRepository>(AnsweredQuestRepositoryImpl.new);
+  injector.addSingleton<IAnsweredQuestFacadeUseCases>(AnsweredQuestFacadeUsecasesImpl.new);
+   injector.addSingleton<ICreateAnsweredQuestUseCase>(
+    CreateAnsweredQuestUseCaseImpl.new,
+  );
+  injector.addSingleton<IGetAnsweredQuestUseCase>(
+    GetAnsweredQuestUseCaseImpl.new,
+  );
+  injector.addSingleton<IGetAnsweredQuestsUseCase>(
+    GetAnsweredQuestsUseCaseImpl.new,
+  );
+  injector.addSingleton<IUpdateAnsweredQuestUseCase>(
+    UpdateAnsweredQuestUseCaseImpl.new,
+  );
+  injector.addSingleton<IDeleteAnsweredQuestUseCase>(
+    DeleteAnsweredQuestUseCaseImpl.new,
+  );
+  injector.addSingleton<CreateAnsweredQuestCommand>(
+    CreateAnsweredQuestCommand.new,
+  );
+  injector.addSingleton<GetAnsweredQuestCommand>(GetAnsweredQuestCommand.new);
+  injector.addSingleton<GetAnsweredQuestsCommand>(GetAnsweredQuestsCommand.new);
+  injector.addSingleton<UpdateAnsweredQuestCommand>(
+    UpdateAnsweredQuestCommand.new,
+  );
+  injector.addSingleton<DeleteAnsweredQuestCommand>(
+    DeleteAnsweredQuestCommand.new,
+  );
 
   injector.commit();
 }

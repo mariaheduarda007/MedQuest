@@ -1,3 +1,5 @@
+import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
+
 import '../../../core/typedefs/type_defs.dart';
 import '../../domain/models/patient_entity.dart';
 
@@ -12,10 +14,7 @@ abstract interface class IPatientFirestore {
     String groupId,
     String patientId,
   );
-  Future<PatientsResult> getPatients(
-    String researchId,
-    String groupId,
-  );
+  Future<PatientsResult> getPatients(String researchId, String groupId);
   Future<PatientResult> updatePatient(
     Patient patient,
     String researchId,
@@ -26,4 +25,5 @@ abstract interface class IPatientFirestore {
     String groupId,
     String patientId,
   );
+  
 }

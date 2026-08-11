@@ -7,12 +7,12 @@ abstract interface class ICreatePatientUseCase
 abstract interface class IGetPatientUseCase
     implements IUseCase<PatientResult, PatientIdParams> {}
 
-    abstract interface class IGetPatientsUseCase
+abstract interface class IGetPatientsUseCase
     implements IUseCase<PatientsResult, GroupIdParams> {}
-    
+
 abstract interface class IUpdatePatientUseCase
     implements IUseCase<PatientResult, PatientParams> {}
 
-
 abstract interface class IDeletePatientUseCase
     implements IUseCase<VoidResult, PatientIdParams> {}
+
