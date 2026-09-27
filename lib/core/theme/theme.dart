@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppSpacing {
   // Spacing values
-  static const double xs = 4.0;
+  static const double xs = 5.0;
   static const double sm = 10.0;
-  static const double md = 16.0;
-  static const double lg = 24.0;
-  static const double xl = 32.0;
-  static const double xxl = 48.0;
+  static const double md = 15.0;
+  static const double lg = 25.0;
+  static const double xl = 30.0;
+  static const double xxl = 45.0;
 
   // Edge insets shortcuts
   static const EdgeInsets paddingXs = EdgeInsets.all(xs);
@@ -83,9 +83,19 @@ extension TextStyleExtensions on TextStyle {
   TextStyle withSize(double size) => copyWith(fontSize: size);
 }
 
-// =============================================================================
-// COLORS
-// =============================================================================
+class FontSizes {
+  static const double displayLarge = 36.0;
+  static const double displayMedium = 30.0;
+  static const double headlineLarge = 28.0;
+  static const double headlineMedium = 26.0;
+  static const double titleLarge = 24.0;
+  static const double titleMedium = 22.0;
+  static const double labelLarge = 18.0;
+  static const double labelMedium = 16.0;
+  static const double labelSmall = 14.0;
+  static const double bodyMedium = 12.0;
+}
+
 class LightModeColors {
   // Primary
   static const lightPrimary = Color(0xFFFFFCEE);
@@ -120,25 +130,6 @@ class LightModeColors {
   static const lightInversePrimary = Color(0xFFDDB9E7);
 }
 
-/// Font size constants
-class FontSizes {
-  static const double displayLarge = 36.0;
-  static const double displayMedium = 30.0;
-  static const double headlineLarge = 28.0;
-  static const double headlineMedium = 26.0;
-  static const double titleLarge = 24.0;
-  static const double titleMedium = 22.0;
-  static const double labelLarge = 18.0;
-  static const double labelMedium = 16.0;
-  static const double labelSmall = 14.0;
-  static const double bodyMedium = 12.0;
-}
-
-// =============================================================================
-// THEMES
-// =============================================================================
-
-/// Light theme with modern, neutral aesthetic
 ThemeData get theme => ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.light(
@@ -158,28 +149,28 @@ ThemeData get theme => ThemeData(
   ),
   brightness: Brightness.light,
   scaffoldBackgroundColor: LightModeColors.lightPrimary,
-  filledButtonTheme: FilledButtonThemeData(
-    style: FilledButton.styleFrom(
-      backgroundColor: LightModeColors.lightSecondary.withValues(alpha: 0.6),
-      foregroundColor: LightModeColors.lightOnSecondary,
-      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-    ),
-  ),
+  // filledButtonTheme: FilledButtonThemeData(
+  //   style: FilledButton.styleFrom(
+  //     backgroundColor: LightModeColors.lightSecondary.withValues(alpha: 0.6),
+  //     foregroundColor: LightModeColors.lightOnSecondary,
+  //     textStyle: const TextStyle(fontWeight: FontWeight.w600),
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(AppRadius.md),
+  //     ),
+  //   ),
+  // ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: LightModeColors.lightSecondary.withValues(alpha: 0.6),
+      backgroundColor: LightModeColors.lightTertiary,
       foregroundColor: LightModeColors.lightOnSecondary,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
     ),
   ),
   appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.transparent,
+    backgroundColor: LightModeColors.lightSecondary,
     elevation: 0,
     scrolledUnderElevation: 0,
   ),
