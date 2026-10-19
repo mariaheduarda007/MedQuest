@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medquest/core/functions/ui_functions.dart';
+import 'package:medquest/core/validators/email_validator.dart';
+import 'package:medquest/core/validators/empty_str_validator.dart';
+import 'package:medquest/core/validators/password_cascade_validator.dart';
+import 'package:medquest/core/validators/password_confirmation_validator.dart';
+import 'package:medquest/research/presentation/widgets/action_button.dart';
+import 'package:medquest/research/presentation/widgets/input_text_field.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
-import 'package:medquest/core/theme/theme.dart'; 
+import 'package:medquest/core/theme/theme.dart';
 import '../controllers/auth_session_viewmodel.dart';
 
 class SignupPage extends StatefulWidget {
@@ -20,7 +27,6 @@ class _SignupPageState extends State<SignupPage> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
-  bool _obscure = true;
 
   @override
   void initState() {
@@ -63,7 +69,9 @@ class _SignupPageState extends State<SignupPage> {
       if (auth == null) {
         _showSnack('Falha ao cadastrar usuário.');
       } else {
-        _showSnack('Usuário cadastrado com sucesso! Bem-vindo, ${auth.user.name}.');
+        _showSnack(
+          'Usuário cadastrado com sucesso! Bem-vindo, ${auth.user.name}.',
+        );
         context.go(AuthRouteNames.login);
       }
     } catch (e) {
@@ -94,50 +102,34 @@ class _SignupPageState extends State<SignupPage> {
                     InputTextField(
                       controller: _nameCtrl,
                       labelText: 'Nome',
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Informe seu nome' : null,
+                      keyboardType: TextInputType.name,
+                      validator: (value) =>
+                          validateField(value, [EmptyStrValidator()]),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     InputTextField(
                       controller: _emailCtrl,
                       labelText: 'E-mail',
                       keyboardType: TextInputType.emailAddress,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Informe seu e-mail';
-                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v)) {
-                          return 'E-mail inválido';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          validateField(value, [EmailValidator()]),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     InputTextField(
                       controller: _passCtrl,
                       labelText: 'Senha',
-                      obscureText: _obscure,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscure ? Icons.visibility : Icons.visibility_off,
-                          color: context.colors.outline,
-                        ),
-                        onPressed: () => setState(() => _obscure = !_obscure),
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Informe sua senha';
-                        if (v.length < 6) return 'Senha muito curta';
-                        return null;
-                      },
+                      password: true,
+                      validator: (value) =>
+                          validateField(value, [PasswordCascadeValidator()]),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     InputTextField(
                       controller: _confirmCtrl,
                       labelText: 'Confirmar senha',
-                      obscureText: _obscure,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Confirme sua senha';
-                        if (v != _passCtrl.text) return 'Senhas não coincidem';
-                        return null;
-                      },
+
+                      validator: (value) => validateField(value, [
+                        PasswordConfirmationValidator(_passCtrl.text),
+                      ]),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     Watch((context) {
@@ -149,24 +141,10 @@ class _SignupPageState extends State<SignupPage> {
 
                       return SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: isExecuting ? null : _submit,
-                          child: isExecuting
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  'Criar conta',
-                                  style: TextStyle(
-                                    color: context.colors.onSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                        child: ActionButton(
+                          onPressed: _submit,
+                          text: 'Criar conta',
+                          isLoading: isExecuting,
                         ),
                       );
                     }),
@@ -185,41 +163,6 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class InputTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String labelText;
-  final String? Function(String?)? validator;
-  final bool obscureText;
-  final TextInputType? keyboardType;
-  final Widget? suffixIcon;
-
-  const InputTextField({
-    super.key,
-    required this.controller,
-    required this.labelText,
-    this.validator,
-    this.obscureText = false,
-    this.keyboardType,
-    this.suffixIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      style: TextStyle(color: context.colors.onSurface),
-      cursorColor: context.colors.secondary,
-      decoration: InputDecoration(
-        labelText: labelText,
-        suffixIcon: suffixIcon,
-      ),
-      validator: validator,
     );
   }
 }

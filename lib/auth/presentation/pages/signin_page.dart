@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medquest/core/functions/ui_functions.dart';
+import 'package:medquest/core/validators/email_validator.dart';
+import 'package:medquest/research/presentation/widgets/action_button.dart';
+import 'package:medquest/research/presentation/widgets/input_text_field.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
@@ -69,32 +73,18 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxl),
-                    AuthTextFormField(
+                    InputTextField(
                       controller: emailCtrl,
-                      label: 'E-mail',
+                      labelText: 'E-mail',
                       keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Informe seu e-mail';
-                        }
-                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                          return 'E-mail inválido';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          validateField(value, [EmailValidator()]),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AuthTextFormField(
+                    InputTextField(
                       controller: passCtrl,
-                      label: 'Senha',
-                      obscureText: obscure,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscure ? Icons.visibility : Icons.visibility_off,
-                          color: context.colors.outline,
-                        ),
-                        onPressed: () => setState(() => obscure = !obscure),
-                      ),
+                      labelText: 'Senha',
+                      password: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Informe sua senha';
@@ -124,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                           .isExecuting
                           .value;
 
-                      return ElevatedButton(
+                      return ActionButton(
                         onPressed: () async {
                           if (_formKey.currentState?.validate() != true) return;
 
@@ -141,65 +131,23 @@ class _LoginPageState extends State<LoginPage> {
                             _showSnack('Erro ao fazer login: $e');
                           }
                         },
-                        child: isRunning
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Text(
-                                'Entrar',
-                                style: TextStyle(
-                                  color: context.colors.onSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                        isLoading: isRunning,
+                        text: 'Entrar',
+                        size: ActionButtonSize.md,
+                        
+
                       );
                     }),
                     const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: context.colors.outline.withValues(alpha: 0.4),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Text(
-                          'Ou continue com',
-                          style: context.textStyles.bodyMedium?.copyWith(
-                            color: context.colors.onPrimary.withValues(alpha: 0.7),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Divider(
-                            color: context.colors.outline.withValues(alpha: 0.4),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Não tem conta? ',
-                          style: TextStyle(color: context.colors.onPrimary),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.goNamed(AuthRouteNames.register);
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: context.colors.secondary,
-                          ),
-                          child: const Text(
-                            'Criar conta',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
+
+                    TextButton(
+                      onPressed: () {
+                        context.goNamed(AuthRouteNames.register);
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: context.colors.secondary,
+                      ),
+                      child: const Text('Não tem conta? Criar conta'),
                     ),
                   ],
                 ),

@@ -63,9 +63,24 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final modelQuests = snapshot.docs
-          .map((doc) => ModelQuestMapper.fromMap(doc.data()))
-          .toList();
+      final modelQuests = await Future.wait(
+        snapshot.docs.map((doc) async {
+          final modelQuest = ModelQuestMapper.fromMap(
+            doc.data(),
+            documentId: doc.id,
+          );
+          final questionsSnapshot = await doc.reference
+              .collection('Questions')
+              .get();
+          final questions = questionsSnapshot.docs.map((questionDoc) {
+            final questionData = Map<String, dynamic>.from(questionDoc.data());
+            questionData['id'] ??= questionDoc.id;
+            return QuestionMapper.fromMap(questionData);
+          }).toList();
+
+          return modelQuest.copyWith(questions: questions);
+        }),
+      );
 
       return Success(modelQuests);
     } catch (e) {
@@ -154,7 +169,10 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
   }
 
   @override
-  Future<QuestionResult> createQuestion(String modelQuestId, Question question) async {
+  Future<QuestionResult> createQuestion(
+    String modelQuestId,
+    Question question,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection(_collection)
@@ -166,13 +184,14 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
 
       return questionCreated;
     } catch (e) {
-      return Error(
-        ApiLocalFailure('Firestore - Erro ao salvar question: $e'),
-      );
+      return Error(ApiLocalFailure('Firestore - Erro ao salvar question: $e'));
     }
   }
 
-  Future<QuestionResult> getQuestion(String modelQuestId, String questionId) async {
+  Future<QuestionResult> getQuestion(
+    String modelQuestId,
+    String questionId,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection(_collection)
@@ -185,14 +204,15 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
 
       return questionUpdated;
     } catch (e) {
-      return Error(
-        ApiLocalFailure('Firestore - Erro ao salvar question: $e'),
-      );
+      return Error(ApiLocalFailure('Firestore - Erro ao salvar question: $e'));
     }
   }
 
   @override
-  Future<QuestionResult> updateQuestion(String modelQuestId, Question question) async {
+  Future<QuestionResult> updateQuestion(
+    String modelQuestId,
+    Question question,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection(_collection)
@@ -205,25 +225,26 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
 
       return questionUpdated;
     } catch (e) {
-      return Error(
-        ApiLocalFailure('Firestore - Erro ao salvar question: $e'),
-      );
+      return Error(ApiLocalFailure('Firestore - Erro ao salvar question: $e'));
     }
   }
 
   @override
-  Future<VoidResult> deleteQuestion(String modelQuestId, String questionId) async {
+  Future<VoidResult> deleteQuestion(
+    String modelQuestId,
+    String questionId,
+  ) async {
     try {
-      await _firestore.collection(_collection).doc(modelQuestId).collection('Questions').doc(questionId).delete();
+      await _firestore
+          .collection(_collection)
+          .doc(modelQuestId)
+          .collection('Questions')
+          .doc(questionId)
+          .delete();
 
       return Success(null);
     } catch (e) {
-      return Error(
-        ApiLocalFailure('Firestore - Erro ao deletar question: $e'),
-      );
+      return Error(ApiLocalFailure('Firestore - Erro ao deletar question: $e'));
     }
   }
-
-
-
 }

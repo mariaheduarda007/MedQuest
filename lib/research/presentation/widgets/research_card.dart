@@ -5,22 +5,15 @@ import 'package:medquest/research/presentation/widgets/main_card.dart';
 class ResearchCard extends MainCard {
   ResearchCard({
     super.key,
-    required super.title, // fornecido ao ser criado
-    required this.participants,
-    required this.groups,
-    required this.researchers,
+    required super.title,
+    required this.date,
+    required this.questionnaires,
     required super.onTap,
   }) : super(
          icon: Icons.science, // fixos direto no maincard
-         infoTexts: [
-           'Participantes: $participants',
-           'Grupos: $groups',
-           'Pesquisadores: $researchers',
-         ],
+         infoTexts: ['Data: $date', 'Questionários: $questionnaires'],
        );
 
-  final int participants;
-  final int groups;
-  final int researchers;
-
+  final String date;
+  final int questionnaires;
 }

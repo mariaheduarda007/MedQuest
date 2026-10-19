@@ -24,7 +24,9 @@ final class ResearchFirestoreService implements IResearchFirestore {
       final researchCreated = await getResearch(research.id);
 
       if (researchCreated is Error) {
-        return Error(ApiLocalFailure('Firestore - Erro ao obter pesquisa criada'));
+        return Error(
+          ApiLocalFailure('Firestore - Erro ao obter pesquisa criada'),
+        );
       }
 
       return researchCreated;
@@ -46,7 +48,6 @@ final class ResearchFirestoreService implements IResearchFirestore {
       }
 
       final research = ResearchMapper.fromMap(snapshot.data()!);
-
       return Success(research);
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter pesquisa: $e'));
@@ -56,16 +57,24 @@ final class ResearchFirestoreService implements IResearchFirestore {
   @override
   Future<ResearchesResult> getResearches(List<String> researchIds) async {
     try {
-      final snapshot = await _firestore
-          .collection(_collection)
-          .where(FieldPath.documentId, whereIn: researchIds)
-          .get();
+      final collection = _firestore.collection(_collection);
+      final snapshot = researchIds.isEmpty
+          ? await collection.get()
+          : await collection
+                .where(FieldPath.documentId, whereIn: researchIds)
+                .get();
 
-      if (!snapshot.docs.isNotEmpty) {
-        return Error(EmptyResultFailure());
-      }
+      final researches = snapshot.docs.map((doc) {
+        final data = Map<String, dynamic>.from(doc.data());
+        data['id'] ??= doc.id;
 
-      final researches = snapshot.docs.map((doc) => ResearchMapper.fromMap(doc.data())).toList();
+        final date = data['date'];
+        if (date is Timestamp) {
+          data['date'] = date.toDate();
+        }
+
+        return ResearchMapper.fromMap(data, documentId: doc.id);
+      }).toList();
 
       return Success(researches);
     } catch (e) {
@@ -74,9 +83,7 @@ final class ResearchFirestoreService implements IResearchFirestore {
   }
 
   @override
-  Future<ResearchResult> updateResearch(
-    Research research,
-  ) async {
+  Future<ResearchResult> updateResearch(Research research) async {
     try {
       await _firestore
           .collection(_collection)

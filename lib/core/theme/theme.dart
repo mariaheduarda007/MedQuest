@@ -40,6 +40,14 @@ class AppRadius {
   static const double xl = 20.0; // Não usado no design por enquanto.
 }
 
+class AppButtonSize {
+  static const Size xs =  Size(80.0, 30.0);
+  static const Size sm = Size(120.0, 40.0);
+  static const Size md = Size(140.0, 50.0);
+  static const Size lg = Size(250.0, 50.0);
+  static const Size xl = Size(350.0, 50.0);
+}
+
 // =============================================================================
 // THEME EXTENSIONS
 // =============================================================================
