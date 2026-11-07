@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../core/failure/failure.dart';
 import '../../core/messages/messages.dart';
@@ -22,5 +23,12 @@ String? validateField(String? value, List<BaseValidator> validators) {
   } catch (e) {
     return e.toString();
   }
+}
+
+String dateFormat(DateTime date) {
+
+  return DateFormat('dd/MM/yyyy').format(date);
+
+
 }
 

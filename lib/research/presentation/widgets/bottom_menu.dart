@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medquest/core/routes/auth_routes.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class BottomMenuBar extends StatefulWidget {
@@ -42,7 +45,10 @@ class _BottomMenuBarState extends State<BottomMenuBar> {
             icon: Icons.science_outlined,
             label: 'Pesquisas',
             selected: currentIndex == 1,
-            onTap: () => _onTap(1),
+            onTap: () {
+              _onTap(1);
+              context.goNamed(MedQuestRouteNames.researches);
+            },
           ),
 
           _NavigationItem(

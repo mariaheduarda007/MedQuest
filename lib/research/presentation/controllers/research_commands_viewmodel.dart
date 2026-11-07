@@ -190,7 +190,7 @@ class ResearchCommandsViewModel {
     await _getResearchCommand.executeWith((researchId: researchId));
   }
 
-Future<void> getResearches(List<String> researchesId) async {
+Future<void> getResearches({List<String> researchesId = const []}) async {
     await _getResearchesCommand.executeWith((researchesId: researchesId));
   }
 

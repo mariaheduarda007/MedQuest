@@ -13,6 +13,7 @@ class AuthPaths {
   static const splash = '/';
   static const login = '/login';
   static const register = '/register';
+  
 }
 
 final List<RouteBase> authRoutes = [

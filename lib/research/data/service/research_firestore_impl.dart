@@ -17,11 +17,13 @@ final class ResearchFirestoreService implements IResearchFirestore {
   @override
   Future<ResearchResult> createResearch(Research research) async {
     try {
-      await _firestore
+      final researchToCreate = research.copyWith(date: DateTime.now());
+      final document = await _firestore
           .collection(_collection)
-          .add(ResearchMapper.toMap(research));
+          .add(ResearchMapper.toMap(researchToCreate));
 
-      final researchCreated = await getResearch(research.id);
+      final researchCreated = await getResearch(document.id);
+
 
       if (researchCreated is Error) {
         return Error(
@@ -47,7 +49,7 @@ final class ResearchFirestoreService implements IResearchFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final research = ResearchMapper.fromMap(snapshot.data()!);
+      final research = ResearchMapper.fromMap(snapshot.data()!, documentId: snapshot.id);
       return Success(research);
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter pesquisa: $e'));
@@ -66,12 +68,6 @@ final class ResearchFirestoreService implements IResearchFirestore {
 
       final researches = snapshot.docs.map((doc) {
         final data = Map<String, dynamic>.from(doc.data());
-        data['id'] ??= doc.id;
-
-        final date = data['date'];
-        if (date is Timestamp) {
-          data['date'] = date.toDate();
-        }
 
         return ResearchMapper.fromMap(data, documentId: doc.id);
       }).toList();

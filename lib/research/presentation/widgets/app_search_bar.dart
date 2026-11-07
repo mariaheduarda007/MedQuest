@@ -17,7 +17,7 @@ class AppSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 390,
+      width: 360,
       height: 45,
       child:
        TextField(

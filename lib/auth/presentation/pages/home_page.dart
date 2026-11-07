@@ -31,10 +31,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController searchController = TextEditingController();
   late final AuthViewModel authController;
   late final ResearchViewModel researchController;
   late final ModelQuestViewModel modelQuestController;
+  final TextEditingController searchController = TextEditingController();
+  
   bool canCreateResearch = false;
   bool isLoadingPermissions = true;
 
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _loadResearches() async {
-    await researchController.commands.getResearches(const []);
+    await researchController.commands.getResearches();
   }
 
   Future<void> _loadModelQuests() async {

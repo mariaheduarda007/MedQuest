@@ -13,7 +13,7 @@ class MainCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final VoidCallback onTap;
-  final List<String> infoTexts;
+  final List<String> infoTexts; // VER SE É NECESSÁRIO ESSE PARAMETRO
 
   @override
   Widget build(BuildContext context) {

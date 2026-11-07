@@ -7,13 +7,13 @@ class Research extends Equatable {
   final List<String> quests;
   final Map<String, String> researchAttributes;
 
-  const Research({
-    required this.id,
-    required this.name,
-    required this.date,
-    required this.quests,
-    required this.researchAttributes,
-  });
+  Research({
+    this.id = '',
+    this.name = 'Pesquisa Criada',
+    DateTime? date,
+    this.quests = const [],
+    this.researchAttributes = const {},
+  }) : date = date ?? DateTime.now();
 
   Research copyWith({
     String?id,
@@ -45,5 +45,4 @@ String toString() {
       ')';
 }
 }
-
 

@@ -11,7 +11,7 @@ class AppRouter {
   AppRouter._();
 
 static final GoRouter router = GoRouter(
-  initialLocation: AuthPaths.splash,
+  initialLocation: MedQuestPaths.home,
   refreshListenable: injector.get<AuthViewModel>(), 
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medquest/auth/presentation/pages/splash_page.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/validators/email_validator.dart';
 import 'package:medquest/core/validators/empty_str_validator.dart';
@@ -7,6 +8,7 @@ import 'package:medquest/core/validators/password_cascade_validator.dart';
 import 'package:medquest/core/validators/password_confirmation_validator.dart';
 import 'package:medquest/research/presentation/widgets/action_button.dart';
 import 'package:medquest/research/presentation/widgets/input_text_field.dart';
+import 'package:medquest/research/presentation/widgets/logo.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
@@ -83,84 +85,107 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Criar conta'),
-        backgroundColor: context.colors.secondary,
-        foregroundColor: context.colors.onSecondary,
-      ),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: AppSpacing.paddingXl,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    InputTextField(
-                      controller: _nameCtrl,
-                      labelText: 'Nome',
-                      keyboardType: TextInputType.name,
-                      validator: (value) =>
-                          validateField(value, [EmptyStrValidator()]),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    InputTextField(
-                      controller: _emailCtrl,
-                      labelText: 'E-mail',
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) =>
-                          validateField(value, [EmailValidator()]),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    InputTextField(
-                      controller: _passCtrl,
-                      labelText: 'Senha',
-                      password: true,
-                      validator: (value) =>
-                          validateField(value, [PasswordCascadeValidator()]),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    InputTextField(
-                      controller: _confirmCtrl,
-                      labelText: 'Confirmar senha',
-
-                      validator: (value) => validateField(value, [
-                        PasswordConfirmationValidator(_passCtrl.text),
-                      ]),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    Watch((context) {
-                      final isExecuting = _authController
-                          .commands
-                          .signUpCommand
-                          .isExecuting
-                          .value;
-
-                      return SizedBox(
-                        width: double.infinity,
-                        child: ActionButton(
-                          onPressed: _submit,
-                          text: 'Criar conta',
-                          isLoading: isExecuting,
+        child: Stack(
+          children: [
+            const Positioned(
+              top: AppSpacing.lg,
+              left: 0,
+              right: 0,
+              child: Center(child: MedQuestLogo()),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                padding: AppSpacing.paddingXl,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Bem-vindo',
+                          style: context.textStyles.headlineMedium?.copyWith(
+                            color: context.colors.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    }),
-                    const SizedBox(height: AppSpacing.md),
-                    TextButton(
-                      onPressed: () => context.go(AuthRouteNames.login),
-                      style: TextButton.styleFrom(
-                        foregroundColor: context.colors.secondary,
-                      ),
-                      child: const Text('Já tem conta? Login'),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Crie sua conta para continuar',
+                          style: context.textStyles.bodyMedium?.copyWith(
+                            color: context.colors.onPrimary.withValues(
+                              alpha: 0.8,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        InputTextField(
+                          controller: _nameCtrl,
+                          labelText: 'Nome',
+                          keyboardType: TextInputType.name,
+                          validator: (value) =>
+                              validateField(value, [EmptyStrValidator()]),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        InputTextField(
+                          controller: _emailCtrl,
+                          labelText: 'E-mail',
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) =>
+                              validateField(value, [EmailValidator()]),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        InputTextField(
+                          controller: _passCtrl,
+                          labelText: 'Senha',
+                          password: true,
+                          validator: (value) => validateField(value, [
+                            PasswordCascadeValidator(),
+                          ]),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        InputTextField(
+                          controller: _confirmCtrl,
+                          labelText: 'Confirmar senha',
+
+                          validator: (value) => validateField(value, [
+                            PasswordConfirmationValidator(_passCtrl.text),
+                          ]),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+                        Watch((context) {
+                          final isExecuting = _authController
+                              .commands
+                              .signUpCommand
+                              .isExecuting
+                              .value;
+
+                          return SizedBox(
+                            width: double.infinity,
+                            child: ActionButton(
+                              onPressed: _submit,
+                              text: 'Criar conta',
+                              isLoading: isExecuting,
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: AppSpacing.md),
+                        TextButton(
+                          onPressed: () => context.go(AuthRouteNames.login),
+                          style: TextButton.styleFrom(
+                            foregroundColor: context.colors.secondary,
+                          ),
+                          child: const Text('Já tem conta? Login'),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
