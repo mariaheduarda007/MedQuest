@@ -23,9 +23,7 @@ final class GroupFirestoreService implements IGroupFirestore {
           .collection(_collection)
           .add(GroupMapper.toMap(group));
 
-      final groupCreated = await getGroup(researchId, snapshot.id);
-
-      return groupCreated;
+      return Success(group.copyWith(id: snapshot.id));
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao salvar grupo: $e'));
     }
@@ -45,7 +43,7 @@ final class GroupFirestoreService implements IGroupFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final group = GroupMapper.fromMap(snapshot.data()!);
+      final group = GroupMapper.fromMap(snapshot.data()!, snapshot.id);
 
       return Success(group);
     } catch (e) {
@@ -66,7 +64,9 @@ final class GroupFirestoreService implements IGroupFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final groups = snapshot.docs.map((doc) => GroupMapper.fromMap(doc.data())).toList();
+      final groups = snapshot.docs
+          .map((doc) => GroupMapper.fromMap(doc.data(), doc.id))
+          .toList();
 
       return Success(groups);
     } catch (e) {

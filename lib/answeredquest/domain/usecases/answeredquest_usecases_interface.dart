@@ -8,7 +8,7 @@ abstract interface class IGetAnsweredQuestUseCase
     implements IUseCase<AnsweredQuestResult, AnsweredQuestIdParams> {}
 
 abstract interface class IGetAnsweredQuestsUseCase
-    implements IUseCase<AnsweredQuestsResult, PatientQuestsParams> {}
+    implements IUseCase<AnsweredQuestsResult, PatientParams> {}
 
 abstract interface class IUpdateAnsweredQuestUseCase
     implements IUseCase<AnsweredQuestResult, AnsweredQuestParams> {}

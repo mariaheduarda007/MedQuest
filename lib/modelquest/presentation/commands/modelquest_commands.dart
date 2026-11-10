@@ -128,7 +128,7 @@ final class UpdateQuestionCommand
 }
 
 final class DeleteQuestionCommand
-    extends ParameterizedCommand<void, Failure, QuestionParams> {
+    extends ParameterizedCommand<void, Failure, QuestionIdParams> {
   final IModelQuestFacadeUseCases _modelQuestFacadeUseCases;
 
   DeleteQuestionCommand(this._modelQuestFacadeUseCases);

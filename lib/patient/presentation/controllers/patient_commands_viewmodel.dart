@@ -3,6 +3,7 @@ import 'package:medquest/answeredquest/presentation/commands/answeredquest_comma
 
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
+import '../../../core/typedefs/type_defs.dart';
 import '../../domain/models/patient_entity.dart';
 import '../commands/patient_commands.dart';
 import 'patient_state_viewmodel.dart';
@@ -49,11 +50,11 @@ class PatientCommandsViewModel {
     _observeGetPatients();
     _observeUpdatePatient();
     _observeDeletePatient();
-    _observeCreateAnsweredQuest();
-    _observeGetAnsweredQuest();
-    _observeGetAnsweredQuests();
-    _observeUpdateAnsweredQuest();
-    _observeDeleteAnsweredQuest();
+    // _observeCreateAnsweredQuest();
+    // _observeGetAnsweredQuest();
+    // _observeGetAnsweredQuests();
+    // _observeUpdateAnsweredQuest();
+    // _observeDeleteAnsweredQuest();
   }
 
   // ========================================================
@@ -165,73 +166,73 @@ class PatientCommandsViewModel {
     );
   }
 
-  void _observeCreateAnsweredQuest() {
-    _observeCommand<AnsweredQuest>(
-      _createAnsweredQuestCommand,
-      onSuccess: (answeredQuest) {
-        state.setAnsweredQuest(answeredQuest);
-        state.answeredQuestSuccessEvent.value =
-            AnsweredQuestSuccessEvent.created;
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeCreateAnsweredQuest() {
+  //   _observeCommand<AnsweredQuest>(
+  //     _createAnsweredQuestCommand,
+  //     onSuccess: (answeredQuest) {
+  //       state.setAnsweredQuest(answeredQuest);
+  //       state.answeredQuestSuccessEvent.value =
+  //           AnsweredQuestSuccessEvent.created;
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
-  void _observeGetAnsweredQuest() {
-    _observeCommand<AnsweredQuest>(
-      _getAnsweredQuestCommand,
-      onSuccess: (answeredQuest) {
-        state.setAnsweredQuest(answeredQuest);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-    );
-  }
+  // void _observeGetAnsweredQuest() {
+  //   _observeCommand<AnsweredQuest>(
+  //     _getAnsweredQuestCommand,
+  //     onSuccess: (answeredQuest) {
+  //       state.setAnsweredQuest(answeredQuest);
+  //       state.clearMessage();
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+  //   );
+  // }
 
-  void _observeGetAnsweredQuests() {
-    _observeCommand<List<AnsweredQuest>>(
-      _getAnsweredQuestsCommand,
-      onSuccess: (answeredQuests) {
-        state.setAnsweredQuests(answeredQuests);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-    );
-  }
+  // void _observeGetAnsweredQuests() {
+  //   _observeCommand<List<AnsweredQuest>>(
+  //     _getAnsweredQuestsCommand,
+  //     onSuccess: (answeredQuests) {
+  //       state.setAnsweredQuests(answeredQuests);
+  //       state.clearMessage();
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+  //   );
+  // }
 
-  void _observeUpdateAnsweredQuest() {
-    _observeCommand<AnsweredQuest>(
-      _updateAnsweredQuestCommand,
-      onSuccess: (answeredQuest) {
-        state.setAnsweredQuest(answeredQuest);
-        state.answeredQuestSuccessEvent.value =
-            AnsweredQuestSuccessEvent.updated;
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeUpdateAnsweredQuest() {
+  //   _observeCommand<AnsweredQuest>(
+  //     _updateAnsweredQuestCommand,
+  //     onSuccess: (answeredQuest) {
+  //       state.setAnsweredQuest(answeredQuest);
+  //       state.answeredQuestSuccessEvent.value =
+  //           AnsweredQuestSuccessEvent.updated;
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
-  void _observeDeleteAnsweredQuest() {
-    _observeCommand<void>(
-      _deleteAnsweredQuestCommand,
-      onSuccess: (_) {
-        state.answeredQuestSuccessEvent.value =
-            AnsweredQuestSuccessEvent.deleted;
-        state.setAnsweredQuest(null);
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeDeleteAnsweredQuest() {
+  //   _observeCommand<void>(
+  //     _deleteAnsweredQuestCommand,
+  //     onSuccess: (_) {
+  //       state.answeredQuestSuccessEvent.value =
+  //           AnsweredQuestSuccessEvent.deleted;
+  //       state.setAnsweredQuest(null);
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
   // ========================================================
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
@@ -292,31 +293,23 @@ class PatientCommandsViewModel {
     ));
   }
 
-  Future<void> createAnsweredQuest(AnsweredQuest answeredQuest) async {
-    await _createAnsweredQuestCommand.executeWith((
-      answeredQuest: answeredQuest,
-    ));
-  }
+  // Future<void> createAnsweredQuest(AnsweredQuestParams params) async {
+  //   await _createAnsweredQuestCommand.executeWith((params));
+  // }
 
-  Future<void> getAnsweredQuest(String answeredQuestId) async {
-    await _getAnsweredQuestCommand.executeWith((
-      answeredQuestId: answeredQuestId,
-    ));
-  }
+  // Future<void> getAnsweredQuest(AnsweredQuestIdParams params) async {
+  //   await _getAnsweredQuestCommand.executeWith(params);
+  // }
 
-  Future<void> getAnsweredQuests(String patientId) async {
-    await _getAnsweredQuestsCommand.executeWith((patientId: patientId));
-  }
+  // Future<void> getAnsweredQuests(PatientParams params) async {
+  //   await _getAnsweredQuestsCommand.executeWith(params);
+  // }
 
-  Future<void> updateAnsweredQuest(AnsweredQuest answeredQuest) async {
-    await _updateAnsweredQuestCommand.executeWith((
-      answeredQuest: answeredQuest,
-    ));
-  }
+  // Future<void> updateAnsweredQuest(AnsweredQuestParams params) async {
+  //   await _updateAnsweredQuestCommand.executeWith(params);
+  // }
 
-  Future<void> deleteAnsweredQuest(String answeredQuestId) async {
-    await _deleteAnsweredQuestCommand.executeWith((
-      answeredQuestId: answeredQuestId,
-    ));
-  }
+  // Future<void> deleteAnsweredQuest(AnsweredQuestIdParams params) async {
+  //   await _deleteAnsweredQuestCommand.executeWith(params);
+  // }
 }

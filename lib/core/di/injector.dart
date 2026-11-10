@@ -4,6 +4,9 @@ import 'package:medquest/answeredquest/domain/facade/answeredquest_facade_usecas
 import 'package:medquest/answeredquest/domain/usecases/answeredquest_usecases_impl.dart';
 import 'package:medquest/answeredquest/domain/usecases/answeredquest_usecases_interface.dart';
 import 'package:medquest/answeredquest/presentation/commands/answeredquest_commands.dart';
+import 'package:medquest/answeredquest/presentation/controllers/answeredquest_commands_viewmodel.dart';
+import 'package:medquest/answeredquest/presentation/controllers/answeredquest_state_viewmodel.dart';
+import 'package:medquest/answeredquest/presentation/controllers/answeredquest_viewmodel.dart';
 import 'package:medquest/group/data/repositories/group_repository_impl.dart';
 import 'package:medquest/group/data/repositories/group_repository_interface.dart';
 import 'package:medquest/group/data/services/group_firestore_impl.dart';
@@ -229,7 +232,11 @@ void setupDependencyInjection() {
   injector.addSingleton<DeleteAnsweredQuestCommand>(
     DeleteAnsweredQuestCommand.new,
   );
-
+ injector.addSingleton<AnsweredQuestStateViewModel>(AnsweredQuestStateViewModel.new);
+  injector.addSingleton<AnsweredQuestCommandsViewModel>(
+    AnsweredQuestCommandsViewModel.new,
+  );
+  injector.addSingleton<AnsweredQuestViewModel>(AnsweredQuestViewModel.new);
 //--------------------------------------------------------------------------
   
   // --- AUTH ---

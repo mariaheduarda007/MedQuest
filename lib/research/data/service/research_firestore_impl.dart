@@ -18,12 +18,11 @@ final class ResearchFirestoreService implements IResearchFirestore {
   Future<ResearchResult> createResearch(Research research) async {
     try {
       final researchToCreate = research.copyWith(date: DateTime.now());
-      final document = await _firestore
+      final snapshot = await _firestore
           .collection(_collection)
           .add(ResearchMapper.toMap(researchToCreate));
 
-      final researchCreated = await getResearch(document.id);
-
+      var researchCreated = await getResearch(snapshot.id);
 
       if (researchCreated is Error) {
         return Error(

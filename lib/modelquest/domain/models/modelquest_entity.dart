@@ -7,7 +7,11 @@ class ModelQuest extends Equatable {
   final String name;
   final List<Question> questions;
 
-  const ModelQuest({required this.id, required this.name, required this.questions});
+  const ModelQuest({
+    this.id = '',
+    this.name = "Questionário Novo",
+    this.questions = const [],
+  });
 
   ModelQuest copyWith({String? id, String? name, List<Question>? questions}) {
     return ModelQuest(

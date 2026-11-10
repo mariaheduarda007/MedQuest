@@ -11,7 +11,7 @@ final class CreateAnsweredQuestUseCaseImpl
 
   @override
   Future<AnsweredQuestResult> call(AnsweredQuestParams params) async {
-    return _repository.createAnsweredQuest(params.answeredQuest);
+    return _repository.createAnsweredQuest(params);
   }
 }
 
@@ -23,7 +23,7 @@ final class GetAnsweredQuestUseCaseImpl implements IGetAnsweredQuestUseCase {
 
   @override
   Future<AnsweredQuestResult> call(AnsweredQuestIdParams params) async {
-    return _repository.getAnsweredQuest(params.answeredQuestId);
+    return _repository.getAnsweredQuest(params);
   }
 }
 
@@ -34,8 +34,8 @@ final class GetAnsweredQuestsUseCaseImpl implements IGetAnsweredQuestsUseCase {
     : _repository = repository;
 
   @override
-  Future<AnsweredQuestsResult> call(PatientQuestsParams params) async {
-    return _repository.getAnsweredQuests(params.patientId);
+  Future<AnsweredQuestsResult> call(PatientParams params) async {
+    return _repository.getAnsweredQuests(params);
   }
 }
 
@@ -48,7 +48,7 @@ final class UpdateAnsweredQuestUseCaseImpl
 
   @override
   Future<AnsweredQuestResult> call(AnsweredQuestParams params) async {
-    return _repository.updateAnsweredQuest(params.answeredQuest);
+    return _repository.updateAnsweredQuest(params);
   }
 }
 
@@ -61,6 +61,6 @@ final class DeleteAnsweredQuestUseCaseImpl
 
   @override
   Future<VoidResult> call(AnsweredQuestIdParams params) async {
-    return _repository.deleteAnsweredQuest(params.answeredQuestId);
+    return _repository.deleteAnsweredQuest(params);
   }
 }

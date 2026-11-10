@@ -42,7 +42,7 @@ final class GetAnsweredQuestsCommand
         ParameterizedCommand<
           List<AnsweredQuest>,
           Failure,
-          PatientQuestsParams
+          PatientParams
         > {
   final IAnsweredQuestFacadeUseCases _answeredQuestFacadeUseCases;
 

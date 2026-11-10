@@ -9,7 +9,7 @@ class Research extends Equatable {
 
   Research({
     this.id = '',
-    this.name = 'Pesquisa Criada',
+    this.name = 'Pesquisa Nova',
     DateTime? date,
     this.quests = const [],
     this.researchAttributes = const {},

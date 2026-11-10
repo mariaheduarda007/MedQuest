@@ -1,8 +1,6 @@
 import '../../../core/typedefs/type_defs.dart';
 import 'answeredquest_repository_interface.dart';
 import '../service/answeredquest_firestore_interface.dart';
-import '../../domain/models/answeredquest_entity.dart';
-
 /// implementação do repositório para AnsweredQuest
 
 final class AnsweredQuestRepositoryImpl implements IAnsweredQuestRepository {
@@ -12,27 +10,27 @@ final class AnsweredQuestRepositoryImpl implements IAnsweredQuestRepository {
     : _firestore = firestore;
 
   @override
-  Future<AnsweredQuestResult> createAnsweredQuest(AnsweredQuest answeredQuest) {
-    return _firestore.createAnsweredQuest(answeredQuest);
+  Future<AnsweredQuestResult> createAnsweredQuest(AnsweredQuestParams params) {
+    return _firestore.createAnsweredQuest(params);
   }
 
   @override
-  Future<AnsweredQuestResult> getAnsweredQuest(String answeredQuestId) {
-    return _firestore.getAnsweredQuest(answeredQuestId);
+  Future<AnsweredQuestResult> getAnsweredQuest(AnsweredQuestIdParams params) {
+    return _firestore.getAnsweredQuest(params);
   }
 
   @override
-  Future<AnsweredQuestsResult> getAnsweredQuests(String patientId) {
-    return _firestore.getAnsweredQuests(patientId);
+  Future<AnsweredQuestsResult> getAnsweredQuests(PatientParams params) {
+    return _firestore.getAnsweredQuests(params);
   }
 
   @override
-  Future<AnsweredQuestResult> updateAnsweredQuest(AnsweredQuest answeredQuest) {
-    return _firestore.updateAnsweredQuest(answeredQuest);
+  Future<AnsweredQuestResult> updateAnsweredQuest(AnsweredQuestParams params) {
+    return _firestore.updateAnsweredQuest(params);
   }
 
   @override
-  Future<VoidResult> deleteAnsweredQuest(String answeredQuestId) {
-    return _firestore.deleteAnsweredQuest(answeredQuestId);
+  Future<VoidResult> deleteAnsweredQuest(AnsweredQuestIdParams params) {
+    return _firestore.deleteAnsweredQuest(params);
   }
 }

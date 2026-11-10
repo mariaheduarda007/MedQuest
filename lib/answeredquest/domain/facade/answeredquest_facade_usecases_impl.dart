@@ -33,7 +33,7 @@ final class AnsweredQuestFacadeUsecasesImpl
   }
 
   @override
-  Future<AnsweredQuestsResult> getAnsweredQuests(PatientQuestsParams params) {
+  Future<AnsweredQuestsResult> getAnsweredQuests(PatientParams params) {
     return _getAnsweredQuestsUseCase(params);
   }
 

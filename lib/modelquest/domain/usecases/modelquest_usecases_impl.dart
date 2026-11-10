@@ -106,7 +106,7 @@ final class DeleteQuestionUseCaseImpl implements IDeleteQuestionUseCase {
     : _repository = repository;
 
   @override
-  Future<VoidResult> call(QuestionParams params) async {
-    return _repository.deleteQuestion(params.modelQuestId, params.question.id);
+  Future<VoidResult> call(QuestionIdParams params) async {
+    return _repository.deleteQuestion(params.modelQuestId, params.questionId);
   }
 }

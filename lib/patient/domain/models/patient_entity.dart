@@ -43,7 +43,7 @@ class Patient extends Equatable {
   final Map<String, String> researchAttributes;
 
   const Patient({
-    required this.id,
+    this.id = '',
     required this.name,
     required this.treatmentStartAge,
     required this.sex,

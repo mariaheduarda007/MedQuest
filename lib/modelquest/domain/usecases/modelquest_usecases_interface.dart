@@ -26,4 +26,4 @@ abstract interface class IUpdateQuestionUseCase
     implements IUseCase<QuestionResult, QuestionParams> {}
 
 abstract interface class IDeleteQuestionUseCase
-    implements IUseCase<VoidResult, QuestionParams> {}
+    implements IUseCase<VoidResult, QuestionIdParams> {}

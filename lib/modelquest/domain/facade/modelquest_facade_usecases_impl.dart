@@ -74,7 +74,7 @@ final class ModelQuestFacadeUsecasesImpl implements IModelQuestFacadeUseCases {
   }
 
   @override
-  Future<VoidResult> deleteQuestion(QuestionParams params) {
+  Future<VoidResult> deleteQuestion(QuestionIdParams params) {
     return _deleteQuestionUseCase(params);
   }
 }

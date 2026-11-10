@@ -9,5 +9,5 @@ abstract interface class IModelQuestFacadeUseCases {
   Future<VoidResult> deleteModelQuest(ModelQuestIdParams params);
   Future<QuestionResult> createQuestion(QuestionParams params);
   Future<QuestionResult> updateQuestion(QuestionParams params);
-  Future<VoidResult> deleteQuestion(QuestionParams params);
+  Future<VoidResult> deleteQuestion(QuestionIdParams params);
 }

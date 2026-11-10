@@ -58,9 +58,17 @@ typedef ModelQuestParams = ({ModelQuest modelQuest});
 typedef ModelQuestIdParams = ({String modelQuestId});
 typedef ModelQuestsIdParams = ({List<String> modelQuestsId});
 typedef QuestionParams = ({String modelQuestId, Question question});
-typedef AnsweredQuestParams = ({AnsweredQuest answeredQuest});
-typedef AnsweredQuestIdParams = ({String answeredQuestId});
-typedef PatientQuestsParams = ({String patientId});
+typedef QuestionIdParams = ({String modelQuestId, String questionId});
+typedef AnsweredQuestParams = ({
+  AnsweredQuest answeredQuest,
+  PatientIdParams patientIdParams,
+});
+typedef AnsweredQuestIdParams = ({
+  String researchId,
+  String groupId,
+  String patientId,
+  String answeredQuestId,
+});
 typedef NoParams = ();
 
 // LEMBRAR DE SIMPLIFICAR QUANDO FOR UM PARAMETRO COMO STRING, UM INT, UM BOOL, ETC. NAO PRECISA DE RECORD, PODE SER DIRETO COMO PARAMETRO DO METODO

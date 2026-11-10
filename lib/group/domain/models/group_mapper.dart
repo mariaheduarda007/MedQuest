@@ -4,15 +4,14 @@ class GroupMapper {
   
   static Map<String, String> toMap(Group group) {
     return {
-      'id': group.id,
       'name': group.name,
       
     };
   }
 
-  static Group fromMap(Map<String, dynamic> map) {
+  static Group fromMap(Map<String, dynamic> map, String? documentId) {
   return Group(
-    id: map['id'] as String,
+    id: documentId ?? '',
     name: map['name'] as String,
   );
 }

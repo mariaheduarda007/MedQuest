@@ -29,9 +29,7 @@ final class PatientFirestoreService implements IPatientFirestore {
           .collection(_collection)
           .add(PatientMapper.toMap(patient));
 
-      final patientCreated = await getPatient(researchId, groupId, snapshot.id);
-
-      return patientCreated;
+      return Success(patient.copyWith(id: snapshot.id));
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao salvar paciente: $e'));
     }
@@ -57,7 +55,10 @@ final class PatientFirestoreService implements IPatientFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final patient = PatientMapper.fromMap(snapshot.data()!);
+      final patient = PatientMapper.fromMap(
+        snapshot.data()!,
+        documentId: snapshot.id,
+      );
 
       return Success(patient);
     } catch (e) {
@@ -81,7 +82,7 @@ final class PatientFirestoreService implements IPatientFirestore {
       }
 
       final patients = snapshot.docs
-          .map((doc) => PatientMapper.fromMap(doc.data()))
+          .map((doc) => PatientMapper.fromMap(doc.data(), documentId: doc.id))
           .toList();
 
       return Success(patients);
@@ -123,20 +124,28 @@ final class PatientFirestoreService implements IPatientFirestore {
     String patientId,
   ) async {
     try {
-      await _firestore
+      final patientReference = _firestore
           .collection('Research')
           .doc(researchId)
           .collection('Group')
           .doc(groupId)
           .collection(_collection)
-          .doc(patientId)
-          .delete();
+          .doc(patientId);
+      final snapshot = await patientReference.get();
+
+      if (!snapshot.exists) {
+        return Error(
+          EmptyResultFailure(
+            'Paciente $patientId não encontrado para exclusão.',
+          ),
+        );
+      }
+
+      await patientReference.delete();
 
       return Success(null);
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao deletar paciente: $e'));
     }
   }
-
-  
 }

@@ -27,14 +27,30 @@ abstract base class Command<Success, Error>
   // late final data = computed(() => _result.value?.successValueOrNull);
 
   // Método para executar o comando com tratamento
+  // Future<Result<Success, Error>> call() async {
+  //   if (_running.value) return _result.value!; // já está rodando
+  //   _running.value = true; // indica que está rodando
+  //   _result.value = null; // limpa resultado anterior
+  //   _result.value = await execute(); // executa a ação
+  //   _running.value = false; // indica que terminou
+  //   return _result.value!;
+  // }
+
   Future<Result<Success, Error>> call() async {
-    if (_running.value) return _result.value!; // já está rodando
-    _running.value = true; // indica que está rodando
-    _result.value = null; // limpa resultado anterior
-    _result.value = await execute(); // executa a ação
-    _running.value = false; // indica que terminou
-    return _result.value!;
+  if (_running.value) {
+    throw StateError('O comando já está em execução.');
   }
+
+  _running.value = true;
+  _result.value = null;
+
+  try {
+    _result.value = await execute();
+    return _result.value!;
+  } finally {
+    _running.value = false;
+  }
+}
 
   void clear() {
     _result.value = null;

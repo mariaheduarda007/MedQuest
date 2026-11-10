@@ -7,8 +7,8 @@ class Question extends Equatable {
   final String type;
 
   const Question({
-    required this.id,
-    required this.alternatives,
+    this.id = '',
+    this.alternatives = const [],
     required this.text,
     required this.type,
   });

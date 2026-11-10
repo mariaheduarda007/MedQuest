@@ -6,7 +6,7 @@ class Question extends Equatable {
   final String answer;
 
   const Question({
-    required this.id,
+    this.id = '',
     required this.idModelQuestion,
     required this.answer,
   });

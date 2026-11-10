@@ -3,6 +3,7 @@ import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/answeredquest/data/service/answeredquest_firestore_interface.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_mapper.dart';
+import 'package:medquest/answeredquest/domain/models/question_mapper.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/result.dart';
 
@@ -16,13 +17,29 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
 
   @override
   Future<AnsweredQuestResult> createAnsweredQuest(
-    AnsweredQuest answeredQuest,
+    AnsweredQuestParams params,
   ) async {
     try {
-      final snapshot = await _firestore
-          .collection(_collection)
-          .add(AnsweredQuestMapper.toMap(answeredQuest));
-      final questCreated = await getAnsweredQuest(snapshot.id);
+      final answeredQuest = params.answeredQuest;
+      final patientIdParams = params.patientIdParams;
+      final collection = _answeredQuestsCollection(
+        researchId: patientIdParams.researchId,
+        groupId: patientIdParams.groupId,
+        patientId: patientIdParams.patientId,
+      );
+      final document = collection.doc();
+      await document.set(AnsweredQuestMapper.toMap(answeredQuest));
+      final questionsCollection = document.collection('Questions');
+      for (final question in answeredQuest.questions) {
+        await questionsCollection.add(QuestionMapper.toMap(question));
+      }
+
+      final questCreated = await getAnsweredQuest((
+        researchId: patientIdParams.researchId,
+        groupId: patientIdParams.groupId,
+        patientId: patientIdParams.patientId,
+        answeredQuestId: document.id,
+      ));
 
       return questCreated;
     } catch (e) {
@@ -35,20 +52,27 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
   }
 
   @override
-  Future<AnsweredQuestResult> getAnsweredQuest(String answeredQuestId) async {
+  Future<AnsweredQuestResult> getAnsweredQuest(
+    AnsweredQuestIdParams params,
+  ) async {
     try {
-      final snapshot = await _firestore
-          .collection(_collection)
-          .doc(answeredQuestId)
-          .get();
+      final currentSnapshot = await _answeredQuestsCollection(
+        researchId: params.researchId,
+        groupId: params.groupId,
+        patientId: params.patientId,
+      ).doc(params.answeredQuestId).get();
 
-      if (!snapshot.exists || snapshot.data() == null) {
-        return Error(EmptyResultFailure());
+      if (currentSnapshot.exists && currentSnapshot.data() != null) {
+        return Success(await _answeredQuestFromDocument(currentSnapshot));
       }
 
-      final answeredQuest = AnsweredQuestMapper.fromMap(snapshot.data()!);
-
-      return Success(answeredQuest);
+      return Error(
+        EmptyResultFailure(
+          'Questionário ${params.answeredQuestId} não encontrado em '
+          'Research/${params.researchId}/Group/${params.groupId}/'
+          'Patient/${params.patientId}/$_collection.',
+        ),
+      );
     } catch (e) {
       return Error(
         ApiLocalFailure(
@@ -59,21 +83,21 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
   }
 
   @override
-  Future<AnsweredQuestsResult> getAnsweredQuests(String patientId) async {
+  Future<AnsweredQuestsResult> getAnsweredQuests(PatientParams params) async {
     try {
-      final snapshot = await _firestore
-          .collection("Patient")
-          .doc(patientId)
-          .collection(_collection)
-          .get();
+      final snapshot = await _answeredQuestsCollection(
+        researchId: params.researchId,
+        groupId: params.groupId,
+        patientId: params.patient.id,
+      ).get();
 
       if (snapshot.docs.isEmpty) {
         return Error(EmptyResultFailure());
       }
 
-      final answeredQuests = snapshot.docs
-          .map((doc) => AnsweredQuestMapper.fromMap(doc.data()))
-          .toList();
+      final answeredQuests = await Future.wait(
+        snapshot.docs.map(_answeredQuestFromDocument),
+      );
 
       return Success(answeredQuests);
     } catch (e) {
@@ -87,15 +111,31 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
 
   @override
   Future<AnsweredQuestResult> updateAnsweredQuest(
-    AnsweredQuest answeredQuest,
+    AnsweredQuestParams params,
   ) async {
     try {
-      await _firestore
-          .collection(_collection)
-          .doc(answeredQuest.id)
-          .update(AnsweredQuestMapper.toMap(answeredQuest));
+      final answeredQuest = params.answeredQuest;
+      final patientIdParams = params.patientIdParams;
+      final document = _answeredQuestsCollection(
+        researchId: patientIdParams.researchId,
+        groupId: patientIdParams.groupId,
+        patientId: patientIdParams.patientId,
+      ).doc(answeredQuest.id);
+      await document.update(AnsweredQuestMapper.toMap(answeredQuest));
+      final questionsCollection = document.collection('Questions');
+      for (final question in answeredQuest.questions) {
+        final questionDocument = question.id.isEmpty
+            ? questionsCollection.doc()
+            : questionsCollection.doc(question.id);
+        await questionDocument.set(QuestionMapper.toMap(question));
+      }
 
-      final updated = await getAnsweredQuest(answeredQuest.id);
+      final updated = await getAnsweredQuest((
+        researchId: patientIdParams.researchId,
+        groupId: patientIdParams.groupId,
+        patientId: patientIdParams.patientId,
+        answeredQuestId: answeredQuest.id,
+      ));
 
       return updated;
     } catch (e) {
@@ -108,12 +148,13 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
   }
 
   @override
-  Future<VoidResult> deleteAnsweredQuest(String answeredQuestId) async {
+  Future<VoidResult> deleteAnsweredQuest(AnsweredQuestIdParams params) async {
     try {
-      await _firestore
-          .collection(_collection)
-          .doc(answeredQuestId)
-          .delete();
+      await _answeredQuestsCollection(
+        researchId: params.researchId,
+        groupId: params.groupId,
+        patientId: params.patientId,
+      ).doc(params.answeredQuestId).delete();
 
       return Success(null);
     } catch (e) {
@@ -123,5 +164,51 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
         ),
       );
     }
+  }
+
+  Future<AnsweredQuest> _answeredQuestFromDocument(
+    DocumentSnapshot<Map<String, dynamic>> document,
+  ) async {
+    final data = document.data();
+    if (data == null) {
+      throw StateError('Documento AnsweredQuest sem dados: ${document.id}');
+    }
+
+    final answeredQuest = AnsweredQuestMapper.fromMap(
+      data,
+      documentId: document.id,
+    );
+    final questionsSnapshot = await document.reference
+        .collection('Questions')
+        .get();
+    if (questionsSnapshot.docs.isEmpty) {
+      return answeredQuest;
+    }
+
+    final questions = questionsSnapshot.docs
+        .map(
+          (questionDocument) => QuestionMapper.fromMap(
+            questionDocument.data(),
+            documentId: questionDocument.id,
+          ),
+        )
+        .toList();
+
+    return answeredQuest.copyWith(questions: questions);
+  }
+
+  CollectionReference<Map<String, dynamic>> _answeredQuestsCollection({
+    required String researchId,
+    required String groupId,
+    required String patientId,
+  }) {
+    return _firestore
+        .collection('Research')
+        .doc(researchId)
+        .collection('Group')
+        .doc(groupId)
+        .collection('Patient')
+        .doc(patientId)
+        .collection(_collection);
   }
 }

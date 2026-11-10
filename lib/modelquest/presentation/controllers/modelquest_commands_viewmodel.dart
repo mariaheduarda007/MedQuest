@@ -234,7 +234,7 @@ class ModelQuestCommandsViewModel {
     await _updateQuestionCommand.executeWith((modelQuestId: modelQuestId, question: question));
   }
 
-  Future<void> deleteQuestion(String modelQuestId, Question question) async {
-    await _deleteQuestionCommand.executeWith((modelQuestId: modelQuestId, question: question));
+  Future<void> deleteQuestion(String modelQuestId, String questionId) async {
+    await _deleteQuestionCommand.executeWith((modelQuestId: modelQuestId, questionId: questionId));
   }
 }

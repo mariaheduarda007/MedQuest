@@ -1,27 +1,34 @@
-
 import 'question_entity.dart';
 
 class QuestionMapper {
   static Map<String, dynamic> toMap(Question question) {
     return {
-      'id': question.id,
-      'alternatives': question.alternatives
-          .map((item) => {
+      if (question.alternatives.isNotEmpty)
+        'alternatives': question.alternatives
+            .map(
+              (item) => {
                 'choice': item['choice']?.toString() ?? '',
                 'value': (item['value'] as num?)?.toDouble() ?? 0.0,
-              })
-          .toList(),
+              },
+            )
+            .toList(),
       'text': question.text,
       'type': question.type,
     };
   }
 
-  static Question fromMap(Map<String, dynamic> map) {
+  static Question fromMap(Map<String, dynamic> map, {String? documentId}) {
+    final id = documentId != null && documentId.isNotEmpty
+        ? documentId
+        : map['id']?.toString() ?? '';
+    final rawAlternatives = map['alternatives'];
+
     return Question(
-      id: map['id']?.toString() ?? '',
-      alternatives: (map['alternatives'] as List<dynamic>? ?? [])
+      id: id,
+      alternatives: (rawAlternatives is Iterable ? rawAlternatives : const [])
+          .whereType<Map>()
           .map((item) {
-            final alternativeMap = item as Map<dynamic, dynamic>;
+            final alternativeMap = Map<String, dynamic>.from(item);
             return {
               'choice': alternativeMap['choice']?.toString() ?? '',
               'value': (alternativeMap['value'] as num?)?.toDouble() ?? 0.0,

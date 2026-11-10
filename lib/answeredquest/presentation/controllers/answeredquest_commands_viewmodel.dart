@@ -4,6 +4,7 @@ import 'package:medquest/answeredquest/presentation/controllers/answeredquest_st
 
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
+import '../../../core/typedefs/type_defs.dart';
 
 import 'package:signals_flutter/signals_flutter.dart';
 
@@ -17,14 +18,13 @@ class AnsweredQuestCommandsViewModel {
 
   AnsweredQuestCommandsViewModel({
     required this.state,
-    
+
     required CreateAnsweredQuestCommand createAnsweredQuestCommand,
     required GetAnsweredQuestCommand getAnsweredQuestCommand,
     required GetAnsweredQuestsCommand getAnsweredQuestsCommand,
     required UpdateAnsweredQuestCommand updateAnsweredQuestCommand,
     required DeleteAnsweredQuestCommand deleteAnsweredQuestCommand,
-  }) : 
-       _createAnsweredQuestCommand = createAnsweredQuestCommand,
+  }) : _createAnsweredQuestCommand = createAnsweredQuestCommand,
        _getAnsweredQuestCommand = getAnsweredQuestCommand,
        _getAnsweredQuestsCommand = getAnsweredQuestsCommand,
        _updateAnsweredQuestCommand = updateAnsweredQuestCommand,
@@ -40,11 +40,16 @@ class AnsweredQuestCommandsViewModel {
   // ========================================================
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
-  CreateAnsweredQuestCommand get createAnsweredQuestCommand => _createAnsweredQuestCommand;
-  GetAnsweredQuestCommand get getAnsweredQuestCommand => _getAnsweredQuestCommand;
-  GetAnsweredQuestsCommand get getAnsweredQuestsCommand => _getAnsweredQuestsCommand;
-  UpdateAnsweredQuestCommand get updateAnsweredQuestCommand => _updateAnsweredQuestCommand;
-  DeleteAnsweredQuestCommand get deleteAnsweredQuestCommand => _deleteAnsweredQuestCommand;
+  CreateAnsweredQuestCommand get createAnsweredQuestCommand =>
+      _createAnsweredQuestCommand;
+  GetAnsweredQuestCommand get getAnsweredQuestCommand =>
+      _getAnsweredQuestCommand;
+  GetAnsweredQuestsCommand get getAnsweredQuestsCommand =>
+      _getAnsweredQuestsCommand;
+  UpdateAnsweredQuestCommand get updateAnsweredQuestCommand =>
+      _updateAnsweredQuestCommand;
+  DeleteAnsweredQuestCommand get deleteAnsweredQuestCommand =>
+      _deleteAnsweredQuestCommand;
 
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
@@ -89,9 +94,7 @@ class AnsweredQuestCommandsViewModel {
         state.answeredQuestSuccessEvent.value =
             AnsweredQuestSuccessEvent.created;
       },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
+     
     );
   }
 
@@ -102,9 +105,7 @@ class AnsweredQuestCommandsViewModel {
         state.setAnsweredQuest(answeredQuest);
         state.clearMessage();
       },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+     //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
     );
   }
 
@@ -153,33 +154,23 @@ class AnsweredQuestCommandsViewModel {
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
 
-  Future<void> createAnsweredQuest(AnsweredQuest answeredQuest) async {
-    await _createAnsweredQuestCommand.executeWith((
-      answeredQuest: answeredQuest,
-    ));
+  Future<void> createAnsweredQuest(AnsweredQuestParams params) async {
+    await _createAnsweredQuestCommand.executeWith((params));
   }
 
-  Future<void> getAnsweredQuest(String answeredQuestId) async {
-    await _getAnsweredQuestCommand.executeWith((
-      answeredQuestId: answeredQuestId,
-    ));
+  Future<void> getAnsweredQuest(AnsweredQuestIdParams params) async {
+    await _getAnsweredQuestCommand.executeWith(params);
   }
 
-  Future<void> getAnsweredQuests(String patientId) async {
-    await _getAnsweredQuestsCommand.executeWith((patientId: patientId));
+  Future<void> getAnsweredQuests(PatientParams params) async {
+    await _getAnsweredQuestsCommand.executeWith(params);
   }
 
-  Future<void> updateAnsweredQuest(AnsweredQuest answeredQuest) async {
-    await _updateAnsweredQuestCommand.executeWith((
-      answeredQuest: answeredQuest,
-    ));
+  Future<void> updateAnsweredQuest(AnsweredQuestParams params) async {
+    await _updateAnsweredQuestCommand.executeWith((params));
   }
 
-  Future<void> deleteAnsweredQuest(String answeredQuestId) async {
-    await _deleteAnsweredQuestCommand.executeWith((
-      answeredQuestId: answeredQuestId,
-    ));
+  Future<void> deleteAnsweredQuest(AnsweredQuestIdParams params) async {
+    await _deleteAnsweredQuestCommand.executeWith(params);
   }
 }
-
-
