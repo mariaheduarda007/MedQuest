@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medquest/core/routes/auth_routes.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/core/theme/theme.dart';
 
@@ -14,12 +13,8 @@ class BottomMenuBar extends StatefulWidget {
 }
 
 class _BottomMenuBarState extends State<BottomMenuBar> {
-  late int currentIndex = widget.initialIndex;
-
-  void _onTap(int index) {
-    setState(() {
-      currentIndex = index;
-    });
+  void _navigateTo(String routeName) {
+    context.goNamed(routeName);
   }
 
   @override
@@ -37,32 +32,29 @@ class _BottomMenuBarState extends State<BottomMenuBar> {
           _NavigationItem(
             icon: Icons.home_rounded,
             label: 'Início',
-            selected: currentIndex == 0,
-            onTap: () => _onTap(0),
+            selected: widget.initialIndex == 0,
+            onTap: () => _navigateTo(MedQuestRouteNames.home),
           ),
 
           _NavigationItem(
             icon: Icons.science_outlined,
             label: 'Pesquisas',
-            selected: currentIndex == 1,
-            onTap: () {
-              _onTap(1);
-              context.goNamed(MedQuestRouteNames.researches);
-            },
+            selected: widget.initialIndex == 1,
+            onTap: () => _navigateTo(MedQuestRouteNames.researches),
           ),
 
           _NavigationItem(
             icon: Icons.description_outlined,
             label: 'Questionários',
-            selected: currentIndex == 2,
-            onTap: () => _onTap(2),
+            selected: widget.initialIndex == 2,
+            onTap: () => _navigateTo(MedQuestRouteNames.quests),
           ),
 
           _NavigationItem(
             icon: Icons.account_circle_rounded,
             label: 'Conta',
-            selected: currentIndex == 3,
-            onTap: () => _onTap(3),
+            selected: widget.initialIndex == 3,
+            onTap: () => _navigateTo(MedQuestRouteNames.profile),
           ),
         ],
       ),

@@ -32,6 +32,13 @@ class ActionButton extends StatelessWidget {
       ActionButtonSize.lg => AppButtonSize.lg,
       ActionButtonSize.xl => AppButtonSize.xl,
     };
+    final textStyle = switch (size) {
+      ActionButtonSize.xs => context.textStyles.bodyMedium,
+      ActionButtonSize.sm => context.textStyles.labelMedium,
+      ActionButtonSize.md => context.textStyles.labelLarge,
+      ActionButtonSize.lg => context.textStyles.labelLarge,
+      ActionButtonSize.xl => context.textStyles.titleMedium,
+    };
     final foregroundColor = isFilled
         ? context.colors.primary
         : context.colors.onPrimary;
@@ -44,7 +51,11 @@ class ActionButton extends StatelessWidget {
               color: foregroundColor,
             ),
           )
-        : Text(text);
+        :  Text(
+              text,
+              maxLines: 1,
+              style: textStyle?.copyWith(color: foregroundColor),
+            );
 
     return Container(
       width: buttonSize.width,
@@ -58,24 +69,24 @@ class ActionButton extends StatelessWidget {
                 foregroundColor: context.colors.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                ), // Padronizar no Theme?
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                ), // Padronizar no Theme?
+                ),
+                padding: AppSpacing.paddingXs
               ),
               child: buttonContent,
             )
           : OutlinedButton(
               onPressed: isLoading ? null : onPressed,
+              
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.onPrimary,
                 side: BorderSide(color: context.colors.onPrimary, width: 2.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                ), // Padronizar no Theme?
+                ),
                 padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                ), // Padronizar no Theme?
+                  horizontal: 6,
+                  vertical: 4,
+                ),
               ),
               child: buttonContent,
             ),

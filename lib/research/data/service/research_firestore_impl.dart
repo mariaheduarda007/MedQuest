@@ -48,7 +48,10 @@ final class ResearchFirestoreService implements IResearchFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final research = ResearchMapper.fromMap(snapshot.data()!, documentId: snapshot.id);
+      final research = ResearchMapper.fromMap(
+        snapshot.data()!,
+        documentId: snapshot.id,
+      );
       return Success(research);
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter pesquisa: $e'));

@@ -1,25 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
-import 'package:medquest/answeredquest/domain/models/question_entity.dart';
-import 'package:medquest/answeredquest/presentation/controllers/answeredquest_viewmodel.dart';
+import 'package:intl/intl.dart';
+import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/core/di/injector.dart';
-import 'package:medquest/core/theme/theme.dart';
+import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
+import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
+import 'package:medquest/research/presentation/widgets/header_title.dart';
+import 'package:medquest/research/presentation/widgets/list_item.dart';
+import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
+import 'package:medquest/userContext/userRole/presentation/controllers/userRole_viewmodel.dart';
 import 'package:signals_flutter/signals_flutter.dart';
-
-const _researchId = 'RjLSlXYoZjbocCPObGEG';
-const _groupId = 'placebo';
-const _patientId = 'UFRCkj9aIVRAPx78Rga2';
-
-const _fakeAnsweredQuest = AnsweredQuest(
-  idModelQuest: 'modelquest-teste',
-  questions: [
-    Question(idModelQuestion: 'question-teste-1', answer: 'Resposta de teste'),
-    Question(
-      idModelQuestion: 'question-teste-2',
-      answer: 'Outra resposta teste',
-    ),
-  ],
-);
 
 class ResearchesPage extends StatefulWidget {
   const ResearchesPage({super.key});
@@ -29,80 +21,189 @@ class ResearchesPage extends StatefulWidget {
 }
 
 class _ResearchesPageState extends State<ResearchesPage> {
-  late final AnsweredQuestViewModel _viewModel;
+  late final AuthViewModel _authViewModel;
+  late final UserRoleViewModel _userRoleViewModel;
+  late final ResearchViewModel _viewModel;
+  late final PermissionCacheService _permissionService;
+  Map<String, String> _roleNameByResearch = {};
+  bool _isLoading = true;
+  String? _loadError;
+  String? _permissionLoadError;
 
   @override
   void initState() {
     super.initState();
-
-    _viewModel = injector.get<AnsweredQuestViewModel>();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _createAnsweredQuest();
-    });
+    _authViewModel = injector.get<AuthViewModel>();
+    _userRoleViewModel = injector.get<UserRoleViewModel>();
+    _viewModel = injector.get<ResearchViewModel>();
+    _permissionService = injector.get<PermissionCacheService>();
+    unawaited(_loadResearches());
   }
 
-  Future<void> _createAnsweredQuest() async {
-    _viewModel.answeredQuestState.setAnsweredQuest(null);
-    _viewModel.answeredQuestState.setMessage(
-      'Criando AnsweredQuest de teste...',
-    );
+  Future<void> _loadResearches() async {
+    _viewModel.researchState.setResearches([]);
+    _viewModel.researchState.clearMessage();
+    _roleNameByResearch = {};
 
-    await _viewModel.commands.getAnsweredQuest((
-      researchId: _researchId,
-      groupId: _groupId,
-      patientId: _patientId,
-      answeredQuestId: 'vPvgQvXMm1TELWk0MYbo',
-    ));
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _loadError = null;
+        _permissionLoadError = null;
+      });
+    }
+
+    final userId = _authViewModel.session.session.value?.user.uid;
+    if (userId == null) {
+      _viewModel.researchState.setResearches([]);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _loadError = 'Não foi possível identificar o usuário autenticado.';
+        });
+      }
+      return;
+    }
+
+    final userRoleState = _userRoleViewModel.userRoleState;
+    userRoleState.setUserRoles([]);
+    userRoleState.clearMessage();
+    await _userRoleViewModel.commands.fetchUserRoles(userId);
+
+    final rolesError = userRoleState.message.value;
+    if (rolesError != null) {
+      _viewModel.researchState.setResearches([]);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _loadError = rolesError;
+        });
+      }
+      return;
+    }
+
+    try {
+      await _permissionService.loadPermissions();
+    } catch (error) {
+      _permissionLoadError = 'Não foi possível carregar o papel: $error';
+    }
+
+    final permissions = _permissionService.allPermissions;
+    final researchIds = userRoleState.state.value
+        .map((role) => role.researchId)
+        .whereType<String>()
+        .map((id) => id.trim())
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
+    final roleNameByResearch = <String, String>{};
+    for (final role in userRoleState.state.value) {
+      final researchId = role.researchId?.trim();
+      if (researchId == null ||
+          researchId.isEmpty ||
+          _permissionLoadError != null) {
+        continue;
+      }
+
+      final roleName = permissions?[role.permissionId]?['roleName'];
+      roleNameByResearch[researchId] =
+          roleName is String && roleName.trim().isNotEmpty
+          ? roleName.trim()
+          : 'Papel não identificado';
+    }
+    _roleNameByResearch = roleNameByResearch;
+
+    if (researchIds.isEmpty) {
+      _viewModel.researchState.setResearches([]);
+      _viewModel.researchState.clearMessage();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _loadError = 'Nenhuma pesquisa vinculada aos seus papéis.';
+        });
+      }
+      return;
+    }
+
+    _viewModel.researchState.clearMessage();
+    await _viewModel.commands.getResearches(researchesId: researchIds);
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _loadError = _viewModel.researchState.message.value;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      appBar: const MainAppBar(title: 'MedQuest'),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: SafeArea(
-        child: Watch((context) {
-          final state = _viewModel.answeredQuestState;
-          final answeredQuest = state.state.value;
-          final message = state.message.value;
-
-          final isLoading =
-              _viewModel.commands.getAnsweredQuestCommand.isExecuting.value;
-
-          if (isLoading && answeredQuest == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (answeredQuest == null && message != null && message.isNotEmpty) {
-            return Center(child: Text(message));
-          }
-
-          if (answeredQuest == null) {
-            return const Center(child: Text('Questionário não encontrado.'));
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isLoading) const LinearProgressIndicator(),
-                if (message != null && message.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Text(message),
-                  ),
-                const Text('AnsweredQuest buscado:'),
-                Text('ID: ${answeredQuest.id}'),
-                Text('ModelQuest: ${answeredQuest.idModelQuest}'),
-                const SizedBox(height: 12),
-
-                for (final question in answeredQuest.questions)
-                  ListTile(title: Text(question.toString())),
-              ],
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: HeaderTitle(
+                title: 'Suas Pesquisas',
+                buttonTitle: '+ Pesquisa',
+                onPressed: _loadResearches,
+              ),
             ),
-          );
-        }),
+            Expanded(
+              child: Watch((context) {
+                final state = _viewModel.researchState;
+                final isLoading =
+                    _isLoading ||
+                    _viewModel.commands.getResearchesCommand.isExecuting.value;
+                final researches = List.of(
+                  state.researchesState.value ?? const [],
+                )..sort((a, b) => b.date.compareTo(a.date));
+
+                if (isLoading && researches.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (researches.isEmpty) {
+                  return Center(
+                    child: Text(
+                      _loadError ??
+                          state.message.value ??
+                          'Nenhuma pesquisa encontrada.',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: _loadResearches,
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: researches.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final research = researches[index];
+                      final roleName =
+                          _permissionLoadError ??
+                          _roleNameByResearch[research.id] ??
+                          'Sem papel nesta pesquisa';
+
+                      return ListItem(
+                        icon: Icons.science_outlined,
+                        title: research.name,
+                        subtitle: roleName,
+                      );
+                    },
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

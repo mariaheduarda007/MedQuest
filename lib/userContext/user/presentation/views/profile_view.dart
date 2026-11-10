@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/theme/theme.dart';
+import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import '../controllers/user_viewmodel.dart';
 
 class ProfileView extends StatefulWidget {
@@ -13,7 +14,7 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   late final UserViewModel _vm;
-  
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
 
@@ -41,6 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
         backgroundColor: context.colors.secondary,
         foregroundColor: context.colors.onSecondary,
       ),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 3),
       body: Watch((context) {
         if (_vm.commands.getUserCommand.isExecuting.value) {
           return const Center(child: CircularProgressIndicator());
@@ -99,19 +101,47 @@ class _ProfileViewState extends State<ProfileView> {
               // Informações pessoais
               _buildSectionTitle(context, 'Informações pessoais'),
               const SizedBox(height: AppSpacing.md),
-              _buildTextField(context, label: 'Nome', controller: _nameController),
+              _buildTextField(
+                context,
+                label: 'Nome',
+                controller: _nameController,
+              ),
               const SizedBox(height: AppSpacing.md),
-              _buildTextField(context, label: 'E-mail', controller: _emailController),
-              
+              _buildTextField(
+                context,
+                label: 'E-mail',
+                controller: _emailController,
+              ),
+
               const SizedBox(height: AppSpacing.xl),
 
               // Segurança
               _buildSectionTitle(context, 'Segurança'),
               const SizedBox(height: AppSpacing.md),
-              _buildSecurityOption(context, Icons.lock_outline, 'Alterar senha', () {}),
-              _buildSecurityOption(context, Icons.email_outlined, 'Alterar E-mail', () {}),
-              _buildSecurityOption(context, Icons.person_outline, 'Alterar Nome', () {}),
-              _buildSecurityOption(context, Icons.settings_outlined, 'Preferências', () {}),
+              _buildSecurityOption(
+                context,
+                Icons.lock_outline,
+                'Alterar senha',
+                () {},
+              ),
+              _buildSecurityOption(
+                context,
+                Icons.email_outlined,
+                'Alterar E-mail',
+                () {},
+              ),
+              _buildSecurityOption(
+                context,
+                Icons.person_outline,
+                'Alterar Nome',
+                () {},
+              ),
+              _buildSecurityOption(
+                context,
+                Icons.settings_outlined,
+                'Preferências',
+                () {},
+              ),
 
               const SizedBox(height: AppSpacing.xxl),
 
@@ -119,7 +149,8 @@ class _ProfileViewState extends State<ProfileView> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () => null, // Ajustar quando tiver o comando de logout
+                  onPressed: () =>
+                      null, // Ajustar quando tiver o comando de logout
                   style: OutlinedButton.styleFrom(
                     foregroundColor: context.colors.error,
                     side: BorderSide(color: context.colors.error),
@@ -139,71 +170,75 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title) => Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: context.textStyles.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: context.colors.onPrimary,
-          ),
-        ),
-      );
-
-  Widget _buildTextField(BuildContext context, {required String label, required TextEditingController controller}) => 
-    TextFormField(
-      controller: controller,
-      style: TextStyle(color: context.colors.onSurface),
-      cursorColor: context.colors.secondary,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: context.colors.outline),
-        filled: true,
-        fillColor: context.colors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(
-            color: context.colors.outline.withValues(alpha: 0.4),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(
-            color: context.colors.outline.withValues(alpha: 0.4),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(
-            color: context.colors.secondary,
-            width: 1.5,
-          ),
-        ),
+    alignment: Alignment.centerLeft,
+    child: Text(
+      title,
+      style: context.textStyles.titleLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: context.colors.onPrimary,
       ),
-    );
+    ),
+  );
 
-  Widget _buildSecurityOption(BuildContext context, IconData icon, String text, VoidCallback onTap) => 
-    Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      elevation: 0,
-      color: context.colors.surface,
-      shape: RoundedRectangleBorder(
+  Widget _buildTextField(
+    BuildContext context, {
+    required String label,
+    required TextEditingController controller,
+  }) => TextFormField(
+    controller: controller,
+    style: TextStyle(color: context.colors.onSurface),
+    cursorColor: context.colors.secondary,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: context.colors.outline),
+      filled: true,
+      fillColor: context.colors.surface,
+      border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        side: BorderSide(
-          color: context.colors.outline.withValues(alpha: 0.2),
-          width: 1,
+        borderSide: BorderSide(
+          color: context.colors.outline.withValues(alpha: 0.4),
         ),
       ),
-      child: ListTile(
-        leading: Icon(icon, color: context.colors.secondary),
-        title: Text(
-          text,
-          style: context.textStyles.bodyMedium?.copyWith(
-            color: context.colors.onSurface,
-            fontWeight: FontWeight.w500,
-          ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderSide: BorderSide(
+          color: context.colors.outline.withValues(alpha: 0.4),
         ),
-        trailing: Icon(Icons.chevron_right, color: context.colors.outline),
-        onTap: onTap,
       ),
-    );
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderSide: BorderSide(color: context.colors.secondary, width: 1.5),
+      ),
+    ),
+  );
+
+  Widget _buildSecurityOption(
+    BuildContext context,
+    IconData icon,
+    String text,
+    VoidCallback onTap,
+  ) => Card(
+    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+    elevation: 0,
+    color: context.colors.surface,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      side: BorderSide(
+        color: context.colors.outline.withValues(alpha: 0.2),
+        width: 1,
+      ),
+    ),
+    child: ListTile(
+      leading: Icon(icon, color: context.colors.secondary),
+      title: Text(
+        text,
+        style: context.textStyles.bodyMedium?.copyWith(
+          color: context.colors.onSurface,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: Icon(Icons.chevron_right, color: context.colors.outline),
+      onTap: onTap,
+    ),
+  );
 }

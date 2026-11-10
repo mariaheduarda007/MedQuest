@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/auth/presentation/pages/home_page.dart';
+import 'package:medquest/modelquest/presentation/pages/modelquests_page.dart';
 import 'package:medquest/research/presentation/pages/researches_page.dart';
 import 'package:medquest/auth/presentation/pages/signin_page.dart';
 import 'package:medquest/core/di/injector.dart';
@@ -44,11 +45,11 @@ final List<RouteBase> appRoutes = [
     name: MedQuestRouteNames.researches,
     builder: (context, state) => const ResearchesPage(),
   ),
-  // GoRoute(
-  //   path: MedQuestPaths.quests,
-  //   name: MedQuestRouteNames.quests,
-  //   // builder: (context, state) => const QuestsPage(),
-  // ),
+  GoRoute(
+    path: MedQuestPaths.quests,
+    name: MedQuestRouteNames.quests,
+    builder: (context, state) => const ModelQuestsPage(),
+  ),
   GoRoute(
     path: MedQuestPaths.profile,
     name: MedQuestRouteNames.profile,

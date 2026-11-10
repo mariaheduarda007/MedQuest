@@ -41,7 +41,7 @@ class AppRadius {
 }
 
 class AppButtonSize {
-  static const Size xs =  Size(80.0, 30.0);
+  static const Size xs = Size(80.0, 30.0);
   static const Size sm = Size(120.0, 40.0);
   static const Size md = Size(140.0, 50.0);
   static const Size lg = Size(250.0, 50.0);
@@ -98,6 +98,7 @@ class FontSizes {
   static const double headlineMedium = 26.0;
   static const double titleLarge = 24.0;
   static const double titleMedium = 22.0;
+  static const double titleSmall = 20.0;
   static const double labelLarge = 18.0;
   static const double labelMedium = 16.0;
   static const double labelSmall = 14.0;
@@ -153,7 +154,7 @@ ThemeData get theme => ThemeData(
     onErrorContainer: LightModeColors.lightOnErrorContainer,
     outline: LightModeColors.lightOutline,
     shadow: LightModeColors.lightShadow,
-    inversePrimary: LightModeColors.lightInversePrimary,
+    inversePrimary: LightModeColors.lightAccentOnPrimary,
   ),
   brightness: Brightness.light,
   scaffoldBackgroundColor: LightModeColors.lightPrimary,
@@ -225,6 +226,10 @@ TextTheme _buildTextTheme(Brightness brightness) {
     ),
     titleMedium: GoogleFonts.poppins(
       fontSize: FontSizes.titleMedium,
+      letterSpacing: -0.5,
+    ),
+    titleSmall: GoogleFonts.poppins(
+      fontSize: FontSizes.titleSmall,
       letterSpacing: -0.5,
     ),
     labelLarge: GoogleFonts.poppins(
