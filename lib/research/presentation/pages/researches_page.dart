@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/core/di/injector.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_title.dart';
@@ -26,6 +27,7 @@ class _ResearchesPageState extends State<ResearchesPage> {
   late final ResearchViewModel _viewModel;
   late final PermissionCacheService _permissionService;
   Map<String, String> _roleNameByResearch = {};
+  Set<String> _researchIdsWithRole = {};
   bool _isLoading = true;
   String? _loadError;
   String? _permissionLoadError;
@@ -44,6 +46,7 @@ class _ResearchesPageState extends State<ResearchesPage> {
     _viewModel.researchState.setResearches([]);
     _viewModel.researchState.clearMessage();
     _roleNameByResearch = {};
+    _researchIdsWithRole = {};
 
     if (mounted) {
       setState(() {
@@ -89,15 +92,19 @@ class _ResearchesPageState extends State<ResearchesPage> {
     }
 
     final permissions = _permissionService.allPermissions;
-    final researchIds = userRoleState.state.value
+    final userRoles = userRoleState.state.value
+        .where((role) => role.userId == userId)
+        .toList();
+    final researchIds = userRoles
         .map((role) => role.researchId)
         .whereType<String>()
         .map((id) => id.trim())
         .where((id) => id.isNotEmpty)
         .toSet()
         .toList();
+    _researchIdsWithRole = researchIds.toSet();
     final roleNameByResearch = <String, String>{};
-    for (final role in userRoleState.state.value) {
+    for (final role in userRoles) {
       final researchId = role.researchId?.trim();
       if (researchId == null ||
           researchId.isEmpty ||
@@ -158,9 +165,14 @@ class _ResearchesPageState extends State<ResearchesPage> {
                 final isLoading =
                     _isLoading ||
                     _viewModel.commands.getResearchesCommand.isExecuting.value;
-                final researches = List.of(
-                  state.researchesState.value ?? const [],
-                )..sort((a, b) => b.date.compareTo(a.date));
+                final researches =
+                    List.of(state.researchesState.value ?? const [])
+                        .where(
+                          (research) =>
+                              _researchIdsWithRole.contains(research.id),
+                        )
+                        .toList()
+                      ..sort((a, b) => b.date.compareTo(a.date));
 
                 if (isLoading && researches.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
@@ -196,6 +208,12 @@ class _ResearchesPageState extends State<ResearchesPage> {
                         icon: Icons.science_outlined,
                         title: research.name,
                         subtitle: roleName,
+                        onTap: () {
+                          context.pushNamed(
+                            MedQuestRouteNames.research,
+                            extra: research,
+                          );
+                        },
                       );
                     },
                   ),

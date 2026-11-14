@@ -44,8 +44,9 @@ final class GroupFirestoreService implements IGroupFirestore {
       }
 
       final group = GroupMapper.fromMap(snapshot.data()!, snapshot.id);
+      final patientCount = await _getPatientCount(snapshot.reference);
 
-      return Success(group);
+      return Success(group.copyWith(patientCount: patientCount));
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter grupo: $e'));
     }
@@ -64,14 +65,25 @@ final class GroupFirestoreService implements IGroupFirestore {
         return Error(EmptyResultFailure());
       }
 
-      final groups = snapshot.docs
-          .map((doc) => GroupMapper.fromMap(doc.data(), doc.id))
-          .toList();
+      final groups = await Future.wait(
+        snapshot.docs.map((doc) async {
+          final group = GroupMapper.fromMap(doc.data(), doc.id);
+          final patientCount = await _getPatientCount(doc.reference);
+          return group.copyWith(patientCount: patientCount);
+        }),
+      );
 
       return Success(groups);
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter grupo: $e'));
     }
+  }
+
+  Future<int> _getPatientCount(
+    DocumentReference<Map<String, dynamic>> group,
+  ) async {
+    final snapshot = await group.collection('Patient').count().get();
+    return snapshot.count ?? 0;
   }
 
   @override
