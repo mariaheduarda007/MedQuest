@@ -26,32 +26,76 @@ class PatientMapper {
     };
   }
 
+  // static Patient fromMap(Map<String, dynamic> map, {String? documentId}) {
+  //   return Patient(
+  //     id: documentId ?? _stringValue(map['id'], 'id', fallback: ''),
+  //     name: _stringValue(map['name'], 'name'),
+  //     treatmentStartAge: _parseInt(map['treatmentStartAge']),
+  //     sex: _stringValue(map['sex'], 'sex'),
+  //     income: _parseDouble(map['income']),
+  //     smokingLevel: SmokingLevel.values.byName(
+  //       _stringValue(map['smokingLevel'], 'smokingLevel'),
+  //     ),
+  //     elitism: _stringValue(map['elitism'], 'elitism'),
+  //     ethnicity: _stringValue(map['ethnicity'], 'ethnicity'),
+  //     birthPlacement: _stringValue(map['birthPlacement'], 'birthPlacement'),
+  //     birthDate: _parseDate(map['birthDate']),
+  //     weight: _parseDouble(map['weight']),
+  //     height: _parseDouble(map['height']),
+  //     occupation: _stringValue(map['occupation'], 'occupation'),
+  //     educationLevel: _stringValue(map['educationLevel'], 'educationLevel'),
+  //     drugs: _stringList(map['drugs'], 'drugs'),
+  //     comorbidities: _stringList(map['comorbidities'], 'comorbidities'),
+  //     participationStatus: _parseBool(map['participationStatus']),
+  //     exitReason: map['exitReason'] == null
+  //         ? null
+  //         : _stringValue(map['exitReason'], 'exitReason'),
+  //     researchAttributes: _stringMap(map['researchAttributes']),
+  //   );
+  // }
   static Patient fromMap(Map<String, dynamic> map, {String? documentId}) {
     return Patient(
-      id: documentId ?? _stringValue(map['id'], 'id', fallback: ''),
-      name: _stringValue(map['name'], 'name'),
-      treatmentStartAge: _parseInt(map['treatmentStartAge']),
-      sex: _stringValue(map['sex'], 'sex'),
-      income: _parseDouble(map['income']),
-      smokingLevel: SmokingLevel.values.byName(
-        _stringValue(map['smokingLevel'], 'smokingLevel'),
+      id: documentId ?? map['id'] ?? '',
+      name: map['name'] as String? ?? 'Paciente sem nome',
+      treatmentStartAge: map['treatmentStartAge'] as int? ?? 0,
+      sex: map['sex'] as String? ?? 'Não informado',
+      income: (map['income'] as num?)?.toDouble() ?? 0.0,
+
+      smokingLevel: _parseSmokingLevel(map['smokingLevel']),
+
+      elitism: map['elitism'] as String? ?? '',
+      ethnicity: map['ethnicity'] as String? ?? 'Não informada',
+      birthPlacement: map['birthPlacement'] as String? ?? '',
+
+      birthDate: map['birthDate'] != null
+          ? DateTime.parse(map['birthDate'] as String)
+          : DateTime.now(),
+
+      weight: (map['weight'] as num?)?.toDouble() ?? 0.0,
+      height: (map['height'] as num?)?.toDouble() ?? 0.0,
+      occupation: map['occupation'] as String? ?? '',
+      educationLevel: map['educationLevel'] as String? ?? 'Não informada',
+
+      drugs: List<String>.from(map['drugs'] ?? []),
+      comorbidities: List<String>.from(map['comorbidities'] ?? []),
+
+      participationStatus: map['participationStatus'] as bool? ?? true,
+      exitReason: map['exitReason'] as String?,
+
+      researchAttributes: Map<String, String>.from(
+        map['researchAttributes'] ?? {},
       ),
-      elitism: _stringValue(map['elitism'], 'elitism'),
-      ethnicity: _stringValue(map['ethnicity'], 'ethnicity'),
-      birthPlacement: _stringValue(map['birthPlacement'], 'birthPlacement'),
-      birthDate: _parseDate(map['birthDate']),
-      weight: _parseDouble(map['weight']),
-      height: _parseDouble(map['height']),
-      occupation: _stringValue(map['occupation'], 'occupation'),
-      educationLevel: _stringValue(map['educationLevel'], 'educationLevel'),
-      drugs: _stringList(map['drugs'], 'drugs'),
-      comorbidities: _stringList(map['comorbidities'], 'comorbidities'),
-      participationStatus: _parseBool(map['participationStatus']),
-      exitReason: map['exitReason'] == null
-          ? null
-          : _stringValue(map['exitReason'], 'exitReason'),
-      researchAttributes: _stringMap(map['researchAttributes']),
     );
+  }
+
+  static SmokingLevel _parseSmokingLevel(dynamic value) {
+    if (value is String) {
+      return SmokingLevel.values.firstWhere(
+        (e) => e.name == value,
+        orElse: () => SmokingLevel.never,
+      );
+    }
+    return SmokingLevel.never;
   }
 
   static String _stringValue(dynamic value, String field, {String? fallback}) {
@@ -82,7 +126,7 @@ class PatientMapper {
     );
   }
 
-   static DateTime _parseDate(Object? value) {
+  static DateTime _parseDate(Object? value) {
     if (value is Timestamp) return value.toDate();
     if (value is DateTime) return value;
     if (value is String) {
@@ -92,6 +136,7 @@ class PatientMapper {
 
     throw const FormatException('Data da pesquisa ausente ou inválida.');
   }
+
   static int _parseInt(dynamic value) {
     if (value is int) return value;
     if (value is String) {

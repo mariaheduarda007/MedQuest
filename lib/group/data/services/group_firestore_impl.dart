@@ -5,6 +5,8 @@ import 'package:medquest/group/data/services/group_firestore_interface.dart';
 import 'package:medquest/group/domain/models/group_mapper.dart';
 import '../../../core/typedefs/type_defs.dart';
 import '../../domain/models/group_entity.dart';
+import 'package:medquest/patient/domain/models/patient_entity.dart';
+import 'package:medquest/patient/domain/models/patient_mapper.dart';
 
 final class GroupFirestoreService implements IGroupFirestore {
   static const String _collection = 'Group';
@@ -44,9 +46,16 @@ final class GroupFirestoreService implements IGroupFirestore {
       }
 
       final group = GroupMapper.fromMap(snapshot.data()!, snapshot.id);
-      final patientCount = await _getPatientCount(snapshot.reference);
+      // final patientCount = await _getPatientCount(snapshot.reference);
 
-      return Success(group.copyWith(patientCount: patientCount));
+      final patientsList = await _getPatients(snapshot.reference);
+
+      return Success(
+        group.copyWith(
+          patients: patientsList,
+          patientCount: patientsList.length,
+        ),
+      );
     } catch (e) {
       return Error(ApiLocalFailure('Firestore - Erro ao obter grupo: $e'));
     }
@@ -68,8 +77,13 @@ final class GroupFirestoreService implements IGroupFirestore {
       final groups = await Future.wait(
         snapshot.docs.map((doc) async {
           final group = GroupMapper.fromMap(doc.data(), doc.id);
-          final patientCount = await _getPatientCount(doc.reference);
-          return group.copyWith(patientCount: patientCount);
+          // final patientCount = await _getPatientCount(doc.reference);
+
+          final patientsList = await _getPatients(doc.reference);
+          return group.copyWith(
+            patients: patientsList,
+            patientCount: patientsList.length,
+          );
         }),
       );
 
@@ -84,6 +98,18 @@ final class GroupFirestoreService implements IGroupFirestore {
   ) async {
     final snapshot = await group.collection('Patient').count().get();
     return snapshot.count ?? 0;
+  }
+
+  Future<List<Patient>> _getPatients(
+    DocumentReference<Map<String, dynamic>> group,
+  ) async {
+    final snapshot = await group.collection('Patient').get();
+
+    if (snapshot.docs.isEmpty) return [];
+
+    return snapshot.docs.map((doc) {
+      return PatientMapper.fromMap(doc.data(), documentId: doc.id);
+    }).toList();
   }
 
   @override

@@ -158,3 +158,23 @@ class Patient extends Equatable {
         ')';
   }
 }
+extension PatientAttributeExtension on Patient {
+  String getAttributeValue(String attributeKey) {
+    switch (attributeKey) {
+      case 'sex':
+        return sex;
+      case 'ethnicity':
+        return ethnicity;
+      case 'educationLevel':
+        return educationLevel;
+      case 'smokingLevel':
+        return smokingLevel.displayName;
+      case 'elitism':
+        return elitism;
+      case 'participationStatus':
+        return participationStatus ? 'Participando' : 'Desligado';
+      default:
+        return researchAttributes[attributeKey] ?? 'Não informado';
+    }
+  }
+}

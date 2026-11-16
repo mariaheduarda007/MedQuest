@@ -13,6 +13,7 @@ import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmode
 import 'package:medquest/research/presentation/widgets/research_pop_menu.dart';
 import 'package:medquest/research/presentation/widgets/research_info_card.dart';
 import 'package:signals_flutter/signals_flutter.dart';
+import 'package:medquest/research/presentation/widgets/category_chart.dart';
 
 class ResearchPage extends StatefulWidget {
   const ResearchPage({super.key, required this.research});
@@ -170,6 +171,62 @@ class _ResearchPageState extends State<ResearchPage> {
                 );
               }),
               const SizedBox(height: 10),
+              Watch((context) {
+                final state = groupController.groupState;
+                final isLoading =
+                    groupController.commands.getGroupsCommand.isExecuting.value;
+                final groups = state.groupsState.value ?? const [];
+
+                if (isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (groups.isEmpty) {
+                  return const Text('Nenhum grupo encontrado.');
+                }
+
+                return Column(
+                  children: groups.map((group) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: Text(
+                              'Gráfico de Categorias: ${group.name}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          CategoryChart(
+                            patients: group.patients, 
+                            availableAttributes: const [
+                              {'key': 'sex', 'label': 'Sexo'},
+                              {
+                                'key': 'smokingLevel',
+                                'label': 'Nível de Tabagismo',
+                              },
+                              {'key': 'ethnicity', 'label': 'Etnia'},
+                              {
+                                'key': 'educationLevel',
+                                'label': 'Escolaridade',
+                              },
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
             ],
           ),
         ),
