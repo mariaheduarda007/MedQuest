@@ -1,6 +1,12 @@
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/commands/research_commands.dart';
 import 'package:medquest/research/presentation/controllers/research_state_viewmodel.dart';
+import 'package:medquest/group/domain/facades/group_facade_usecases_interface.dart';
+import 'package:medquest/group/domain/models/group_entity.dart';
+import 'package:medquest/group/presentation/commands/group_commands.dart';
+import 'package:medquest/modelquest/domain/facade/modelquest_facade_usecases_interface.dart';
+import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
+import 'package:medquest/modelquest/presentation/commands/modelquest_commands.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import 'package:signals_flutter/signals_flutter.dart';
@@ -14,9 +20,14 @@ class ResearchCommandsViewModel {
   final DeleteResearchCommand _deleteResearchCommand;
   final ArchiveResearchCommand _archiveResearchCommand;
   final UnarchiveResearchCommand _unarchiveResearchCommand;
+  final GetGroupsCommand _getGroupsCommand;
+  final GetAllModelQuestsCommand _getAllModelQuestsCommand;
+  final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
 
   ResearchCommandsViewModel({
     required this.state,
+    required IGroupFacadeUseCases groupFacade,
+    required IModelQuestFacadeUseCases modelQuestFacade,
     required CreateResearchCommand createResearchCommand,
     required GetResearchCommand getResearchCommand,
     required GetResearchesCommand getResearchesCommand,
@@ -30,15 +41,22 @@ class ResearchCommandsViewModel {
        _updateResearchCommand = updateResearchCommand,
        _deleteResearchCommand = deleteResearchCommand,
        _archiveResearchCommand = archiveResearchCommand,
-       _unarchiveResearchCommand = unarchiveResearchCommand {
+       _unarchiveResearchCommand = unarchiveResearchCommand,
+       _getGroupsCommand = GetGroupsCommand(groupFacade),
+       _getAllModelQuestsCommand = GetAllModelQuestsCommand(modelQuestFacade),
+       _getModelQuestsFromResearchCommand =
+           GetModelQuestsFromResearchCommand(modelQuestFacade) {
     // Observers para cada comando
     _observeCreateResearch();
     _observeGetResearch();
-    _observeGetResearches();
+    // _observeGetResearches();
     _observeUpdateResearch();
     _observeDeleteResearch();
     _observeArchiveResearch();
-    _observeUnarchiveResearch();  
+    _observeUnarchiveResearch();
+    _observeGetGroups();
+    _observeGetAllModelQuests();
+    _observeGetModelQuestsFromResearch();
   }
 
   // ========================================================
@@ -50,7 +68,13 @@ class ResearchCommandsViewModel {
   UpdateResearchCommand get updateResearchCommand => _updateResearchCommand;
   DeleteResearchCommand get deleteResearchCommand => _deleteResearchCommand;
   ArchiveResearchCommand get archiveResearchCommand => _archiveResearchCommand;
-  UnarchiveResearchCommand get unarchiveResearchCommand => _unarchiveResearchCommand;
+  UnarchiveResearchCommand get unarchiveResearchCommand =>
+      _unarchiveResearchCommand;
+  GetGroupsCommand get getGroupsCommand => _getGroupsCommand;
+  GetAllModelQuestsCommand get getAllModelQuestsCommand =>
+      _getAllModelQuestsCommand;
+  GetModelQuestsFromResearchCommand get getModelQuestsFromResearchCommand =>
+      _getModelQuestsFromResearchCommand;
 
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
@@ -59,6 +83,7 @@ class ResearchCommandsViewModel {
     Command<T, Failure> command, {
     required void Function(T data) onSuccess,
     void Function(Failure err)? onFailure,
+    bool updateResearchMessage = true,
   }) {
     effect(() {
       // 1) Ignora enquanto está executando
@@ -70,12 +95,12 @@ class ResearchCommandsViewModel {
 
       result.fold(
         onSuccess: (data) {
-          state.clearMessage();
+          if (updateResearchMessage) state.clearMessage();
           onSuccess(data);
           command.clear();
         },
         onFailure: (err) {
-          state.setMessage(err.msg);
+          if (updateResearchMessage) state.setMessage(err.msg);
           if (onFailure != null) onFailure(err);
           command.clear(); // Limpa o resultado para evitar reprocessamento
         },
@@ -113,18 +138,18 @@ class ResearchCommandsViewModel {
     );
   }
 
-  void _observeGetResearches() {
-    _observeCommand<List<Research>>(
-      _getResearchesCommand,
-      onSuccess: (researches) {
-        state.setResearches(researches);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeGetResearches() {
+  //   _observeCommand<List<Research>>(
+  //     _getResearchesCommand,
+  //     onSuccess: (researches) {
+  //       state.setResearches(researches);
+  //       state.clearMessage();
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
   void _observeUpdateResearch() {
     _observeCommand<Research>(
@@ -178,10 +203,46 @@ class ResearchCommandsViewModel {
     );
   }
 
+  void _observeGetGroups() {
+    _observeCommand<List<Group>>(
+      _getGroupsCommand,
+      onSuccess: (groups) {
+        state.setGroups(groups);
+        state.clearGroupsMessage();
+      },
+      onFailure: (err) => state.setGroupsMessage(err.msg),
+      updateResearchMessage: false,
+    );
+  }
+
+  void _observeGetAllModelQuests() {
+    _observeCommand<List<ModelQuest>>(
+      _getAllModelQuestsCommand,
+      onSuccess: (modelQuests) {
+        state.setModelQuests(modelQuests);
+        state.clearModelQuestsMessage();
+      },
+      onFailure: (err) => state.setModelQuestsMessage(err.msg),
+      updateResearchMessage: false,
+    );
+  }
+
+  void _observeGetModelQuestsFromResearch() {
+    _observeCommand<List<ModelQuest>>(
+      _getModelQuestsFromResearchCommand,
+      onSuccess: (modelQuests) {
+        state.setModelQuests(modelQuests);
+        state.clearModelQuestsMessage();
+      },
+      onFailure: (err) => state.setModelQuestsMessage(err.msg),
+      updateResearchMessage: false,
+    );
+  }
+
   // ========================================================
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
-    //só executa o command, state e suas funções são atualizados pelos observers
+  //só executa o command, state e suas funções são atualizados pelos observers
   Future<void> createResearch(Research research) async {
     await _createResearchCommand.executeWith((research: research));
   }
@@ -190,7 +251,7 @@ class ResearchCommandsViewModel {
     await _getResearchCommand.executeWith((researchId: researchId));
   }
 
-Future<void> getResearches({List<String> researchesId = const []}) async {
+  Future<void> getResearches({List<String> researchesId = const []}) async {
     await _getResearchesCommand.executeWith((researchesId: researchesId));
   }
 
@@ -208,5 +269,19 @@ Future<void> getResearches({List<String> researchesId = const []}) async {
 
   Future<void> unarchiveResearch(String researchId) async {
     await _unarchiveResearchCommand.executeWith((researchId: researchId));
+  }
+
+  Future<void> getGroups(String researchId) async {
+    await _getGroupsCommand.executeWith((researchId: researchId));
+  }
+
+  Future<void> getAllModelQuests() async {
+    await _getAllModelQuestsCommand.executeWith(());
+  }
+
+  Future<void> getModelQuestsFromResearch(String researchId) async {
+    await _getModelQuestsFromResearchCommand.executeWith((
+      researchId: researchId,
+    ));
   }
 }

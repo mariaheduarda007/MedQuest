@@ -1,6 +1,6 @@
-import 'package:medquest/auth/presentation/pages/signin_page.dart';
-import 'package:medquest/auth/presentation/pages/signup_page.dart';
-import 'package:medquest/auth/presentation/pages/splash_page.dart';
+import 'package:medquest/auth/presentation/views/signin_view.dart';
+import 'package:medquest/auth/presentation/views/signup_view.dart';
+import 'package:medquest/auth/presentation/views/splash_view.dart';
 import 'package:go_router/go_router.dart';
 
 class AuthRouteNames {

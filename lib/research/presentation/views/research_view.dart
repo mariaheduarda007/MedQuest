@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
-import 'package:medquest/group/presentation/controllers/group_viewmodel.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_route.dart';
@@ -9,7 +8,7 @@ import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/research/presentation/widgets/quest_card.dart';
 import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/group_card.dart';
-import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmodel.dart';
+import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/research_pop_menu.dart';
 import 'package:medquest/research/presentation/widgets/research_info_card.dart';
 import 'package:signals_flutter/signals_flutter.dart';
@@ -25,26 +24,28 @@ class ResearchPage extends StatefulWidget {
 }
 
 class _ResearchPageState extends State<ResearchPage> {
-  late final GroupViewModel groupController;
-  late final ModelQuestViewModel modelQuestController;
+  late final ResearchViewModel researchController;
 
   @override
   void initState() {
     super.initState();
-    groupController = injector.get<GroupViewModel>();
-    modelQuestController = injector.get<ModelQuestViewModel>();
-    groupController.groupState.setGroups([]);
-    groupController.groupState.clearMessage();
+    researchController = injector.get<ResearchViewModel>();
+    researchController.researchState.setGroups([]);
+    researchController.researchState.setModelQuests([]);
+    researchController.researchState.clearGroupsMessage();
+    researchController.researchState.clearModelQuestsMessage();
     unawaited(_loadGroups());
     unawaited(_loadModelQuests());
   }
 
   Future<void> _loadGroups() async {
-    await groupController.commands.getGroups(widget.research.id);
+    await researchController.commands.getGroups(widget.research.id);
   }
 
   Future<void> _loadModelQuests() async {
-    await modelQuestController.commands.getAllModelQuests();
+    await researchController.commands.getModelQuestsFromResearch(
+      widget.research.id,
+    );
   }
 
   @override
@@ -120,10 +121,10 @@ class _ResearchPageState extends State<ResearchPage> {
               ),
               const SizedBox(height: 20),
               Watch((context) {
-                final state = modelQuestController.modelQuestState;
-                final isLoading = modelQuestController
+                final state = researchController.researchState;
+                final isLoading = researchController
                     .commands
-                    .getAllModelQuestsCommand
+                    .getModelQuestsFromResearchCommand
                     .isExecuting
                     .value;
                 final modelQuests = state.modelQuestsState.value;
@@ -143,16 +144,19 @@ class _ResearchPageState extends State<ResearchPage> {
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
                       : Text(
-                          state.message.value ??
+                          state.modelQuestsMessage.value ??
                               'Nenhum questionário encontrado.',
                         ),
                 );
               }),
               Watch((context) {
-                final state = groupController.groupState;
-                final isLoading =
-                    groupController.commands.getGroupsCommand.isExecuting.value;
-                final groups = state.groupsState.value ?? const [];
+                final state = researchController.researchState;
+                final isLoading = researchController
+                    .commands
+                    .getGroupsCommand
+                    .isExecuting
+                    .value;
+                final groups = state.groupsState.value;
 
                 return CardCarousel(
                   title: 'Grupos da pesquisa',
@@ -167,15 +171,21 @@ class _ResearchPageState extends State<ResearchPage> {
                       .toList(),
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
-                      : Text(state.message.value ?? 'Nenhum grupo encontrado.'),
+                      : Text(
+                          state.groupsMessage.value ??
+                              'Nenhum grupo encontrado.',
+                        ),
                 );
               }),
               const SizedBox(height: 10),
               Watch((context) {
-                final state = groupController.groupState;
-                final isLoading =
-                    groupController.commands.getGroupsCommand.isExecuting.value;
-                final groups = state.groupsState.value ?? const [];
+                final state = researchController.researchState;
+                final isLoading = researchController
+                    .commands
+                    .getGroupsCommand
+                    .isExecuting
+                    .value;
+                final groups = state.groupsState.value;
 
                 if (isLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -207,7 +217,7 @@ class _ResearchPageState extends State<ResearchPage> {
                           const SizedBox(height: 8),
 
                           CategoryChart(
-                            patients: group.patients, 
+                            patients: group.patients,
                             availableAttributes: const [
                               {'key': 'sex', 'label': 'Sexo'},
                               {

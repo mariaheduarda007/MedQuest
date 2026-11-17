@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
-import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
+import 'package:medquest/research/presentation/controllers/researches_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_title.dart';
 import 'package:medquest/research/presentation/widgets/list_item.dart';
@@ -24,7 +24,7 @@ class ResearchesPage extends StatefulWidget {
 class _ResearchesPageState extends State<ResearchesPage> {
   late final AuthViewModel _authViewModel;
   late final UserRoleViewModel _userRoleViewModel;
-  late final ResearchViewModel _viewModel;
+  late final ResearchesViewModel _viewModel;
   late final PermissionCacheService _permissionService;
   Map<String, String> _roleNameByResearch = {};
   Set<String> _researchIdsWithRole = {};
@@ -37,14 +37,14 @@ class _ResearchesPageState extends State<ResearchesPage> {
     super.initState();
     _authViewModel = injector.get<AuthViewModel>();
     _userRoleViewModel = injector.get<UserRoleViewModel>();
-    _viewModel = injector.get<ResearchViewModel>();
+    _viewModel = injector.get<ResearchesViewModel>();
     _permissionService = injector.get<PermissionCacheService>();
     unawaited(_loadResearches());
   }
 
   Future<void> _loadResearches() async {
-    _viewModel.researchState.setResearches([]);
-    _viewModel.researchState.clearMessage();
+    _viewModel.researchesState.setResearches([]);
+    _viewModel.researchesState.clearMessage();
     _roleNameByResearch = {};
     _researchIdsWithRole = {};
 
@@ -58,7 +58,7 @@ class _ResearchesPageState extends State<ResearchesPage> {
 
     final userId = _authViewModel.session.session.value?.user.uid;
     if (userId == null) {
-      _viewModel.researchState.setResearches([]);
+      _viewModel.researchesState.setResearches([]);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -75,7 +75,7 @@ class _ResearchesPageState extends State<ResearchesPage> {
 
     final rolesError = userRoleState.message.value;
     if (rolesError != null) {
-      _viewModel.researchState.setResearches([]);
+      _viewModel.researchesState.setResearches([]);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -121,8 +121,8 @@ class _ResearchesPageState extends State<ResearchesPage> {
     _roleNameByResearch = roleNameByResearch;
 
     if (researchIds.isEmpty) {
-      _viewModel.researchState.setResearches([]);
-      _viewModel.researchState.clearMessage();
+      _viewModel.researchesState.setResearches([]);
+      _viewModel.researchesState.clearMessage();
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -132,13 +132,13 @@ class _ResearchesPageState extends State<ResearchesPage> {
       return;
     }
 
-    _viewModel.researchState.clearMessage();
+    _viewModel.researchesState.clearMessage();
     await _viewModel.commands.getResearches(researchesId: researchIds);
 
     if (mounted) {
       setState(() {
         _isLoading = false;
-        _loadError = _viewModel.researchState.message.value;
+        _loadError = _viewModel.researchesState.message.value;
       });
     }
   }
@@ -161,12 +161,12 @@ class _ResearchesPageState extends State<ResearchesPage> {
             ),
             Expanded(
               child: Watch((context) {
-                final state = _viewModel.researchState;
+                final state = _viewModel.researchesState;
                 final isLoading =
                     _isLoading ||
-                    _viewModel.commands.getResearchesCommand.isExecuting.value;
+                    _viewModel.getResearchesCommand.isExecuting.value;
                 final researches =
-                    List.of(state.researchesState.value ?? const [])
+                    List.of(state.researchesState.value)
                         .where(
                           (research) =>
                               _researchIdsWithRole.contains(research.id),

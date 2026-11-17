@@ -1,11 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
-import 'package:medquest/auth/presentation/pages/home_page.dart';
-import 'package:medquest/modelquest/presentation/pages/modelquests_page.dart';
+import 'package:medquest/auth/presentation/views/home_view.dart';
+import 'package:medquest/modelquest/presentation/views/modelquests_view.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
-import 'package:medquest/research/presentation/pages/research_page.dart';
-import 'package:medquest/research/presentation/pages/researches_page.dart';
-import 'package:medquest/auth/presentation/pages/signin_page.dart';
+import 'package:medquest/research/presentation/views/research_view.dart';
+import 'package:medquest/research/presentation/views/researches_page.dart';
+import 'package:medquest/auth/presentation/views/signin_view.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/userContext/user/presentation/views/profile_view.dart';
 

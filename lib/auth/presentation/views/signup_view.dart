@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medquest/auth/presentation/pages/splash_page.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/validators/email_validator.dart';
 import 'package:medquest/core/validators/empty_str_validator.dart';

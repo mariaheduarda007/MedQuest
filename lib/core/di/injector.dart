@@ -35,6 +35,9 @@ import 'package:medquest/answeredquest/data/repository/answeredquest_repository_
 import 'package:medquest/answeredquest/data/repository/answeredquest_repository_interface.dart';
 import 'package:medquest/answeredquest/data/service/answeredquest_firestore_impl.dart';
 import 'package:medquest/answeredquest/data/service/answeredquest_firestore_interface.dart';
+import 'package:medquest/modelquest/presentation/controllers/modelquests_commands_viewmodel.dart';
+import 'package:medquest/modelquest/presentation/controllers/modelquests_state_viewmodel.dart';
+import 'package:medquest/modelquest/presentation/controllers/modelquests_viewmodel.dart';
 import 'package:medquest/patient/data/repository/patient_repository_impl.dart';
 import 'package:medquest/patient/data/repository/patient_repository_interface.dart';
 import 'package:medquest/patient/data/service/patient_firestore_impl.dart';
@@ -59,6 +62,9 @@ import 'package:medquest/research/presentation/commands/research_commands.dart';
 import 'package:medquest/research/presentation/controllers/research_commands_viewmodel.dart';
 import 'package:medquest/research/presentation/controllers/research_state_viewmodel.dart';
 import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
+import 'package:medquest/research/presentation/controllers/researches_commands_viewmodel.dart';
+import 'package:medquest/research/presentation/controllers/researches_state_viewmodel.dart';
+import 'package:medquest/research/presentation/controllers/researches_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medquest/userContext/userRole/domain/usecases/userRole_usecases_impl.dart';
@@ -74,6 +80,9 @@ import 'package:medquest/auth/domain/facades/i_auth_usecase_facade.dart';
 import 'package:medquest/auth/domain/usecases/auth_usecases_impl.dart';
 import 'package:medquest/auth/domain/usecases/i_auth_usecases.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
+import 'package:medquest/auth/presentation/controllers/home_commands_viewmodel.dart';
+import 'package:medquest/auth/presentation/controllers/home_state_viewmodel.dart';
+import 'package:medquest/auth/presentation/controllers/home_viewmodel.dart';
 import 'package:medquest/userContext/user/data/repositories/i_user_repository.dart';
 import 'package:medquest/userContext/user/data/repositories/user_repository_impl.dart';
 import 'package:medquest/userContext/user/data/services/remote/i_user_remote_service.dart';
@@ -159,6 +168,11 @@ void setupDependencyInjection() {
     ResearchCommandsViewModel.new,
   );
   injector.addSingleton<ResearchViewModel>(ResearchViewModel.new);
+  injector.addSingleton<ResearchesStateViewModel>(ResearchesStateViewModel.new);
+  injector.addSingleton<ResearchesCommandsViewModel>(
+    ResearchesCommandsViewModel.new,
+  );
+  injector.addSingleton<ResearchesViewModel>(ResearchesViewModel.new);
 
   injector.addSingleton<IModelQuestFirestore>(ModelQuestFirestoreService.new);
   injector.addSingleton<IModelQuestRepository>(ModelQuestRepositoryImpl.new);
@@ -200,6 +214,11 @@ void setupDependencyInjection() {
     ModelQuestCommandsViewModel.new,
   );
   injector.addSingleton<ModelQuestViewModel>(ModelQuestViewModel.new);
+  injector.addSingleton<ModelQuestsStateViewModel>(ModelQuestsStateViewModel.new);
+  injector.addSingleton<ModelQuestsCommandsViewModel>(
+    ModelQuestsCommandsViewModel.new,
+  );
+  injector.addSingleton<ModelQuestsViewModel>(ModelQuestsViewModel.new);
 
 
 
@@ -295,6 +314,7 @@ injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
 ));
 
 // --- USER ---
+
   
   injector.addSingleton<IUserRemoteService>(FirestoreUserService.new); 
 
@@ -368,6 +388,10 @@ injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
   injector.addSingleton<UserRoleViewModel>(
     () => UserRoleViewModel(injector.get<IUserRoleFacadeUseCases>()),
   );
+
+  injector.addSingleton<HomeStateViewModel>(HomeStateViewModel.new);
+  injector.addSingleton<HomeCommandsViewModel>(HomeCommandsViewModel.new);
+  injector.addSingleton<HomeViewModel>(HomeViewModel.new);
 
   injector.commit();
 }

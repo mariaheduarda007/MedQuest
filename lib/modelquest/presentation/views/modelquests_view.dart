@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmodel.dart';
+import 'package:medquest/modelquest/presentation/controllers/modelquests_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_title.dart';
 import 'package:medquest/research/presentation/widgets/list_item.dart';
@@ -17,18 +18,18 @@ class ModelQuestsPage extends StatefulWidget {
 }
 
 class _ModelQuestsPageState extends State<ModelQuestsPage> {
-  late final ModelQuestViewModel _viewModel;
+  late final ModelQuestsViewModel _viewModel;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = injector.get<ModelQuestViewModel>();
+    _viewModel = injector.get<ModelQuestsViewModel>();
     unawaited(_loadModelQuests());
   }
 
   Future<void> _loadModelQuests() async {
-    final state = _viewModel.modelQuestState;
+    final state = _viewModel.modelQuestsState;
     state.setModelQuests([]);
     state.clearMessage();
 
@@ -61,7 +62,7 @@ class _ModelQuestsPageState extends State<ModelQuestsPage> {
             ),
             Expanded(
               child: Watch((context) {
-                final state = _viewModel.modelQuestState;
+                final state = _viewModel.modelQuestsState;
                 final isLoading =
                     _isLoading ||
                     _viewModel

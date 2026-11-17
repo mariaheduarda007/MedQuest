@@ -98,7 +98,10 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
       if (!snapshot.docs.isNotEmpty) {
         return Error(EmptyResultFailure());
       }
-      final research = ResearchMapper.fromMap(snapshot.docs.first.data());
+      final research = ResearchMapper.fromMap(
+        snapshot.docs.first.data(),
+        documentId: snapshot.docs.first.id,
+      );
       final modelQuests = await getModelQuests(research.quests);
 
       return modelQuests;
