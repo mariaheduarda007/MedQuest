@@ -110,3 +110,18 @@ final class UnarchiveResearchCommand
     return await _researchFacadeUseCases.unarchiveResearch(parameter!);
   }
 }
+
+final class ExportResearchToExcelCommand
+    extends ParameterizedCommand<void, Failure, ResearchIdParams> {
+  final IResearchFacadeUseCases _researchFacadeUseCases;
+
+  ExportResearchToExcelCommand(this._researchFacadeUseCases);
+
+  @override
+  Future<VoidResult> execute() async {
+    if (parameter == null) {
+      return Error(InputFailure('Parametro nulo para exportar pesquisa.'));
+    }
+    return await _researchFacadeUseCases.exportResearchToExcel(parameter!);
+  }
+}

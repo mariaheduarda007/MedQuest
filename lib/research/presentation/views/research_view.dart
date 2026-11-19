@@ -91,7 +91,23 @@ class _ResearchPageState extends State<ResearchPage> {
                 MenuAction(
                   label: 'Exportar',
                   icon: Icons.download_outlined,
-                  onTap: () {},
+                  onTap: () async {
+                    try {
+                      await researchController.commands.exportResearchToExcel(
+                        widget.research.id,
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Planilha exportada com sucesso!'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao exportar: $e')),
+                      );
+                    }
+                  },
                 ),
                 MenuAction(
                   label: 'Editar',

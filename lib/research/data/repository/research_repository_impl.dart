@@ -47,9 +47,13 @@ final class ResearchRepositoryImpl implements IResearchRepository {
     return _firestore.archiveResearch(researchId);
   }
   
-  
   @override
   Future<VoidResult> unarchiveResearch(String researchId) {
     return _firestore.unarchiveResearch(researchId);
+  }
+
+  @override
+  Future<VoidResult> exportResearchToExcel(String researchId) {
+    return _firestore.exportResearchToExcel(researchId);
   }
 }

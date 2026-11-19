@@ -156,6 +156,8 @@ void setupDependencyInjection() {
   injector.addSingleton<IUnarchiveResearchUseCase>(
     UnarchiveResearchUseCaseImpl.new,
   );
+  injector.addSingleton<IExportResearchToExcelUseCase>(ExportResearchToExcelUseCaseImpl.new);
+  injector.addSingleton<ExportResearchToExcelCommand>(ExportResearchToExcelCommand.new);
   injector.addSingleton<CreateResearchCommand>(CreateResearchCommand.new);
   injector.addSingleton<GetResearchCommand>(GetResearchCommand.new);
   injector.addSingleton<GetResearchesCommand>(GetResearchesCommand.new);

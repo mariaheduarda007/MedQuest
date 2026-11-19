@@ -23,6 +23,7 @@ class ResearchCommandsViewModel {
   final GetGroupsCommand _getGroupsCommand;
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
+  final ExportResearchToExcelCommand _exportResearchToExcelCommand;
 
   ResearchCommandsViewModel({
     required this.state,
@@ -35,6 +36,7 @@ class ResearchCommandsViewModel {
     required DeleteResearchCommand deleteResearchCommand,
     required ArchiveResearchCommand archiveResearchCommand,
     required UnarchiveResearchCommand unarchiveResearchCommand,
+    required ExportResearchToExcelCommand exportResearchToExcelCommand,
   }) : _createResearchCommand = createResearchCommand,
        _getResearchCommand = getResearchCommand,
        _getResearchesCommand = getResearchesCommand,
@@ -42,6 +44,7 @@ class ResearchCommandsViewModel {
        _deleteResearchCommand = deleteResearchCommand,
        _archiveResearchCommand = archiveResearchCommand,
        _unarchiveResearchCommand = unarchiveResearchCommand,
+       _exportResearchToExcelCommand = exportResearchToExcelCommand,
        _getGroupsCommand = GetGroupsCommand(groupFacade),
        _getAllModelQuestsCommand = GetAllModelQuestsCommand(modelQuestFacade),
        _getModelQuestsFromResearchCommand =
@@ -54,6 +57,7 @@ class ResearchCommandsViewModel {
     _observeDeleteResearch();
     _observeArchiveResearch();
     _observeUnarchiveResearch();
+    _observeExportResearchToExcel();
     _observeGetGroups();
     _observeGetAllModelQuests();
     _observeGetModelQuestsFromResearch();
@@ -75,7 +79,8 @@ class ResearchCommandsViewModel {
       _getAllModelQuestsCommand;
   GetModelQuestsFromResearchCommand get getModelQuestsFromResearchCommand =>
       _getModelQuestsFromResearchCommand;
-
+  ExportResearchToExcelCommand get exportResearchToExcelCommand => 
+      _exportResearchToExcelCommand;
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
   // ========================================================
@@ -203,6 +208,18 @@ class ResearchCommandsViewModel {
     );
   }
 
+  void _observeExportResearchToExcel() {
+    _observeCommand<void>(
+      _exportResearchToExcelCommand,
+      onSuccess: (_) {
+        state.clearMessage();
+      },
+      onFailure: (err) {
+        state.setMessage(err.msg);
+      },
+    );
+  }
+
   void _observeGetGroups() {
     _observeCommand<List<Group>>(
       _getGroupsCommand,
@@ -271,6 +288,10 @@ class ResearchCommandsViewModel {
     await _unarchiveResearchCommand.executeWith((researchId: researchId));
   }
 
+  Future<void> exportResearchToExcel(String researchId) async {
+    await _exportResearchToExcelCommand.executeWith((researchId: researchId));
+  }
+  
   Future<void> getGroups(String researchId) async {
     await _getGroupsCommand.executeWith((researchId: researchId));
   }

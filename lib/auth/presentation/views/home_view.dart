@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medquest/answeredquest/data/service/answeredquest_firestore_impl.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/core/di/injector.dart';
 import '../../domain/models/auth_entities.dart';
@@ -13,6 +15,7 @@ import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/research_card.dart';
 import 'package:medquest/research/presentation/widgets/app_search_bar.dart';
 import 'package:signals_flutter/signals_flutter.dart';
+import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title, required this.session});
@@ -109,14 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
                       : Text(
-                          state.researchesMessage.value ?? 'Nenhuma pesquisa encontrada.',
+                          state.researchesMessage.value ??
+                              'Nenhuma pesquisa encontrada.',
                         ),
                 );
               }),
               const SizedBox(height: 10),
               Watch((context) {
                 final state = homeController.homeState;
-                
+
                 if (state.isLoadingPermissions.value) {
                   return const SizedBox.shrink();
                 }

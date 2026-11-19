@@ -22,15 +22,31 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
     try {
       final answeredQuest = params.answeredQuest;
       final patientIdParams = params.patientIdParams;
+
       final collection = _answeredQuestsCollection(
         researchId: patientIdParams.researchId,
         groupId: patientIdParams.groupId,
         patientId: patientIdParams.patientId,
       );
+
+      //contando quantas vezes ja respondeu esse questionario
+      final existingQuestsQuery = await collection
+          .where('idModelQuest', isEqualTo: answeredQuest.idModelQuest)
+          .get();
+
+      int existingCount = existingQuestsQuery.docs.length;
+
+      //formatando o nome
+      String timePoint = 'T$existingCount';
+      String computedName = '$timePoint ${answeredQuest.name}';
+
+      final processedQuest = answeredQuest.copyWith(name: computedName);
+
       final document = collection.doc();
-      await document.set(AnsweredQuestMapper.toMap(answeredQuest));
+      await document.set(AnsweredQuestMapper.toMap(processedQuest));
+
       final questionsCollection = document.collection('Questions');
-      for (final question in answeredQuest.questions) {
+      for (final question in processedQuest.questions) {
         await questionsCollection.add(QuestionMapper.toMap(question));
       }
 
