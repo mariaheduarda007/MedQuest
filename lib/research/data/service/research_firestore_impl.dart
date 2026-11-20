@@ -5,6 +5,10 @@ import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/domain/models/research_mapper.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/result.dart';
+import 'package:excel/excel.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 final class ResearchFirestoreService implements IResearchFirestore {
   static const String _collection = 'Research';
@@ -136,6 +140,192 @@ final class ResearchFirestoreService implements IResearchFirestore {
       return Error(
         ApiLocalFailure('Firestore - Erro ao desarquivar pesquisa: $e'),
       );
+    }
+  }
+
+  @override
+  Future<VoidResult> exportResearchToExcel(String researchId) async {
+    try {
+      final groupsSnapshot = await _firestore
+          .collection('Research')
+          .doc(researchId)
+          .collection('Group')
+          .get();
+
+      List<Map<String, dynamic>> processedPatientsData = [];
+      Set<String> dynamicQuestionnaireColumns = {};
+
+      for (var groupDoc in groupsSnapshot.docs) {
+        final groupName = groupDoc.data()['name'] ?? 'Grupo';
+        final patientsSnapshot = await groupDoc.reference
+            .collection('Patient')
+            .get();
+
+        for (var patientDoc in patientsSnapshot.docs) {
+          final patientData = patientDoc.data();
+
+          Map<String, dynamic> rowData = {
+            'ID': patientDoc.id,
+            'Age': calculateAge(patientData['birthDate']),
+            'Sex': patientData['sex'] ?? '',
+            'Group': groupName,
+            'Birth Placement': patientData['birthPlacement'] ?? '',
+            'Comorbidities': patientData['comorbidities'] ?? '',
+            'Height': patientData['height'] ?? '',
+            'Weight': patientData['weight'] ?? '',
+            'Ethnicity': patientData['ethnicity'] ?? '',
+            'Smoking': patientData['smokingLevel'] ?? '',
+            'Drugs': patientData['drugs'] ?? '',
+            'Elitism': patientData['elitism'] ?? '',
+            'Income': patientData['income'] ?? '',
+            'Education': patientData['educationLevel'] ?? '',
+            'Exit Reason': patientData['exitReason'] ?? '',
+          };
+
+          final answeredQuestsSnapshot = await patientDoc.reference
+              .collection('AnsweredQuest')
+              .get();
+
+          for (var questDoc in answeredQuestsSnapshot.docs) {
+            final questData = questDoc.data();
+            String questColumnName = questData['name'] ?? 'Questionário';
+
+            num totalScore = 0;
+            bool hasScore = false;
+            final questionsSnapshot = await questDoc.reference
+                .collection('Questions')
+                .get();
+
+            for (var qDoc in questionsSnapshot.docs) {
+              final rawScore = qDoc.data()['score'];
+              if (rawScore != null) {
+                final parsedScore = rawScore is num
+                    ? rawScore
+                    : num.tryParse(rawScore.toString());
+                if (parsedScore != null) {
+                  totalScore += parsedScore;
+                  hasScore = true;
+                }
+              }
+            }
+
+            dynamicQuestionnaireColumns.add(questColumnName);
+            rowData[questColumnName] = hasScore ? totalScore : '';
+
+            dynamicQuestionnaireColumns.add(questColumnName);
+            rowData[questColumnName] = totalScore;
+          }
+
+          processedPatientsData.add(rowData);
+        }
+      }
+
+      final sortedDynamicColumns = dynamicQuestionnaireColumns.toList()
+        ..sort((a, b) {
+          List<String> partsA = a.split(' ');
+          List<String> partsB = b.split(' ');
+
+          if (partsA.length >= 2 && partsB.length >= 2) {
+            String timeA = partsA[0]; 
+            String nameA = partsA.sublist(1).join(' '); 
+
+            String timeB = partsB[0];
+            String nameB = partsB.sublist(1).join(' '); 
+
+            int nameComparison = nameA.compareTo(nameB);
+            if (nameComparison != 0) {
+              return nameComparison;
+            }
+
+            return timeA.compareTo(timeB);
+          }
+
+          return a.compareTo(b);
+        });
+
+      List<String> fixedHeaders = [
+        'ID',
+        'Age',
+        'Sex',
+        'Group',
+        'Birth Placement',
+        'Comorbidities',
+        'Height',
+        'Weight',
+        'Ethnicity',
+        'Smoking',
+        'Drugs',
+        'Elitism',
+        'Income',
+        'Education',
+        'Exit Reason',
+      ];
+      List<String> allHeaders = [...fixedHeaders, ...sortedDynamicColumns];
+
+      var excel = Excel.createExcel();
+      Sheet sheetObject = excel['Relatório da Pesquisa'];
+      excel.setDefaultSheet('Relatório da Pesquisa');
+      excel.delete('Sheet1');
+
+      sheetObject.appendRow(allHeaders.map((h) => TextCellValue(h)).toList());
+
+      for (var patientData in processedPatientsData) {
+        List<CellValue> rowCells = [];
+
+        for (String header in allHeaders) {
+          var value = patientData[header];
+
+          if (value == null) {
+            rowCells.add(TextCellValue(''));
+          } else if (value is int) {
+            rowCells.add(IntCellValue(value));
+          } else if (value is double) {
+            rowCells.add(DoubleCellValue(value));
+          } else {
+            rowCells.add(TextCellValue(value.toString()));
+          }
+        }
+
+        sheetObject.appendRow(rowCells);
+      }
+
+      var fileBytes = excel.save();
+      if (fileBytes != null) {
+        final directory = await getTemporaryDirectory();
+        String filePath =
+            '${directory.path}/relatorio_pesquisa_$researchId.xlsx';
+
+        final file = File(filePath);
+        await file.writeAsBytes(fileBytes);
+
+        return Success(null);
+      }
+
+      return Error(
+        ApiLocalFailure('Falha ao gerar os bytes do arquivo Excel.'),
+      );
+    } catch (e) {
+      return Error(ApiLocalFailure('Erro ao exportar pesquisa para Excel: $e'));
+    }
+  }
+
+  int calculateAge(String? birthDateString) {
+    if (birthDateString == null || birthDateString.isEmpty) return 0;
+
+    try {
+      DateTime birthDate = DateTime.parse(birthDateString);
+      DateTime today = DateTime.now();
+
+      int age = today.year - birthDate.year;
+
+      if (today.month < birthDate.month ||
+          (today.month == birthDate.month && today.day < birthDate.day)) {
+        age--;
+      }
+
+      return age;
+    } catch (e) {
+      return 0;
     }
   }
 }

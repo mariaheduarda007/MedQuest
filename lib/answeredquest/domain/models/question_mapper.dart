@@ -1,4 +1,3 @@
-
 import 'question_entity.dart';
 
 class QuestionMapper {
@@ -6,6 +5,7 @@ class QuestionMapper {
     return {
       'idModelQuestion': question.idModelQuestion,
       'answer': question.answer,
+      'score': question.score,
     };
   }
 
@@ -17,6 +17,7 @@ class QuestionMapper {
       id: id,
       idModelQuestion: map['idModelQuestion']?.toString() ?? '',
       answer: map['answer']?.toString() ?? '',
+      score: map['score'] != null ? num.tryParse(map['score'].toString()) : null,
     );
   }
 }

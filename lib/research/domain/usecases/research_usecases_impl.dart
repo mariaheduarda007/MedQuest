@@ -103,3 +103,17 @@ final class UnarchiveResearchUseCaseImpl implements IUnarchiveResearchUseCase {
     );
   }
 }
+
+final class ExportResearchToExcelUseCaseImpl implements IExportResearchToExcelUseCase {
+  final IResearchRepository _repository;
+
+  ExportResearchToExcelUseCaseImpl({required IResearchRepository repository})
+    : _repository = repository;
+
+  @override
+  Future<VoidResult> call(ResearchIdParams params) async {
+    return _repository.exportResearchToExcel(
+      params.researchId,
+    );
+  }
+}

@@ -31,7 +31,7 @@ class ResearchViewModel {
   //mudei o construtor para que ele nao dependa de nada, e coloquei stateviewmodel no DI
 
   ResearchViewModel({
-    required ResearchStateViewModel state, //injetada pelo DI
+    required ResearchStateViewModel state,
     required this.commands,
   }) : _state = state;
 
@@ -52,4 +52,7 @@ class ResearchViewModel {
   GetGroupsCommand get getGroupsCommand => commands.getGroupsCommand;
   GetAllModelQuestsCommand get getAllModelQuestsCommand =>
       commands.getAllModelQuestsCommand;
+  ExportResearchToExcelCommand get exportResearchToExcelCommand =>
+      commands.exportResearchToExcelCommand;
+
 }

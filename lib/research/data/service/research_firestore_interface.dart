@@ -23,6 +23,9 @@ abstract interface class IResearchFirestore {
   Future<VoidResult> unarchiveResearch(
     String researchId,
   );
+  Future<VoidResult> exportResearchToExcel(
+    String researchId,
+  );
 }
 
     

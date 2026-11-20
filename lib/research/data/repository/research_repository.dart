@@ -23,6 +23,9 @@ abstract interface class IResearchRepository {
   Future<VoidResult> unarchiveResearch(
     String researchId,
   );
+  Future<VoidResult> exportResearchToExcel(
+    String researchId,
+  );
 }
 
     
