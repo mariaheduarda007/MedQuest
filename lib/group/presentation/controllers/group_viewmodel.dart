@@ -1,3 +1,5 @@
+import 'package:medquest/patient/presentation/commands/patient_commands.dart';
+
 import '../commands/group_commands.dart';
 import 'group_commands_viewmodel.dart';
 import 'group_state_viewmodel.dart';
@@ -26,19 +28,14 @@ class GroupViewModel {
   //   );
   // }
 
-
-//mudei o construtor para que ele nao dependa de nada, e coloquei stateviewmodel na di
-  GroupViewModel({
-    required GroupStateViewModel state,
-    required this.commands,
-  }) : _state = state;
-
+  //mudei o construtor para que ele nao dependa de nada, e coloquei stateviewmodel na di
+  GroupViewModel({required GroupStateViewModel state, required this.commands})
+    : _state = state;
 
   // --- Comandos expostos ---
-  CreateGroupCommand get saveGroupCommand => commands.createGroupCommand;
-  GetGroupCommand get getGroupCommand => commands.getGroupCommand;
-  GetGroupsCommand get getGroupsCommand => commands.getGroupsCommand;
-  DeleteGroupCommand get deleteGroupCommand =>
-      commands.deleteGroupCommand;
 
+  DeleteGroupCommand get deleteGroupCommand => commands.deleteGroupCommand;
+  CreatePatientCommand get createPatientCommand =>
+      commands.createPatientCommand;
+  GetPatientsCommand get getPatientsCommand => commands.getPatientsCommand;
 }

@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: context.theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
@@ -155,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         TextButton(
                           onPressed: () {
-                            context.goNamed(AuthRouteNames.register);
+                            context.pushNamed(AuthRouteNames.register);
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: context.colors.secondary,

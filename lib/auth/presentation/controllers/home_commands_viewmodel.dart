@@ -17,6 +17,7 @@ import 'home_state_viewmodel.dart';
 class HomeCommandsViewModel {
   final HomeStateViewModel state;
   final GetResearchesCommand _getResearchesCommand;
+  // final CreateResearchCommand _createResearchCommand;
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetUserRolesByUserIdCommand _getUserRolesByUserIdCommand;
   final PermissionCacheService _permissionCacheService;

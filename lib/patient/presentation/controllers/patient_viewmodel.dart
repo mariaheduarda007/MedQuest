@@ -1,3 +1,5 @@
+import 'package:medquest/answeredquest/presentation/commands/answeredquest_commands.dart';
+
 import '../commands/patient_commands.dart';
 import 'patient_commands_viewmodel.dart';
 import 'patient_state_viewmodel.dart';
@@ -33,11 +35,10 @@ class PatientViewModel {
   }) : _state = state;
 
   // --- Comandos expostos ---
-  CreatePatientCommand get savePatientCommand => commands.createPatientCommand;
   GetPatientCommand get getPatientCommand => commands.getPatientCommand;
-  GetPatientsCommand get getPatientsCommand => commands.getPatientsCommand;
   UpdatePatientCommand get updatePatientCommand =>
       commands.updatePatientCommand;
   DeletePatientCommand get deletePatientCommand =>
       commands.deletePatientCommand;
+ 
 }

@@ -1,40 +1,37 @@
-import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/group/presentation/commands/group_commands.dart';
 import 'package:medquest/group/presentation/controllers/group_state_viewmodel.dart';
+import 'package:medquest/patient/domain/models/patient_entity.dart';
+import 'package:medquest/patient/presentation/commands/patient_commands.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class GroupCommandsViewModel {
   final GroupStateViewModel state;
-  final CreateGroupCommand _createGroupCommand;
-  final GetGroupCommand _getGroupCommand;
-  final GetGroupsCommand _getGroupsCommand;
   final DeleteGroupCommand _deleteGroupCommand;
+  final GetPatientsCommand _getPatientsCommand;
+  final CreatePatientCommand _createPatientCommand;
 
   GroupCommandsViewModel({
     required this.state,
-    required GetGroupCommand getGroupCommand,
-    required GetGroupsCommand getGroupsCommand,
-    required CreateGroupCommand createGroupCommand,
     required DeleteGroupCommand deleteGroupCommand,
-  }) : _createGroupCommand = createGroupCommand,
-       _getGroupCommand = getGroupCommand,
-       _getGroupsCommand = getGroupsCommand,
+    required CreatePatientCommand createPatientCommand,
+    required GetPatientsCommand getPatientsCommand,
+  }) : 
+       _getPatientsCommand = getPatientsCommand,
+       _createPatientCommand = createPatientCommand,
        _deleteGroupCommand = deleteGroupCommand {
     // Observers para cada comando
-    _observeCreateGroup();
-    _observeGetGroup();
-    _observeGetGroups();
     _observeDeleteGroup();
+    _observeCreatePatient();
+    _observeGetPatients();
   }
 
   // ========================================================
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
-  CreateGroupCommand get createGroupCommand => _createGroupCommand;
-  GetGroupCommand get getGroupCommand => _getGroupCommand;
-  GetGroupsCommand get getGroupsCommand => _getGroupsCommand;
+  GetPatientsCommand get getPatientsCommand => _getPatientsCommand;
+  CreatePatientCommand get createPatientCommand => _createPatientCommand;
   DeleteGroupCommand get deleteGroupCommand => _deleteGroupCommand;
 
   // ========================================================
@@ -72,12 +69,12 @@ class GroupCommandsViewModel {
   //   OBSERVERS ESPECÍFICOS
   // ========================================================
 
-  void _observeCreateGroup() {
-    _observeCommand<Group>(
-      _createGroupCommand,
-      onSuccess: (group) {
-        state.setGroup(group);
-        state.successEvent.value = GroupSuccessEvent.created;
+  void _observeCreatePatient() {
+    _observeCommand<Patient>(
+      _createPatientCommand,
+      onSuccess: (patient) {
+        state.setPatient(patient);
+        state.patientSuccessEvent.value = PatientSuccessEvent.created;
       },
       onFailure: (err) {
         state.setMessage(err.msg);
@@ -85,28 +82,15 @@ class GroupCommandsViewModel {
     );
   }
 
-  void _observeGetGroup() {
-    _observeCommand<Group>(
-      _getGroupCommand,
-      onSuccess: (group) {
-        state.setGroup(group);
-        state.clearMessage();
+  void _observeGetPatients() {
+    _observeCommand<List<Patient>>(
+      _getPatientsCommand,
+      onSuccess: (patients) {
+        state.setPatients(patients);
+        state.clearPatientsMessage();
       },
       onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-    );
-  }
-
-  void _observeGetGroups() {
-    _observeCommand<List<Group>>(
-      _getGroupsCommand,
-      onSuccess: (groups) {
-        state.setGroups(groups);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
+        state.setPatientsMessage(err.msg);
       },
     );
   }
@@ -127,26 +111,19 @@ class GroupCommandsViewModel {
   // ========================================================
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
-  Future<void> createGroup(Group group, String researchId) async {
-    //só executa o command, state e suas funções são atualizados pelos observers
-    await _createGroupCommand.executeWith((
-      group: group,
+  Future<void> getPatients(String researchId, String groupId) async {
+    await _getPatientsCommand.executeWith((
       researchId: researchId,
+      groupId: groupId
     ));
   }
 
-  Future<void> getGroup(String researchId, String groupId) async {
-    await _getGroupCommand.executeWith((
-      researchId: researchId,
-      groupId: groupId,
-    ));
-  }
-
-  Future<void> getGroups(String researchId) async {
-    await _getGroupsCommand.executeWith((
-      researchId: researchId,
-    ));
-  }
+  // Future<void> createPatient(String researchId, String groupId) async {
+  //   await _createPatientCommand.executeWith((
+  //     researchId: researchId,
+  //     groupId: groupId
+  //   ));
+  // }
 
   Future<void> deleteGroup(String researchId, String groupId) async {
     await _deleteGroupCommand.executeWith((

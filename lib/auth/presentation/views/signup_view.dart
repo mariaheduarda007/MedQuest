@@ -83,6 +83,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: context.theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(

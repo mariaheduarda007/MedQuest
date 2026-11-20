@@ -40,7 +40,7 @@ class ModelQuestCommandsViewModel {
        _deleteQuestionCommand = deleteQuestionCommand {
     _observeCreateModelQuest();
     _observeGetModelQuest();
-    _observeGetAllModelQuests();
+    // _observeGetAllModelQuests();
     _observeGetModelQuestsFromResearch();
     _observeUpdateModelQuest();
     _observeDeleteModelQuest();
@@ -111,18 +111,18 @@ class ModelQuestCommandsViewModel {
     );
   }
 
-  void _observeGetAllModelQuests() {
-    _observeCommand<List<ModelQuest>>(
-      _getAllModelQuestsCommand,
-      onSuccess: (modelQuests) {
-        state.setModelQuests(modelQuests);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeGetAllModelQuests() {
+  //   _observeCommand<List<ModelQuest>>(
+  //     _getAllModelQuestsCommand,
+  //     onSuccess: (modelQuests) {
+  //       state.setModelQuests(modelQuests);
+  //       state.clearMessage();
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
   void _observeGetModelQuestsFromResearch() {
     _observeCommand<List<ModelQuest>>(

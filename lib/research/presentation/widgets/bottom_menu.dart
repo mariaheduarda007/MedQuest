@@ -14,7 +14,7 @@ class BottomMenuBar extends StatefulWidget {
 
 class _BottomMenuBarState extends State<BottomMenuBar> {
   void _navigateTo(String routeName) {
-    context.goNamed(routeName);
+    context.pushNamed(routeName);
   }
 
   @override

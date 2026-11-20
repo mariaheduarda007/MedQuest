@@ -1,17 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:medquest/auth/domain/models/auth_entities.dart';
 import 'package:medquest/core/di/injector.dart';
-import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmodel.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquests_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_title.dart';
 import 'package:medquest/research/presentation/widgets/list_item.dart';
 import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class ModelQuestsPage extends StatefulWidget {
-  const ModelQuestsPage({super.key});
+  const ModelQuestsPage({super.key, required this.session});
+
+  final AuthSession session;
 
   @override
   State<ModelQuestsPage> createState() => _ModelQuestsPageState();
@@ -19,6 +22,7 @@ class ModelQuestsPage extends StatefulWidget {
 
 class _ModelQuestsPageState extends State<ModelQuestsPage> {
   late final ModelQuestsViewModel _viewModel;
+  late final PermissionCacheService permissions;
   bool _isLoading = true;
 
   @override
@@ -42,7 +46,10 @@ class _ModelQuestsPageState extends State<ModelQuestsPage> {
     if (mounted) {
       setState(() => _isLoading = false);
     }
+    await _viewModel.commands.loadUserPermissions(widget.session.user.uid);
   }
+
+  void canCreateModelQuest() {}
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +63,12 @@ class _ModelQuestsPageState extends State<ModelQuestsPage> {
               padding: const EdgeInsets.all(16),
               child: HeaderTitle(
                 title: 'Seus Modelos',
-                buttonTitle: '+ Modelo',
+
+                buttonTitle:
+                    _viewModel.modelQuestsState.canCreateModelQuest.value
+                    ? '+ Modelo'
+                    : null,
+
                 onPressed: _loadModelQuests,
               ),
             ),

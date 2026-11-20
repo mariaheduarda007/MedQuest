@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:medquest/core/theme/theme.dart';
 
-class ResearchInfo extends StatefulWidget {
-  const ResearchInfo({
+class InfoCard extends StatefulWidget {
+  const InfoCard({
     super.key,
     required this.props,
     required this.info,
@@ -14,10 +14,10 @@ class ResearchInfo extends StatefulWidget {
   final bool initiallyExpanded;
 
   @override
-  State<ResearchInfo> createState() => _ResearchInfoState();
+  State<InfoCard> createState() => _InfoCardState();
 }
 
-class _ResearchInfoState extends State<ResearchInfo> {
+class _InfoCardState extends State<InfoCard> {
   late bool isExpanded;
 
   @override
@@ -46,10 +46,13 @@ class _ResearchInfoState extends State<ResearchInfo> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Icon(Icons.info_outline, color: context.colors.secondary),
+                  const SizedBox(width: 10),
+
                   Text(
                     'Informações',
                     style: context.textStyles.headlineSmall?.copyWith(
-                      color: colors.secondary,
+                      color: colors.onPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -72,12 +75,18 @@ class _ResearchInfoState extends State<ResearchInfo> {
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
             child: isExpanded
-                ? Card(
+                ? Container(
                     margin: EdgeInsets.zero,
-                    elevation: 3,
-                    color: colors.primary,
-                    shape: RoundedRectangleBorder(
+                    decoration: BoxDecoration(
+                      color: colors.primary,
                       borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.colors.outline.withValues(alpha: 0.4),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: SizedBox(
                       width: 360,

@@ -18,17 +18,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             ?.withColor(context.colors.primary)
             .regular,
       ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          color: context.colors.primary,
-          iconSize: 35,
-          onPressed: () {
-            // Ação ao pressionar o botão de configurações
-          },
-        ),
-      ],
+      centerTitle: true, 
     );
   }
 }

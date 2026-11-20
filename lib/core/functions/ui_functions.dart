@@ -26,9 +26,21 @@ String? validateField(String? value, List<BaseValidator> validators) {
 }
 
 String dateFormat(DateTime date) {
-
   return DateFormat('dd/MM/yyyy').format(date);
-
-
 }
 
+int calculateAge(DateTime birthDate) {
+  final today = DateTime.now();
+
+  int age = today.year - birthDate.year;
+
+  final hasNotHadBirthday =
+      today.month < birthDate.month ||
+      (today.month == birthDate.month && today.day < birthDate.day);
+
+  if (hasNotHadBirthday) {
+    age--;
+  }
+
+  return age;
+}

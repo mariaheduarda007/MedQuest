@@ -1,4 +1,8 @@
 import 'package:medquest/modelquest/presentation/controllers/modelquests_state_viewmodel.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
+import 'package:medquest/userContext/userRole/domain/facades/i_userRole_facade_usecases.dart';
+import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
+import 'package:medquest/userContext/userRole/presentation/commands/userRole_commands.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import '../../domain/models/modelquest_entity.dart';
@@ -11,6 +15,8 @@ class ModelQuestsCommandsViewModel {
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
   final CreateModelQuestCommand _createModelQuestCommand;
+  final GetUserRolesByUserIdCommand _getUserRolesByUserIdCommand;
+  final PermissionCacheService _permissionCacheService;
 
   ModelQuestsCommandsViewModel({
     required this.state,
@@ -18,12 +24,19 @@ class ModelQuestsCommandsViewModel {
     required GetAllModelQuestsCommand getAllModelQuestsCommand,
     required GetModelQuestsFromResearchCommand
     getModelQuestsFromResearchCommand,
+    required IUserRoleFacadeUseCases userRoleFacade,
+    required PermissionCacheService permissionCacheService,
   }) : _createModelQuestCommand = createModelQuestCommand,
        _getAllModelQuestsCommand = getAllModelQuestsCommand,
-       _getModelQuestsFromResearchCommand = getModelQuestsFromResearchCommand {
+       _getModelQuestsFromResearchCommand = getModelQuestsFromResearchCommand,
+       _getUserRolesByUserIdCommand = GetUserRolesByUserIdCommand(
+         userRoleFacade,
+       ),
+       _permissionCacheService = permissionCacheService {
     _observeCreateModelQuest();
     _observeGetAllModelQuests();
     _observeGetModelQuestsFromResearch();
+    _observeGetUserRolesByUserId();
   }
 
   CreateModelQuestCommand get createModelQuestCommand =>
@@ -32,6 +45,8 @@ class ModelQuestsCommandsViewModel {
       _getAllModelQuestsCommand;
   GetModelQuestsFromResearchCommand get getModelQuestsFromResearchCommand =>
       _getModelQuestsFromResearchCommand;
+   GetUserRolesByUserIdCommand get getUserRolesByUserIdCommand =>
+      _getUserRolesByUserIdCommand;
 
   void _observeCommand<T>(
     Command<T, Failure> command, {
@@ -98,6 +113,27 @@ class ModelQuestsCommandsViewModel {
     );
   }
 
+  void _observeGetUserRolesByUserId() {
+    _observeCommand<List<UserRoleModel>>(
+      _getUserRolesByUserIdCommand,
+      onSuccess: (roles) {
+        state.setCanCreateModelQuest(
+          roles.any(
+            (role) => _permissionCacheService.hasPermission(
+              role.permissionId,
+              'createModelQuest',
+            ),
+          ),
+        );
+        state.clearPermissionMessage();
+      },
+      onFailure: (failure) {
+        state.setCanCreateModelQuest(false);
+        state.setPermissionMessage(failure.msg);
+      },
+    );
+  }
+
   Future<void> createModelQuest(ModelQuest modelQuest) async {
     await _createModelQuestCommand.executeWith((modelQuest: modelQuest));
   }
@@ -110,5 +146,22 @@ class ModelQuestsCommandsViewModel {
     await _getModelQuestsFromResearchCommand.executeWith((
       researchId: researchId,
     ));
+  }
+
+  Future<void> loadUserPermissions(String userId) async {
+    state.setLoadingPermissions(true);
+    state.clearPermissionMessage();
+    state.setCanCreateModelQuest(false);
+
+    try {
+      await _permissionCacheService.loadPermissions();
+      await _getUserRolesByUserIdCommand.executeWith((userId: userId));
+    } on Exception catch (error) {
+      state.setPermissionMessage(
+        'Não foi possível carregar as permissões: $error',
+      );
+    } finally {
+      state.setLoadingPermissions(false);
+    }
   }
 }

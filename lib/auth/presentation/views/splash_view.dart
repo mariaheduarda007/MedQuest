@@ -73,7 +73,7 @@ class SplashPage extends StatelessWidget {
                       variant: ActionButtonVariant.outlined,
                       size: ActionButtonSize.lg,
                       onPressed: () {
-                        context.goNamed(AuthRouteNames.login);
+                        context.pushNamed(AuthRouteNames.login);
                       },
                     ),
                   ),
@@ -86,7 +86,7 @@ class SplashPage extends StatelessWidget {
                       variant: ActionButtonVariant.filled,
                       size: ActionButtonSize.lg,
                       onPressed: () {
-                        context.goNamed(AuthRouteNames.register);
+                        context.pushNamed(AuthRouteNames.register);
                       },
                     ),
                   ),

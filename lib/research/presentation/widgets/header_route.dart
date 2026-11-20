@@ -26,7 +26,8 @@ class HeaderRoute extends StatelessWidget implements PreferredSizeWidget {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: onBack ?? () => Navigator.maybePop(context),
+                  onPressed:
+                      onBack ?? () => Navigator.maybePop(context), // DANDO ERRO
                   icon: Icon(
                     Icons.arrow_back_ios_new,
                     size: 20,
@@ -42,19 +43,13 @@ class HeaderRoute extends StatelessWidget implements PreferredSizeWidget {
                         for (int i = 0; i < route.length; i++) ...[
                           Text(
                             route[i],
-                            style: TextStyle(
-                              color: colors.outline,
-                              fontSize: 18,
-                              fontWeight: i == route.length - 1
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                            ),
+                            style: context.textStyles.labelSmall?.regular.withColor(colors.outline)
                           ),
                           if (i < route.length - 1)
                             Icon(
                               Icons.chevron_right,
                               size: 22,
-                              color: colors.secondary,
+                              color: colors.outline,
                             ),
                         ],
                       ],

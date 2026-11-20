@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_route.dart';
@@ -9,21 +11,21 @@ import 'package:medquest/research/presentation/widgets/quest_card.dart';
 import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/group_card.dart';
 import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
-import 'package:medquest/research/presentation/widgets/research_pop_menu.dart';
-import 'package:medquest/research/presentation/widgets/research_info_card.dart';
+import 'package:medquest/research/presentation/widgets/pop_menu.dart';
+import 'package:medquest/research/presentation/widgets/info_card.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/research/presentation/widgets/category_chart.dart';
 
-class ResearchPage extends StatefulWidget {
-  const ResearchPage({super.key, required this.research});
+class ResearchView extends StatefulWidget {
+  const ResearchView({super.key, required this.research});
 
   final Research research;
 
   @override
-  State<ResearchPage> createState() => _ResearchPageState();
+  State<ResearchView> createState() => _ResearchViewState();
 }
 
-class _ResearchPageState extends State<ResearchPage> {
+class _ResearchViewState extends State<ResearchView> {
   late final ResearchViewModel researchController;
 
   @override
@@ -53,7 +55,7 @@ class _ResearchPageState extends State<ResearchPage> {
     return Scaffold(
       appBar: HeaderRoute(
         route: [widget.research.name],
-        action: ResearchPopupMenu(
+        action: PopMenu(
           sections: [
             MenuSection(
               title: 'Adicionar',
@@ -115,7 +117,7 @@ class _ResearchPageState extends State<ResearchPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              ResearchInfo(
+              InfoCard(
                 props: ['Nome', 'Data'],
                 info: [widget.research.name, dateFormat(widget.research.date)],
               ),
@@ -165,7 +167,12 @@ class _ResearchPageState extends State<ResearchPage> {
                         (group) => GroupCard(
                           title: group.name,
                           patients: group.patientCount.toString(),
-                          onTap: () {},
+                          onTap: () {
+                            context.pushNamed(
+                              MedQuestRouteNames.group,
+                              extra: (research: widget.research, group: group),
+                            );
+                          },
                         ),
                       )
                       .toList(),

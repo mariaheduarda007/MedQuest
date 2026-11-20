@@ -1,9 +1,10 @@
 import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 import 'package:medquest/answeredquest/presentation/commands/answeredquest_commands.dart';
+import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
+import 'package:medquest/modelquest/presentation/commands/modelquest_commands.dart';
 
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
-import '../../../core/typedefs/type_defs.dart';
 import '../../domain/models/patient_entity.dart';
 import '../commands/patient_commands.dart';
 import 'patient_state_viewmodel.dart';
@@ -12,47 +13,36 @@ import 'package:signals_flutter/signals_flutter.dart';
 class PatientCommandsViewModel {
   final PatientStateViewModel state;
   final GetPatientCommand _getPatientCommand;
-  final GetPatientsCommand _getPatientsCommand;
-  final CreatePatientCommand _createPatientCommand;
   final UpdatePatientCommand _updatePatientCommand;
   final DeletePatientCommand _deletePatientCommand;
-  final CreateAnsweredQuestCommand _createAnsweredQuestCommand;
-  final GetAnsweredQuestCommand _getAnsweredQuestCommand;
+  final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
   final GetAnsweredQuestsCommand _getAnsweredQuestsCommand;
-  final UpdateAnsweredQuestCommand _updateAnsweredQuestCommand;
-  final DeleteAnsweredQuestCommand _deleteAnsweredQuestCommand;
+  // final UpdateAnsweredQuestCommand _updateAnsweredQuestCommand;
+  // final DeleteAnsweredQuestCommand _deleteAnsweredQuestCommand;
 
   PatientCommandsViewModel({
     required this.state,
-    required CreatePatientCommand createPatientCommand,
     required GetPatientCommand getPatientCommand,
-    required GetPatientsCommand getPatientsCommand,
     required UpdatePatientCommand updatePatientCommand,
     required DeletePatientCommand deletePatientCommand,
-    required CreateAnsweredQuestCommand createAnsweredQuestCommand,
-    required GetAnsweredQuestCommand getAnsweredQuestCommand,
+    required GetModelQuestsFromResearchCommand
+    getModelQuestsFromResearchCommand,
     required GetAnsweredQuestsCommand getAnsweredQuestsCommand,
-    required UpdateAnsweredQuestCommand updateAnsweredQuestCommand,
-    required DeleteAnsweredQuestCommand deleteAnsweredQuestCommand,
-  }) : _createPatientCommand = createPatientCommand,
-       _getPatientCommand = getPatientCommand,
-       _getPatientsCommand = getPatientsCommand,
+    // required UpdateAnsweredQuestCommand updateAnsweredQuestCommand,
+    // required DeleteAnsweredQuestCommand deleteAnsweredQuestCommand,
+  }) : _getPatientCommand = getPatientCommand,
        _updatePatientCommand = updatePatientCommand,
        _deletePatientCommand = deletePatientCommand,
-       _createAnsweredQuestCommand = createAnsweredQuestCommand,
-       _getAnsweredQuestCommand = getAnsweredQuestCommand,
-       _getAnsweredQuestsCommand = getAnsweredQuestsCommand,
-       _updateAnsweredQuestCommand = updateAnsweredQuestCommand,
-       _deleteAnsweredQuestCommand = deleteAnsweredQuestCommand {
+       //  _createAnsweredQuestCommand = createAnsweredQuestCommand,
+       _getModelQuestsFromResearchCommand = getModelQuestsFromResearchCommand,
+       _getAnsweredQuestsCommand = getAnsweredQuestsCommand {
     // Observers para cada comando
-    _observeCreatePatient();
-    _observeGetPatient();
-    _observeGetPatients();
+
     _observeUpdatePatient();
     _observeDeletePatient();
     // _observeCreateAnsweredQuest();
-    // _observeGetAnsweredQuest();
-    // _observeGetAnsweredQuests();
+    _observeGetModelQuestsFromResearch();
+    _observeGetAnsweredQuests();
     // _observeUpdateAnsweredQuest();
     // _observeDeleteAnsweredQuest();
   }
@@ -60,11 +50,13 @@ class PatientCommandsViewModel {
   // ========================================================
   //   GETTERS PARA WIDGETS USAREM DIRETAMENTE OS COMANDOS
   // ========================================================
-  CreatePatientCommand get createPatientCommand => _createPatientCommand;
   GetPatientCommand get getPatientCommand => _getPatientCommand;
-  GetPatientsCommand get getPatientsCommand => _getPatientsCommand;
   UpdatePatientCommand get updatePatientCommand => _updatePatientCommand;
   DeletePatientCommand get deletePatientCommand => _deletePatientCommand;
+  GetModelQuestsFromResearchCommand get getModelQuestsFromResearchCommand =>
+      _getModelQuestsFromResearchCommand;
+  GetAnsweredQuestsCommand get getAnsweredQuestsCommand =>
+      _getAnsweredQuestsCommand;
 
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
@@ -84,12 +76,12 @@ class PatientCommandsViewModel {
 
       result.fold(
         onSuccess: (data) {
-          state.clearMessage();
+          // state.clearMessage();
           onSuccess(data);
           command.clear();
         },
         onFailure: (err) {
-          state.setMessage(err.msg);
+          // state.setMessage(err.msg);
           if (onFailure != null) onFailure(err);
           command.clear(); // Limpa o resultado para evitar reprocessamento
         },
@@ -101,54 +93,42 @@ class PatientCommandsViewModel {
   //   OBSERVERS ESPECÍFICOS
   // ========================================================
 
-  void _observeCreatePatient() {
-    _observeCommand<Patient>(
-      _createPatientCommand,
-      onSuccess: (patient) {
-        state.setPatient(patient);
-        state.patientSuccessEvent.value = PatientSuccessEvent.created;
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      },
-    );
-  }
+  // void _observeCreatePatient() {
+  //   _observeCommand<Patient>(
+  //     _createPatientCommand,
+  //     onSuccess: (patient) {
+  //       state.setPatient(patient);
+  //       state.patientSuccessEvent.value = PatientSuccessEvent.created;
+  //     },
+  //     onFailure: (err) {
+  //       state.setMessage(err.msg);
+  //     },
+  //   );
+  // }
 
-  void _observeGetPatient() {
-    _observeCommand<Patient>(
-      _getPatientCommand,
-      onSuccess: (patient) {
-        state.setPatient(patient);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-    );
-  }
-
-  void _observeGetPatients() {
-    _observeCommand<List<Patient>>(
-      _getPatientsCommand,
-      onSuccess: (patients) {
-        state.setPatients(patients);
-        state.clearMessage();
-      },
-      onFailure: (err) {
-        state.setMessage(err.msg);
-      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-    );
-  }
+  // void _observeGetPatient() {
+  //   _observeCommand<Patient>(
+  //     _getPatientCommand,
+  //     onSuccess: (patient) {
+  //       state.setPatient(patient);
+  //       state.clearPatientMessage();
+  //     },
+  //     onFailure: (err) {
+  //       state.setPatientMessage(err.msg);
+  //     }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+  //   );
+  // }
 
   void _observeUpdatePatient() {
     _observeCommand<Patient>(
       _updatePatientCommand,
       onSuccess: (patient) {
+        state.clearPatientMessage();
         state.setPatient(patient);
         state.patientSuccessEvent.value = PatientSuccessEvent.updated;
       },
       onFailure: (err) {
-        state.setMessage(err.msg);
+        state.setPatientMessage(err.msg);
       },
     );
   }
@@ -157,11 +137,12 @@ class PatientCommandsViewModel {
     _observeCommand<void>(
       _deletePatientCommand,
       onSuccess: (_) {
+        state.clearPatientMessage();
         state.patientSuccessEvent.value = PatientSuccessEvent.deleted;
         state.setPatient(null);
       },
       onFailure: (err) {
-        state.setMessage(err.msg);
+        state.setPatientMessage(err.msg);
       },
     );
   }
@@ -170,41 +151,42 @@ class PatientCommandsViewModel {
   //   _observeCommand<AnsweredQuest>(
   //     _createAnsweredQuestCommand,
   //     onSuccess: (answeredQuest) {
-  //       state.setAnsweredQuest(answeredQuest);
+  //       state.clearAnsweredQuestsMessage();
+  //       state.setAnsweredQuests(answeredQuest);
   //       state.answeredQuestSuccessEvent.value =
   //           AnsweredQuestSuccessEvent.created;
   //     },
   //     onFailure: (err) {
-  //       state.setMessage(err.msg);
+  //       state.setAnsweredQuestsMessage(err.msg);
   //     },
   //   );
   // }
 
-  // void _observeGetAnsweredQuest() {
-  //   _observeCommand<AnsweredQuest>(
-  //     _getAnsweredQuestCommand,
-  //     onSuccess: (answeredQuest) {
-  //       state.setAnsweredQuest(answeredQuest);
-  //       state.clearMessage();
-  //     },
-  //     onFailure: (err) {
-  //       state.setMessage(err.msg);
-  //     }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-  //   );
-  // }
+  void _observeGetModelQuestsFromResearch() {
+    _observeCommand<List<ModelQuest>>(
+      _getModelQuestsFromResearchCommand,
+      onSuccess: (modelQuest) {
+        state.setModelQuests(modelQuest);
+        state.clearModelQuestsMessage();
+      },
+      onFailure: (err) {
+        state.setModelQuestsMessage(err.msg);
+      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+    );
+  }
 
-  // void _observeGetAnsweredQuests() {
-  //   _observeCommand<List<AnsweredQuest>>(
-  //     _getAnsweredQuestsCommand,
-  //     onSuccess: (answeredQuests) {
-  //       state.setAnsweredQuests(answeredQuests);
-  //       state.clearMessage();
-  //     },
-  //     onFailure: (err) {
-  //       state.setMessage(err.msg);
-  //     }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
-  //   );
-  // }
+  void _observeGetAnsweredQuests() {
+    _observeCommand<List<AnsweredQuest>>(
+      _getAnsweredQuestsCommand,
+      onSuccess: (answeredQuests) {
+        state.setAnsweredQuests(answeredQuests);
+        state.clearAnsweredQuestsMessage();
+      },
+      onFailure: (err) {
+        state.setAnsweredQuestsMessage(err.msg);
+      }, //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+    );
+  }
 
   // void _observeUpdateAnsweredQuest() {
   //   _observeCommand<AnsweredQuest>(
@@ -215,7 +197,7 @@ class PatientCommandsViewModel {
   //           AnsweredQuestSuccessEvent.updated;
   //     },
   //     onFailure: (err) {
-  //       state.setMessage(err.msg);
+  //       state.setQuestMessage(err.msg);
   //     },
   //   );
   // }
@@ -237,37 +219,30 @@ class PatientCommandsViewModel {
   // ========================================================
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
-  Future<void> createPatient(
-    Patient patient,
-    String researchId,
-    String groupId,
-  ) async {
-    //só executa o command, state e suas funções são atualizados pelos observers
-    await _createPatientCommand.executeWith((
-      patient: patient,
-      researchId: researchId,
-      groupId: groupId,
-    ));
-  }
+  // Future<void> createPatient(
+  //   Patient patient,
+  //   String researchId,
+  //   String groupId,
+  // ) async {
+  //   //só executa o command, state e suas funções são atualizados pelos observers
+  //   await _createPatientCommand.executeWith((
+  //     patient: patient,
+  //     researchId: researchId,
+  //     groupId: groupId,
+  //   ));
+  // }
 
-  Future<void> getPatient(
-    String researchId,
-    String groupId,
-    String patientId,
-  ) async {
-    await _getPatientCommand.executeWith((
-      researchId: researchId,
-      groupId: groupId,
-      patientId: patientId,
-    ));
-  }
-
-  Future<void> getPatients(String researchId, String groupId) async {
-    await _getPatientsCommand.executeWith((
-      researchId: researchId,
-      groupId: groupId,
-    ));
-  }
+  // Future<void> getPatient(
+  //   String researchId,
+  //   String groupId,
+  //   String patientId,
+  // ) async {
+  //   await _getPatientCommand.executeWith((
+  //     researchId: researchId,
+  //     groupId: groupId,
+  //     patientId: patientId,
+  //   ));
+  // }
 
   Future<void> updatePatient(
     Patient patient,
@@ -297,13 +272,23 @@ class PatientCommandsViewModel {
   //   await _createAnsweredQuestCommand.executeWith((params));
   // }
 
-  // Future<void> getAnsweredQuest(AnsweredQuestIdParams params) async {
-  //   await _getAnsweredQuestCommand.executeWith(params);
-  // }
+  Future<void> getModelQuestsFromResearch(String researchId) async {
+    await _getModelQuestsFromResearchCommand.executeWith((
+      researchId: researchId,
+    ));
+  }
 
-  // Future<void> getAnsweredQuests(PatientParams params) async {
-  //   await _getAnsweredQuestsCommand.executeWith(params);
-  // }
+  Future<void> getAnsweredQuests(
+    String groupId,
+    Patient patient,
+    String researchId,
+  ) async {
+    await _getAnsweredQuestsCommand.executeWith((
+      groupId: groupId,
+      patient: patient,
+      researchId: researchId,
+    ));
+  }
 
   // Future<void> updateAnsweredQuest(AnsweredQuestParams params) async {
   //   await _updateAnsweredQuestCommand.executeWith(params);

@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/core/di/injector.dart';
 import '../../domain/models/auth_entities.dart';
@@ -69,9 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       .map(
                         (modelQuest) => QuestCard(
                           title: modelQuest.name,
-
                           questions: modelQuest.questions.length.toString(),
-                          onTap: () {},
+                          onTap: () {
+                            context.pushNamed(MedQuestRouteNames.quests);
+                          },
                         ),
                       )
                       .toList(),
@@ -102,21 +105,27 @@ class _MyHomePageState extends State<MyHomePage> {
                           title: research.name,
                           date: DateFormat('dd/MM/yy').format(research.date),
                           questionnaires: research.quests.length,
-                          onTap: () {},
+                          onTap: () {
+                            context.pushNamed(
+                              MedQuestRouteNames.research,
+                              extra: research,
+                            );
+                          },
                         ),
                       )
                       .toList(),
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
                       : Text(
-                          state.researchesMessage.value ?? 'Nenhuma pesquisa encontrada.',
+                          state.researchesMessage.value ??
+                              'Nenhuma pesquisa encontrada.',
                         ),
                 );
               }),
               const SizedBox(height: 10),
               Watch((context) {
                 final state = homeController.homeState;
-                
+
                 if (state.isLoadingPermissions.value) {
                   return const SizedBox.shrink();
                 }

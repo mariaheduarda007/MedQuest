@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class ResearchPopupMenu extends StatefulWidget {
+class PopMenu extends StatefulWidget {
   final List<MenuSection> sections;
 
-  const ResearchPopupMenu({super.key, required this.sections});
+  const PopMenu({super.key, required this.sections});
 
   @override
-  State<ResearchPopupMenu> createState() => _ResearchPopupMenuState();
+  State<PopMenu> createState() => _PopMenuState();
 }
 
-class _ResearchPopupMenuState extends State<ResearchPopupMenu> {
+class _PopMenuState extends State<PopMenu> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 

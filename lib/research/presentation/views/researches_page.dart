@@ -14,14 +14,14 @@ import 'package:medquest/userContext/permission/data/services/remote/permission_
 import 'package:medquest/userContext/userRole/presentation/controllers/userRole_viewmodel.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
-class ResearchesPage extends StatefulWidget {
-  const ResearchesPage({super.key});
+class ResearchesView extends StatefulWidget {
+  const ResearchesView({super.key});
 
   @override
-  State<ResearchesPage> createState() => _ResearchesPageState();
+  State<ResearchesView> createState() => _ResearchesPageState();
 }
 
-class _ResearchesPageState extends State<ResearchesPage> {
+class _ResearchesPageState extends State<ResearchesView> {
   late final AuthViewModel _authViewModel;
   late final UserRoleViewModel _userRoleViewModel;
   late final ResearchesViewModel _viewModel;
