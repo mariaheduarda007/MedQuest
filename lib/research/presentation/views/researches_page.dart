@@ -169,7 +169,74 @@ class _ResearchesPageState extends State<ResearchesView> {
                     List.of(state.researchesState.value)
                         .where(
                           (research) =>
-                              _researchIdsWithRole.contains(research.id),
+                              _researchIdsWithRole.contains(research.id) &&
+                              !research.archived,
+                        )
+                        .toList()
+                      ..sort((a, b) => b.date.compareTo(a.date));
+
+                if (isLoading && researches.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (researches.isEmpty) {
+                  return Center(
+                    child: Text(
+                      _loadError ??
+                          state.message.value ??
+                          'Nenhuma pesquisa encontrada.',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: _loadResearches,
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: researches.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final research = researches[index];
+                      final roleName =
+                          _permissionLoadError ??
+                          _roleNameByResearch[research.id] ??
+                          'Sem papel nesta pesquisa';
+
+                      return ListItem(
+                        icon: Icons.science_outlined,
+                        title: research.name,
+                        subtitle: roleName,
+                        onTap: () {
+                          context.pushNamed(
+                            MedQuestRouteNames.research,
+                            extra: research,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              }),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: HeaderTitle(title: 'Pesquisas Arquivadas'),
+            ),
+            Expanded(
+              child: Watch((context) {
+                final state = _viewModel.researchesState;
+                final isLoading =
+                    _isLoading ||
+                    _viewModel.getResearchesCommand.isExecuting.value;
+                final researches =
+                    List.of(state.researchesState.value)
+                        .where(
+                          (research) =>
+                              _researchIdsWithRole.contains(research.id) &&
+                              research.archived,
                         )
                         .toList()
                       ..sort((a, b) => b.date.compareTo(a.date));

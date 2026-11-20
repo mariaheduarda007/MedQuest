@@ -26,26 +26,26 @@ class ResearchView extends StatefulWidget {
 }
 
 class _ResearchViewState extends State<ResearchView> {
-  late final ResearchViewModel researchController;
+  late final ResearchViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
-    researchController = injector.get<ResearchViewModel>();
-    researchController.researchState.setGroups([]);
-    researchController.researchState.setModelQuests([]);
-    researchController.researchState.clearGroupsMessage();
-    researchController.researchState.clearModelQuestsMessage();
+    viewModel = injector.get<ResearchViewModel>();
+    viewModel.researchState.setGroups([]);
+    viewModel.researchState.setModelQuests([]);
+    viewModel.researchState.clearGroupsMessage();
+    viewModel.researchState.clearModelQuestsMessage();
     unawaited(_loadGroups());
     unawaited(_loadModelQuests());
   }
 
   Future<void> _loadGroups() async {
-    await researchController.commands.getGroups(widget.research.id);
+    await viewModel.commands.getGroups(widget.research.id);
   }
 
   Future<void> _loadModelQuests() async {
-    await researchController.commands.getModelQuestsFromResearch(
+    await viewModel.commands.getModelQuestsFromResearch(
       widget.research.id,
     );
   }
@@ -85,20 +85,55 @@ class _ResearchViewState extends State<ResearchView> {
             MenuSection(
               title: 'Gerenciar',
               items: [
-                MenuAction(
+                widget.research.archived ? 
+                 MenuAction(
                   label: 'Arquivar',
                   icon: Icons.archive_outlined,
-                  onTap: () {},
+                  onTap: () {
+                    try {
+                      viewModel.commands.archiveResearch(
+                        widget.research.id,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Pesquisa arquivada com sucesso!'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao arquivar: $e')),
+                      );
+                    }
+                  },
+                ) :
+                MenuAction(
+                  label: 'Desarquivar',
+                  icon: Icons.archive_outlined,
+                  onTap: () {
+                    try {
+                      viewModel.commands.unarchiveResearch(
+                        widget.research.id,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Pesquisa desarquivada com sucesso!'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao desarquivar: $e')),
+                      );
+                    }
+                  },
                 ),
                 MenuAction(
                   label: 'Exportar',
                   icon: Icons.download_outlined,
                   onTap: () async {
                     try {
-                      await researchController.commands.exportResearchToExcel(
+                      await viewModel.commands.exportResearchToExcel(
                         widget.research.id,
                       );
-
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Planilha exportada com sucesso!'),
@@ -139,8 +174,8 @@ class _ResearchViewState extends State<ResearchView> {
               ),
               const SizedBox(height: 20),
               Watch((context) {
-                final state = researchController.researchState;
-                final isLoading = researchController
+                final state = viewModel.researchState;
+                final isLoading = viewModel
                     .commands
                     .getModelQuestsFromResearchCommand
                     .isExecuting
@@ -168,8 +203,8 @@ class _ResearchViewState extends State<ResearchView> {
                 );
               }),
               Watch((context) {
-                final state = researchController.researchState;
-                final isLoading = researchController
+                final state = viewModel.researchState;
+                final isLoading = viewModel
                     .commands
                     .getGroupsCommand
                     .isExecuting
@@ -202,8 +237,8 @@ class _ResearchViewState extends State<ResearchView> {
               }),
               const SizedBox(height: 10),
               Watch((context) {
-                final state = researchController.researchState;
-                final isLoading = researchController
+                final state = viewModel.researchState;
+                final isLoading = viewModel
                     .commands
                     .getGroupsCommand
                     .isExecuting

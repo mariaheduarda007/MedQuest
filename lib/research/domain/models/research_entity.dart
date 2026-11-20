@@ -6,6 +6,7 @@ class Research extends Equatable {
   final DateTime date;
   final List<String> quests;
   final Map<String, String> researchAttributes;
+  final bool archived;
 
   Research({
     this.id = '',
@@ -13,14 +14,16 @@ class Research extends Equatable {
     DateTime? date,
     this.quests = const [],
     this.researchAttributes = const {},
+    this.archived = false,
   }) : date = date ?? DateTime.now();
 
   Research copyWith({
-    String?id,
+    String? id,
     String? name,
     DateTime? date,
     List<String>? quests,
     Map<String, String>? researchAttributes,
+    bool? archived,
   }) {
     return Research(
       id: id ?? this.id,
@@ -28,21 +31,29 @@ class Research extends Equatable {
       date: date ?? this.date,
       quests: quests ?? this.quests,
       researchAttributes: researchAttributes ?? this.researchAttributes,
+      archived: archived ?? this.archived,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, date, quests, researchAttributes];
+  List<Object?> get props => [
+    id,
+    name,
+    date,
+    quests,
+    researchAttributes,
+    archived,
+  ];
 
   @override
-String toString() {
-  return 'Research('
-      'id: $id, '
-      'name: $name, '
-      'date: $date, '
-      'quests: $quests, '
-      'researchAttributes: $researchAttributes'
-      ')';
+  String toString() {
+    return 'Research('
+        'id: $id, '
+        'name: $name, '
+        'date: $date, '
+        'quests: $quests, '
+        'researchAttributes: $researchAttributes, '
+        
+        ')';
+  }
 }
-}
-

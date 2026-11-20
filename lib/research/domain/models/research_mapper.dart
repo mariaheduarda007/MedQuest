@@ -9,6 +9,7 @@ class ResearchMapper {
       date: _dateTime(map['date']),
       quests: _stringList(map['quests']),
       researchAttributes: _stringMap(map['attributes']),
+      archived: map['archived'] == true,
     );
   }
 
@@ -55,6 +56,7 @@ class ResearchMapper {
       'date': research.date.toIso8601String(),
       'quests': research.quests,
       'attributes': research.researchAttributes,
+      'archived': research.archived,
     };
   }
 }
