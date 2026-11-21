@@ -117,3 +117,17 @@ final class ExportResearchToExcelUseCaseImpl implements IExportResearchToExcelUs
     );
   }
 }
+
+final class GetScoreChartDataUseCaseImpl implements IGetScoreChartDataUseCase {
+  final IResearchRepository _repository;
+
+  GetScoreChartDataUseCaseImpl({required IResearchRepository repository})
+    : _repository = repository;
+
+  @override
+  Future<ChartDataResult> call(ResearchIdParams params) async {
+    return _repository.getScoreChartData(
+      params.researchId,
+    );
+  }
+}

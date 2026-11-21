@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -12,19 +11,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupDependencyInjection();
-await FirebaseAuth.instance.signOut();
-  final permissionService = injector.get<PermissionCacheService>();
-
-  // --- teste permissoes ---
-  try {
-    await permissionService.loadPermissions();
-    log('${permissionService.allPermissions}', name: 'Permission Check');
-  } catch (e) {
-    log('Erro ao carregar permissoes: $e', name: 'Permission Check');
-  }
-  // -------------------------------
 
   runApp(const MyApp());
+
+  final permissionService = injector.get<PermissionCacheService>();
+  permissionService.loadPermissions().then((_) {
+    log('${permissionService.allPermissions}', name: 'Permission Check');
+  }).catchError((Object error) {
+    log('Erro ao carregar permissoes: $error', name: 'Permission Check');
+  });
 }
 
 class MyApp extends StatelessWidget {

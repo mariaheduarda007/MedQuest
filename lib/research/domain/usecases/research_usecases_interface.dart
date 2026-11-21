@@ -24,3 +24,6 @@ abstract interface class IUnarchiveResearchUseCase
 
 abstract interface class IExportResearchToExcelUseCase
     implements IUseCase<VoidResult, ResearchIdParams> {}
+
+abstract interface class IGetScoreChartDataUseCase
+    implements IUseCase<ChartDataResult, ResearchIdParams> {}

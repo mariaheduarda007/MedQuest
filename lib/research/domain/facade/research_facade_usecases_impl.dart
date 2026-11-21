@@ -11,6 +11,7 @@ final class ResearchFacadeUsecasesImpl implements IResearchFacadeUseCases {
   final IArchiveResearchUseCase _archiveResearchUseCase;
   final IUnarchiveResearchUseCase _unarchiveResearchUseCase;
   final IExportResearchToExcelUseCase _exportResearchToExcelUseCase;
+  final IGetScoreChartDataUseCase _getScoreChartDataUseCase;
   ResearchFacadeUsecasesImpl({
     required ICreateResearchUseCase createResearchUseCase,
     required IGetResearchUseCase getResearchUseCase,
@@ -20,6 +21,7 @@ final class ResearchFacadeUsecasesImpl implements IResearchFacadeUseCases {
     required IArchiveResearchUseCase archiveResearchUseCase,
     required IUnarchiveResearchUseCase unarchiveResearchUseCase,
     required IExportResearchToExcelUseCase exportResearchToExcelUseCase,
+    required IGetScoreChartDataUseCase getScoreChartDataUseCase,
   }) : _createResearchUseCase = createResearchUseCase,
        _getResearchUseCase = getResearchUseCase,
        _getResearchesUseCase = getResearchesUseCase,
@@ -27,7 +29,8 @@ final class ResearchFacadeUsecasesImpl implements IResearchFacadeUseCases {
        _deleteResearchUseCase = deleteResearchUseCase,
        _archiveResearchUseCase = archiveResearchUseCase,
        _unarchiveResearchUseCase = unarchiveResearchUseCase,
-      _exportResearchToExcelUseCase = exportResearchToExcelUseCase;
+      _exportResearchToExcelUseCase = exportResearchToExcelUseCase,
+      _getScoreChartDataUseCase = getScoreChartDataUseCase;
 
   @override
   Future<ResearchResult> createResearch(ResearchParams params) {
@@ -67,5 +70,10 @@ final class ResearchFacadeUsecasesImpl implements IResearchFacadeUseCases {
   @override
   Future<VoidResult> exportResearchToExcel(ResearchIdParams params) {
     return _exportResearchToExcelUseCase(params);
+  }
+
+  @override
+  Future<ChartDataResult> getScoreChartData(ResearchIdParams params) {
+    return _getScoreChartDataUseCase(params);
   }
 }

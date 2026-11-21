@@ -15,6 +15,7 @@ import 'package:medquest/research/presentation/widgets/group_card.dart';
 import 'package:medquest/research/presentation/controllers/research_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/pop_menu.dart';
 import 'package:medquest/research/presentation/widgets/info_card.dart';
+import 'package:medquest/research/presentation/widgets/score_chart.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/research/presentation/widgets/category_chart.dart';
 
@@ -40,6 +41,9 @@ class _ResearchViewState extends State<ResearchView> {
     viewModel.researchState.setModelQuests([]);
     viewModel.researchState.clearGroupsMessage();
     viewModel.researchState.clearModelQuestsMessage();
+    viewModel.commands.getScoreChartDataCommand.executeWith((
+      researchId: widget.research.id,
+    ));
     unawaited(_loadGroups());
     unawaited(_loadModelQuests());
   }
@@ -49,6 +53,7 @@ class _ResearchViewState extends State<ResearchView> {
   }
 
   Future<void> _loadModelQuests() async {
+
     await viewModel.commands.getModelQuestsFromResearch(_research.id);
   }
 
@@ -93,6 +98,7 @@ class _ResearchViewState extends State<ResearchView> {
       context: context,
       builder: (_) => EditResearchDialog(research: _research),
     );
+
   }
 
   Future<void> _editResearch() async {
@@ -182,13 +188,38 @@ class _ResearchViewState extends State<ResearchView> {
             MenuSection(
               title: 'Gerenciar',
               items: [
+
                 _research.archived
-                    ? MenuAction(
+                    ?  MenuAction(
+                        label: 'Arquivar',
+                        icon: Icons.archive_outlined,
+                        onTap: () {
+                          try {
+                            viewModel.commands.archiveResearch(
+                              widget.research.id,
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Pesquisa arquivada com sucesso!',
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Erro ao arquivar: $e')),
+                            );
+                          }
+                        },
+                      )
+                    : MenuAction(
                         label: 'Desarquivar',
                         icon: Icons.archive_outlined,
                         onTap: () {
                           try {
+
                             viewModel.commands.unarchiveResearch(_research.id);
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -204,28 +235,7 @@ class _ResearchViewState extends State<ResearchView> {
                             );
                           }
                         },
-                      )
-                    : MenuAction(
-                        label: 'Arquivar',
-                        icon: Icons.archive_outlined,
-                        onTap: () {
-                          try {
-                            viewModel.commands.archiveResearch(_research.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Pesquisa arquivada com sucesso!',
-                                ),
-                              ),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Erro ao arquivar: $e')),
-                            );
-                          }
-                        },
-                      ),
-
+                    ),
                 MenuAction(
                   label: 'Exportar',
                   icon: Icons.download_outlined,
@@ -412,6 +422,60 @@ class _ResearchViewState extends State<ResearchView> {
                   }).toList(),
                 );
               }),
+              const SizedBox(height: 20),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Evolução de Score x Período (Geral)',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Watch((context) {
+                      final state = viewModel.researchState;
+
+                      final isLoading = viewModel
+                          .commands
+                          .getScoreChartDataCommand
+                          .isExecuting
+                          .value;
+
+                      final chartDataMap = state.scoreChartDataState.value;
+
+                      if (isLoading && chartDataMap.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(24.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      if (chartDataMap.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'Nenhum dado de score disponível para esta pesquisa.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      }
+
+                      return SizedBox(
+                        height: 400,
+                        child: ScoreChart(groupChartDataMap: chartDataMap),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
             ],
           ),
         ),

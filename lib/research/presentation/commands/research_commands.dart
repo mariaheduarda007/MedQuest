@@ -1,5 +1,6 @@
 import 'package:medquest/research/domain/facade/research_facade_usecases_interface.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import '../../../core/patterns/result.dart';
@@ -125,3 +126,18 @@ final class ExportResearchToExcelCommand
     return await _researchFacadeUseCases.exportResearchToExcel(parameter!);
   }
 }
+
+final class GetScoreChartDataCommand
+    extends ParameterizedCommand<Map<String, List<ScoreChartData>>, Failure, ResearchIdParams> {
+  final IResearchFacadeUseCases _researchFacadeUseCases;
+
+  GetScoreChartDataCommand(this._researchFacadeUseCases);
+
+  @override
+  Future<ChartDataResult> execute() async {
+    if (parameter == null) {
+      return Error(InputFailure('Parametro nulo para obter dados do gráfico.'));
+    }
+    return await _researchFacadeUseCases.getScoreChartData(parameter!);
+  }
+} 

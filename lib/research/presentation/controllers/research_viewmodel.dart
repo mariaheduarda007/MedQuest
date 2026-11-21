@@ -55,4 +55,8 @@ class ResearchViewModel {
       commands.getAllModelQuestsCommand;
   ExportResearchToExcelCommand get exportResearchToExcelCommand =>
       commands.exportResearchToExcelCommand;
+  GetScoreChartDataCommand get getScoreChartDataCommand =>
+      commands.getScoreChartDataCommand;
+
+
 }
