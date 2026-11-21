@@ -5,6 +5,7 @@ import 'package:medquest/modelquest/presentation/commands/modelquest_commands.da
 
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
+import '../../../core/patterns/result.dart';
 import '../../domain/models/patient_entity.dart';
 import '../commands/patient_commands.dart';
 import 'patient_state_viewmodel.dart';
@@ -244,12 +245,12 @@ class PatientCommandsViewModel {
   //   ));
   // }
 
-  Future<void> updatePatient(
+  Future<Result<Patient, Failure>> updatePatient(
     Patient patient,
     String researchId,
     String groupId,
-  ) async {
-    await _updatePatientCommand.executeWith((
+  ) {
+    return _updatePatientCommand.executeWith((
       patient: patient,
       researchId: researchId,
       groupId: groupId,

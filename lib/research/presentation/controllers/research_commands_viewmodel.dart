@@ -9,6 +9,7 @@ import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/presentation/commands/modelquest_commands.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
+import '../../../core/patterns/result.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class ResearchCommandsViewModel {
@@ -20,6 +21,7 @@ class ResearchCommandsViewModel {
   final DeleteResearchCommand _deleteResearchCommand;
   final ArchiveResearchCommand _archiveResearchCommand;
   final UnarchiveResearchCommand _unarchiveResearchCommand;
+  final CreateGroupCommand _createGroupCommand;
   final GetGroupsCommand _getGroupsCommand;
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
@@ -45,10 +47,12 @@ class ResearchCommandsViewModel {
        _archiveResearchCommand = archiveResearchCommand,
        _unarchiveResearchCommand = unarchiveResearchCommand,
        _exportResearchToExcelCommand = exportResearchToExcelCommand,
+       _createGroupCommand = CreateGroupCommand(groupFacade),
        _getGroupsCommand = GetGroupsCommand(groupFacade),
        _getAllModelQuestsCommand = GetAllModelQuestsCommand(modelQuestFacade),
-       _getModelQuestsFromResearchCommand =
-           GetModelQuestsFromResearchCommand(modelQuestFacade) {
+       _getModelQuestsFromResearchCommand = GetModelQuestsFromResearchCommand(
+         modelQuestFacade,
+       ) {
     // Observers para cada comando
     _observeCreateResearch();
     _observeGetResearch();
@@ -58,6 +62,7 @@ class ResearchCommandsViewModel {
     _observeArchiveResearch();
     _observeUnarchiveResearch();
     _observeExportResearchToExcel();
+    _observeCreateGroup();
     _observeGetGroups();
     _observeGetAllModelQuests();
     _observeGetModelQuestsFromResearch();
@@ -74,12 +79,13 @@ class ResearchCommandsViewModel {
   ArchiveResearchCommand get archiveResearchCommand => _archiveResearchCommand;
   UnarchiveResearchCommand get unarchiveResearchCommand =>
       _unarchiveResearchCommand;
+  CreateGroupCommand get createGroupCommand => _createGroupCommand;
   GetGroupsCommand get getGroupsCommand => _getGroupsCommand;
   GetAllModelQuestsCommand get getAllModelQuestsCommand =>
       _getAllModelQuestsCommand;
   GetModelQuestsFromResearchCommand get getModelQuestsFromResearchCommand =>
       _getModelQuestsFromResearchCommand;
-  ExportResearchToExcelCommand get exportResearchToExcelCommand => 
+  ExportResearchToExcelCommand get exportResearchToExcelCommand =>
       _exportResearchToExcelCommand;
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
@@ -232,6 +238,18 @@ class ResearchCommandsViewModel {
     );
   }
 
+  void _observeCreateGroup() {
+    _observeCommand<Group>(
+      _createGroupCommand,
+      onSuccess: (group) {
+        state.setGroups([...state.groupsState.value, group]);
+        state.clearGroupsMessage();
+      },
+      onFailure: (err) => state.setGroupsMessage(err.msg),
+      updateResearchMessage: false,
+    );
+  }
+
   void _observeGetAllModelQuests() {
     _observeCommand<List<ModelQuest>>(
       _getAllModelQuestsCommand,
@@ -272,8 +290,8 @@ class ResearchCommandsViewModel {
     await _getResearchesCommand.executeWith((researchesId: researchesId));
   }
 
-  Future<void> updateResearch(Research research) async {
-    await _updateResearchCommand.executeWith((research: research));
+  Future<Result<Research, Failure>> updateResearch(Research research) {
+    return _updateResearchCommand.executeWith((research: research));
   }
 
   Future<void> deleteResearch(String researchId) async {
@@ -291,9 +309,19 @@ class ResearchCommandsViewModel {
   Future<void> exportResearchToExcel(String researchId) async {
     await _exportResearchToExcelCommand.executeWith((researchId: researchId));
   }
-  
+
   Future<void> getGroups(String researchId) async {
     await _getGroupsCommand.executeWith((researchId: researchId));
+  }
+
+  Future<Result<Group, Failure>> createGroup({
+    required String researchId,
+    required Group group,
+  }) {
+    return _createGroupCommand.executeWith((
+      group: group,
+      researchId: researchId,
+    ));
   }
 
   Future<void> getAllModelQuests() async {

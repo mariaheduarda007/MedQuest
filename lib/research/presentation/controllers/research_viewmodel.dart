@@ -49,10 +49,10 @@ class ResearchViewModel {
       commands.archiveResearchCommand;
   UnarchiveResearchCommand get unarchiveResearchCommand =>
       commands.unarchiveResearchCommand;
+  CreateGroupCommand get createGroupCommand => commands.createGroupCommand;
   GetGroupsCommand get getGroupsCommand => commands.getGroupsCommand;
   GetAllModelQuestsCommand get getAllModelQuestsCommand =>
       commands.getAllModelQuestsCommand;
   ExportResearchToExcelCommand get exportResearchToExcelCommand =>
       commands.exportResearchToExcelCommand;
-
 }

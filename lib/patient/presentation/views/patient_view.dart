@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
-import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/patient/presentation/controllers/patient_viewmodel.dart';
 import 'package:medquest/patient/presentation/widgets/info_tags_card.dart';
+import 'package:medquest/patient/presentation/widgets/edit_patient_dialog.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_route.dart';
@@ -34,32 +33,73 @@ class PatientView extends StatefulWidget {
 }
 
 class _PatientViewState extends State<PatientView> {
-  late final PatientViewModel patientController;
+  late final PatientViewModel viewModel;
+  late Patient _patient;
 
   @override
   void initState() {
     super.initState();
-    patientController = injector.get<PatientViewModel>();
-    patientController.patientState.setPatient(widget.patient);
-    patientController.patientState.setModelQuests([]);
-    patientController.patientState.clearModelQuestsMessage();
-    patientController.patientState.setAnsweredQuests([]);
-    patientController.patientState.clearAnsweredQuestsMessage();
+    _patient = widget.patient;
+    viewModel = injector.get<PatientViewModel>();
+    viewModel.patientState.setPatient(widget.patient);
+    viewModel.patientState.setModelQuests([]);
+    viewModel.patientState.clearModelQuestsMessage();
+    viewModel.patientState.setAnsweredQuests([]);
+    viewModel.patientState.clearAnsweredQuestsMessage();
     unawaited(_loadAnsweredQuests());
     unawaited(_loadModelQuests());
   }
 
   Future<void> _loadModelQuests() async {
-    await patientController.commands.getModelQuestsFromResearch(
+    await viewModel.commands.getModelQuestsFromResearch(widget.research.id);
+  }
+
+  Future<void> _loadAnsweredQuests() async {
+    await viewModel.commands.getAnsweredQuests(
+      widget.group.id,
+      _patient,
       widget.research.id,
     );
   }
 
-  Future<void> _loadAnsweredQuests() async {
-    await patientController.commands.getAnsweredQuests(
-      widget.group.id,
-      widget.patient,
+  Future<void> editPatient() async {
+    final updatedPatient = await showDialog<Patient>(
+      context: context,
+      builder: (_) => EditPatientDialog(
+        patient: _patient,
+        researchAttributes: widget.research.researchAttributes,
+      ),
+    );
+    if (updatedPatient == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Salvando paciente...')),
+    );
+
+    final result = await viewModel.commands.updatePatient(
+      updatedPatient,
       widget.research.id,
+      widget.group.id,
+    );
+    if (!mounted) return;
+
+    result.fold(
+      onSuccess: (savedPatient) {
+        setState(() => _patient = savedPatient);
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Paciente atualizado com sucesso!')),
+          );
+      },
+      onFailure: (error) {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text('Erro ao atualizar paciente: ${error.msg}')),
+          );
+      },
     );
   }
 
@@ -67,7 +107,7 @@ class _PatientViewState extends State<PatientView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HeaderRoute(
-        route: [widget.research.name, widget.group.name, widget.patient.name],
+        route: [widget.research.name, widget.group.name, _patient.name],
         action: PopMenu(
           sections: [
             MenuSection(
@@ -76,14 +116,7 @@ class _PatientViewState extends State<PatientView> {
                 MenuAction(
                   label: 'Editar Info',
                   icon: Icons.edit_attributes,
-                  onTap: () {},
-                ),
-                MenuAction(
-                  label: 'Inativar',
-                  icon: Icons.archive,
-                  onTap: () {
-                    context.pop();
-                  },
+                  onTap: () => unawaited(editPatient()),
                 ),
               ],
             ),
@@ -114,35 +147,35 @@ class _PatientViewState extends State<PatientView> {
                   'Participação',
                 ],
                 info: [
-                  widget.patient.name,
-                  '${widget.patient.treatmentStartAge.toString()} anos',
-                  '${calculateAge(widget.patient.birthDate).toString()} anos',
-                  widget.patient.sex,
-                  widget.patient.educationLevel,
-                  widget.patient.elitism,
-                  widget.patient.ethnicity,
-                  widget.patient.height.toString(),
-                  widget.patient.income.toString(),
-                  widget.patient.occupation,
-                  widget.patient.smokingLevel.displayName,
-                  '${widget.patient.weight.toString()} kg',
-                  widget.patient.participationStatus ? 'Ativo' : 'Inativo',
+                  _patient.name,
+                  '${_patient.treatmentStartAge.toString()} anos',
+                  '${calculateAge(_patient.birthDate).toString()} anos',
+                  _patient.sex,
+                  _patient.educationLevel,
+                  _patient.elitism,
+                  _patient.ethnicity,
+                  _patient.height.toString(),
+                  _patient.income.toString(),
+                  _patient.occupation,
+                  _patient.smokingLevel.displayName,
+                  '${_patient.weight.toString()} kg',
+                  _patient.participationStatus ? 'Ativo' : 'Inativo',
                 ],
               ),
-              if (widget.patient.comorbidities.isNotEmpty) ...[
+              if (_patient.comorbidities.isNotEmpty) ...[
                 const SizedBox(height: 20),
 
                 InfoTagsCard(
                   title: 'Comorbidades',
-                  values: widget.patient.comorbidities,
+                  values: _patient.comorbidities,
                 ),
                 const SizedBox(height: 20),
               ],
               const SizedBox(height: 20),
 
               Watch((context) {
-                final state = patientController.patientState;
-                final isLoading = patientController
+                final state = viewModel.patientState;
+                final isLoading = viewModel
                     .commands
                     .getModelQuestsFromResearchCommand
                     .isExecuting
@@ -169,8 +202,8 @@ class _PatientViewState extends State<PatientView> {
                 );
               }),
               Watch((context) {
-                final state = patientController.patientState;
-                final isLoading = patientController
+                final state = viewModel.patientState;
+                final isLoading = viewModel
                     .commands
                     .getAnsweredQuestsCommand
                     .isExecuting

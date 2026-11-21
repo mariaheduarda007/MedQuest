@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
-import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/group/presentation/controllers/group_viewmodel.dart';
 import 'package:medquest/group/presentation/widgets/patient_card.dart';
@@ -28,58 +26,128 @@ class GroupView extends StatefulWidget {
 }
 
 class _GroupViewState extends State<GroupView> {
-  late final GroupViewModel groupController;
+  late final GroupViewModel viewModel;
   PatientFilterType selectedFilter = PatientFilterType.all;
 
   @override
   void initState() {
     super.initState();
-    groupController = injector.get<GroupViewModel>();
-    groupController.groupState.setGroup(widget.group);
-    groupController.groupState.setPatients([]);
-    groupController.groupState.clearPatientsMessage();
-    groupController.groupState.clearMessage();
+    viewModel = injector.get<GroupViewModel>();
+    viewModel.groupState.setGroup(widget.group);
+    viewModel.groupState.setPatients([]);
+    viewModel.groupState.clearPatientsMessage();
+    viewModel.groupState.clearMessage();
     unawaited(_loadPatients());
   }
 
   Future<void> _loadPatients() async {
-    await groupController.commands.getPatients(
-      widget.research.id,
-      widget.group.id,
-    );
+    await viewModel.commands.getPatients(widget.research.id, widget.group.id);
   }
 
-//   Future<void> _createPatient() async {
-//     Patient patient = final patient = Patient(
-//   id: 'patient_test',
-//   name: 'Paciente Teste',
-//   treatmentStartAge: 25,
-//   sex: 'Feminino',
-//   income: 2500.0,
-//   smokingLevel: SmokingLevel.never,
-//   elitism: 'Não',
-//   ethnicity: 'Não informado',
-//   birthPlacement: 'Hospital',
-//   birthDate: DateTime(2000, 1, 1),
-//   weight: 65.0,
-//   height: 1.65,
-//   occupation: 'Estudante',
-//   educationLevel: 'Ensino Superior',
-//   drugs: [],
-//   comorbidities: [],
-//   participationStatus: true,
-//   exitReason: null,
-//   researchAttributes: {},
-// );
-//     await groupController.commands.createPatient(
-//       widget.group.id,
-//       widget.research.id,
-//     );
-//   }
+  Future<void> deleteGroup() async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(const SnackBar(content: Text('Excluindo grupo...')));
+
+    try {
+      final result = await viewModel.commands.deleteGroup(
+        researchId: widget.research.id,
+        groupId: widget.group.id,
+      );
+
+      result.fold(
+        onSuccess: (_) {
+          unawaited(_loadPatients());
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Grupo excluído com sucesso!')),
+            );
+          if (mounted) context.pop(true);
+        },
+        onFailure: (error) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text('Erro ao excluir grupo: ${error.msg}')),
+            );
+        },
+      );
+    } catch (error) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Erro ao excluir grupo: $error')),
+        );
+    }
+  }
+
+  Future<void> createPatient() async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Criando Paciente...')),
+    );
+
+    try {
+      final patientNumber =
+          (viewModel.groupState.patientsState.value?.length ?? 0) + 1;
+      final researchAttributes = {
+        for (final attribute in widget.research.researchAttributes.keys)
+          attribute: 'Não informado',
+      };
+      final patient = Patient(
+        name: 'Paciente $patientNumber',
+        treatmentStartAge: 0,
+        sex: 'Não informado',
+        income: 0,
+        smokingLevel: SmokingLevel.never,
+        elitism: 'Não informado',
+        ethnicity: 'Não informada',
+        birthPlacement: 'Não informado',
+        birthDate: DateTime.now(),
+        weight: 0,
+        height: 0,
+        occupation: 'Não informado',
+        educationLevel: 'Não informada',
+        drugs: const [],
+        comorbidities: const [],
+        participationStatus: true,
+        exitReason: null,
+        researchAttributes: researchAttributes,
+      );
+      final result = await viewModel.commands.createPatient(
+        patient: patient,
+        researchId: widget.research.id,
+        groupId: widget.group.id,
+      );
+
+      result.fold(
+        onSuccess: (_) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Paciente criado com sucesso!')),
+            );
+        },
+        onFailure: (error) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text('Erro ao criar paciente: ${error.msg}')),
+            );
+        },
+      );
+    } catch (error) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Erro ao criar paciente: $error')),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final state = groupController.groupState;
+    final state = viewModel.groupState;
     // final patients = state.patientsState.value ?? [];
     return Scaffold(
       appBar: HeaderRoute(
@@ -92,7 +160,7 @@ class _GroupViewState extends State<GroupView> {
                 MenuAction(
                   label: 'Paciente',
                   icon: Icons.person_add,
-                  onTap: () {},
+                  onTap: () => unawaited(createPatient()),
                 ),
               ],
             ),
@@ -102,7 +170,9 @@ class _GroupViewState extends State<GroupView> {
                 MenuAction(
                   label: 'Excluir Grupo',
                   icon: Icons.delete,
-                  onTap: () {},
+                  onTap: () {
+                    unawaited(deleteGroup());
+                  },
                 ),
               ],
             ),
@@ -135,11 +205,8 @@ class _GroupViewState extends State<GroupView> {
                   }
                 }).toList();
 
-                final isLoading = groupController
-                    .commands
-                    .getPatientsCommand
-                    .isExecuting
-                    .value;
+                final isLoading =
+                    viewModel.commands.getPatientsCommand.isExecuting.value;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
