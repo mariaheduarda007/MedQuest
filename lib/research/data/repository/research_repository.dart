@@ -26,6 +26,9 @@ abstract interface class IResearchRepository {
   Future<VoidResult> exportResearchToExcel(
     String researchId,
   );
+  Future<ChartDataResult> getScoreChartData(
+    String researchId,
+  );
 }
 
     

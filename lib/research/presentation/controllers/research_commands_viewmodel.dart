@@ -7,6 +7,7 @@ import 'package:medquest/group/presentation/commands/group_commands.dart';
 import 'package:medquest/modelquest/domain/facade/modelquest_facade_usecases_interface.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/presentation/commands/modelquest_commands.dart';
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import 'package:signals_flutter/signals_flutter.dart';
@@ -24,6 +25,7 @@ class ResearchCommandsViewModel {
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetModelQuestsFromResearchCommand _getModelQuestsFromResearchCommand;
   final ExportResearchToExcelCommand _exportResearchToExcelCommand;
+  final GetScoreChartDataCommand _getScoreChartDataCommand;
 
   ResearchCommandsViewModel({
     required this.state,
@@ -37,6 +39,7 @@ class ResearchCommandsViewModel {
     required ArchiveResearchCommand archiveResearchCommand,
     required UnarchiveResearchCommand unarchiveResearchCommand,
     required ExportResearchToExcelCommand exportResearchToExcelCommand,
+    required GetScoreChartDataCommand getScoreChartDataCommand,
   }) : _createResearchCommand = createResearchCommand,
        _getResearchCommand = getResearchCommand,
        _getResearchesCommand = getResearchesCommand,
@@ -45,6 +48,7 @@ class ResearchCommandsViewModel {
        _archiveResearchCommand = archiveResearchCommand,
        _unarchiveResearchCommand = unarchiveResearchCommand,
        _exportResearchToExcelCommand = exportResearchToExcelCommand,
+        _getScoreChartDataCommand = getScoreChartDataCommand,
        _getGroupsCommand = GetGroupsCommand(groupFacade),
        _getAllModelQuestsCommand = GetAllModelQuestsCommand(modelQuestFacade),
        _getModelQuestsFromResearchCommand =
@@ -58,6 +62,7 @@ class ResearchCommandsViewModel {
     _observeArchiveResearch();
     _observeUnarchiveResearch();
     _observeExportResearchToExcel();
+    _observeGetScoreChartData();
     _observeGetGroups();
     _observeGetAllModelQuests();
     _observeGetModelQuestsFromResearch();
@@ -81,6 +86,8 @@ class ResearchCommandsViewModel {
       _getModelQuestsFromResearchCommand;
   ExportResearchToExcelCommand get exportResearchToExcelCommand => 
       _exportResearchToExcelCommand;
+  GetScoreChartDataCommand get getScoreChartDataCommand =>
+      _getScoreChartDataCommand;
   // ========================================================
   //   MÉTODO GENÉRICO DE OBSERVAÇÃO DE COMANDOS
   // ========================================================
@@ -220,6 +227,17 @@ class ResearchCommandsViewModel {
     );
   }
 
+  void _observeGetScoreChartData() {
+    _observeCommand<Map<String, List<ScoreChartData>>>(
+      _getScoreChartDataCommand,
+      onSuccess: (chartData) {
+        state.setScoreChartData(chartData);
+        state.clearScoreChartDataMessage();
+      },
+      onFailure: (err) => state.setScoreChartDataMessage(err.msg),
+      updateResearchMessage: false,
+    );
+  }
   void _observeGetGroups() {
     _observeCommand<List<Group>>(
       _getGroupsCommand,
@@ -290,6 +308,10 @@ class ResearchCommandsViewModel {
 
   Future<void> exportResearchToExcel(String researchId) async {
     await _exportResearchToExcelCommand.executeWith((researchId: researchId));
+  }
+
+  Future<void> getScoreChartData(String researchId) async {
+    await _getScoreChartDataCommand.executeWith((researchId: researchId));
   }
   
   Future<void> getGroups(String researchId) async {

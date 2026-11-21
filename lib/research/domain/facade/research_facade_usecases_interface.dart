@@ -9,4 +9,5 @@ abstract interface class IResearchFacadeUseCases {
   Future<VoidResult> archiveResearch(ResearchIdParams params);
   Future<VoidResult> unarchiveResearch(ResearchIdParams params);
   Future<VoidResult> exportResearchToExcel(ResearchIdParams params);
+  Future<ChartDataResult> getScoreChartData(ResearchIdParams params);
 }

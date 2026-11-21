@@ -1,4 +1,5 @@
 import 'package:medquest/research/domain/models/research_entity.dart';
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class ResearchesStateViewModel {

@@ -56,4 +56,9 @@ final class ResearchRepositoryImpl implements IResearchRepository {
   Future<VoidResult> exportResearchToExcel(String researchId) {
     return _firestore.exportResearchToExcel(researchId);
   }
+
+  @override
+  Future<ChartDataResult> getScoreChartData(String researchId) {
+    return _firestore.getScoreChartData(researchId);
+  }
 }

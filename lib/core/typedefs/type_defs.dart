@@ -9,7 +9,7 @@ import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/auth/domain/models/auth_entities.dart';
 import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
-
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 
 // typedefs para tipo Result
 typedef VoidResult = Result<void, Failure>;
@@ -26,6 +26,7 @@ typedef AnsweredQuestResult = Result<AnsweredQuest, Failure>;
 typedef AnsweredQuestsResult = Result<List<AnsweredQuest>, Failure>;
 typedef UserResult = Result<User, Failure>;
 typedef UserRolesResult = Result<List<UserRoleModel>, Failure>;
+typedef ChartDataResult = Result<Map<String, List<ScoreChartData>>, Failure>;
 
 // typedefs para autenticação
 typedef AuthSessionResult = Result<AuthSession, Failure>;

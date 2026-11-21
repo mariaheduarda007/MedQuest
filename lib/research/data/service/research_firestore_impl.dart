@@ -8,6 +8,7 @@ import '../../../core/patterns/result.dart';
 import 'package:excel/excel.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 import 'dart:io';
 
 final class ResearchFirestoreService implements IResearchFirestore {
@@ -171,6 +172,7 @@ final class ResearchFirestoreService implements IResearchFirestore {
             'Group': groupName,
             'Birth Placement': patientData['birthPlacement'] ?? '',
             'Comorbidities': patientData['comorbidities'] ?? '',
+            'Research Attributes': patientData['researchAttributes'] ?? '',
             'Height': patientData['height'] ?? '',
             'Weight': patientData['weight'] ?? '',
             'Ethnicity': patientData['ethnicity'] ?? '',
@@ -226,11 +228,11 @@ final class ResearchFirestoreService implements IResearchFirestore {
           List<String> partsB = b.split(' ');
 
           if (partsA.length >= 2 && partsB.length >= 2) {
-            String timeA = partsA[0]; 
-            String nameA = partsA.sublist(1).join(' '); 
+            String timeA = partsA[0];
+            String nameA = partsA.sublist(1).join(' ');
 
             String timeB = partsB[0];
-            String nameB = partsB.sublist(1).join(' '); 
+            String nameB = partsB.sublist(1).join(' ');
 
             int nameComparison = nameA.compareTo(nameB);
             if (nameComparison != 0) {
@@ -250,6 +252,7 @@ final class ResearchFirestoreService implements IResearchFirestore {
         'Group',
         'Birth Placement',
         'Comorbidities',
+        'Research Attributes',
         'Height',
         'Weight',
         'Ethnicity',
@@ -327,5 +330,100 @@ final class ResearchFirestoreService implements IResearchFirestore {
     } catch (e) {
       return 0;
     }
+  }
+
+  @override
+  Future<ChartDataResult> getScoreChartData(String researchId) async {
+    try {
+      Map<String, Map<String, List<num>>> groupTimeScoresMap = {};
+
+      final groupsSnapshot = await _firestore
+          .collection('Research')
+          .doc(researchId)
+          .collection('Group')
+          .get();
+
+      for (var groupDoc in groupsSnapshot.docs) {
+        final groupName = groupDoc.data()['name'] ?? 'Grupo';
+
+        groupTimeScoresMap.putIfAbsent(groupName, () => {});
+
+        final patientsSnapshot = await groupDoc.reference
+            .collection('Patient')
+            .get();
+
+        for (var patientDoc in patientsSnapshot.docs) {
+          final answeredQuestsSnapshot = await patientDoc.reference
+              .collection('AnsweredQuest')
+              .get();
+
+          for (var questDoc in answeredQuestsSnapshot.docs) {
+            final questData = questDoc.data();
+            String questName = questData['name'] ?? '';
+
+            if (questName.isEmpty) continue;
+
+            List<String> parts = questName.split(' ');
+            String timeLabel = parts.isNotEmpty ? parts[0] : 'T0';
+
+            num totalScoreForThisQuest = 0;
+            final questionsSnapshot = await questDoc.reference
+                .collection('Questions')
+                .get();
+
+            for (var qDoc in questionsSnapshot.docs) {
+              final rawScore = qDoc.data()['score'];
+              if (rawScore != null) {
+                final parsedScore = rawScore is num
+                    ? rawScore
+                    : num.tryParse(rawScore.toString());
+                if (parsedScore != null) {
+                  totalScoreForThisQuest += parsedScore;
+                }
+              }
+            }
+
+            groupTimeScoresMap[groupName]!.putIfAbsent(timeLabel, () => []);
+            groupTimeScoresMap[groupName]![timeLabel]!.add(
+              totalScoreForThisQuest,
+            );
+          }
+        }
+      }
+
+      Map<String, List<ScoreChartData>> finalChartData = {};
+
+      groupTimeScoresMap.forEach((groupName, timeMap) {
+        List<ScoreChartData> points = [];
+
+        timeMap.forEach((timeLabel, scoresList) {
+          double average = scoresList.isNotEmpty
+              ? scoresList.reduce((a, b) => a + b) / scoresList.length
+              : 0.0;
+
+          double weekIndex = _parseWeekIndex(timeLabel);
+
+          points.add(
+            ScoreChartData(
+              weekIndex: weekIndex,
+              timeLabel: timeLabel,
+              averageScore: average,
+            ),
+          );
+        });
+
+        points.sort((a, b) => a.weekIndex.compareTo(b.weekIndex));
+        finalChartData[groupName] = points;
+      });
+
+      return Success(finalChartData);
+    } catch (e) {
+      return Error(ApiLocalFailure('Erro ao gerar dados para o gráfico: $e'));
+    }
+  }
+
+  double _parseWeekIndex(String timeLabel) {
+    String cleanNumber = timeLabel.replaceAll(RegExp(r'[^0-9]'), '');
+    return double.tryParse(cleanNumber) ?? 0.0;
   }
 }

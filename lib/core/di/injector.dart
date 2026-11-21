@@ -157,6 +157,10 @@ void setupDependencyInjection() {
     UnarchiveResearchUseCaseImpl.new,
   );
   injector.addSingleton<IExportResearchToExcelUseCase>(ExportResearchToExcelUseCaseImpl.new);
+  injector.addSingleton<IGetScoreChartDataUseCase>(
+    GetScoreChartDataUseCaseImpl.new,
+  );
+  injector.addSingleton<GetScoreChartDataCommand>(GetScoreChartDataCommand.new);
   injector.addSingleton<ExportResearchToExcelCommand>(ExportResearchToExcelCommand.new);
   injector.addSingleton<CreateResearchCommand>(CreateResearchCommand.new);
   injector.addSingleton<GetResearchCommand>(GetResearchCommand.new);

@@ -1,6 +1,7 @@
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
+import 'package:medquest/research/domain/models/score_chart_data.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 /// ViewModel que representa os estados da entidade Research que serão consumidas na UI
@@ -16,6 +17,9 @@ class ResearchStateViewModel {
   final message = signal<String?>(null);
   final groupsMessage = signal<String?>(null);
   final modelQuestsMessage = signal<String?>(null);
+
+  final scoreChartDataState = Signal<Map<String, List<ScoreChartData>>>({});
+  final scoreChartMessage = signal<String?>(null);
 
   /// Evento de sucesso para operações de conta, inicializado como nulo
   final successEvent = signal<ResearchSuccessEvent?>(null);
@@ -49,6 +53,18 @@ class ResearchStateViewModel {
   void clearModelQuestsMessage() => modelQuestsMessage.value = null;
 
   void setModelQuestsMessage(String msg) => modelQuestsMessage.value = msg;
+
+  void setScoreChartData(Map<String, List<ScoreChartData>> data) {
+    scoreChartDataState.value = data;
+  }
+
+  void clearScoreChartDataMessage() {
+    scoreChartMessage.value = null;
+  }
+
+  void setScoreChartDataMessage(String msg) {
+    scoreChartMessage.value = msg;
+  }
 
   /// Limpa o evento de sucesso após ser consumido pela UI
   void clearSuccessEvent() => successEvent.value = null;
