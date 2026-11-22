@@ -24,7 +24,7 @@ class AppRouter {
       final isSplash = state.matchedLocation == AuthPaths.splash;
 
       if (user == null && !isLoggingIn && !isSplash) return AuthPaths.login;
-      if (user != null && isLoggingIn) return MedQuestPaths.home;
+      if (user != null && (isLoggingIn || isSplash)) return MedQuestPaths.home;
 
       return null;
     },

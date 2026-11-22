@@ -191,34 +191,37 @@ class _ProfileViewState extends State<ProfileView> {
     required String label,
     required TextEditingController controller,
     bool readOnly = false,
-  }) => TextFormField(
-    controller: controller,
-    style: TextStyle(color: context.colors.onSurface),
-    cursorColor: context.colors.secondary,
-    readOnly: readOnly,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: context.colors.outline),
-      filled: true,
-      fillColor: context.colors.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: BorderSide(
-          color: context.colors.outline.withValues(alpha: 0.4),
+  }) {
+    final borderColor = context.colors.secondary;
+    return TextFormField(
+      controller: controller,
+      style: TextStyle(color: context.colors.onSurface),
+      cursorColor: context.colors.secondary,
+      readOnly: readOnly,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: borderColor),
+        floatingLabelStyle: TextStyle(
+          color: borderColor,
+          fontWeight: FontWeight.w600,
+        ),
+        filled: true,
+        fillColor: context.colors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: BorderSide(color: borderColor, width: 2.0),
         ),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: BorderSide(
-          color: context.colors.outline.withValues(alpha: 0.4),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: BorderSide(color: context.colors.secondary, width: 1.5),
-      ),
-    ),
-  );
+    );
+  }
 
   Widget _buildSecurityOption(
     BuildContext context,
