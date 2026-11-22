@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           title: modelQuest.name,
                           questions: modelQuest.questions.length.toString(),
                           onTap: () {
-                            context.pushNamed(MedQuestRouteNames.quests);
+                            context.pushNamed(MedQuestRouteNames.modelquest, extra: modelQuest);
                           },
                         ),
                       )

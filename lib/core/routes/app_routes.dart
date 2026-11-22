@@ -11,10 +11,11 @@ class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: MedQuestPaths.home,
+    initialLocation: AuthPaths.splash,
     refreshListenable: injector.get<AuthViewModel>(),
     redirect: (context, state) {
       final user = FirebaseAuth.instance.currentUser;
+
       final isLoggingIn =
           state.matchedLocation == AuthPaths.login ||
           state.matchedLocation == AuthPaths.register;
@@ -27,6 +28,4 @@ class AppRouter {
     },
     routes: <RouteBase>[...authRoutes, ...appRoutes],
   );
-
-
 }
