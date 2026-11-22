@@ -32,18 +32,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late final HomeViewModel homeController;
   final TextEditingController searchController = TextEditingController();
+  final searchQuery = signal('');
 
   @override
   void initState() {
     super.initState();
     homeController = injector.get<HomeViewModel>();
     unawaited(homeController.commands.loadHome(widget.session.user.uid));
+    searchController.addListener(() {
+      searchQuery.value = searchController.text;
+    });
   }
 
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _navigateTo(String routeName, {Object? extra}) async {
+    await context.pushNamed(routeName, extra: extra);
+    searchController.clear();
+    searchQuery.value = '';
   }
 
   @override
@@ -68,27 +78,39 @@ class _MyHomePageState extends State<MyHomePage> {
                     homeController.getAllModelQuestsCommand.isExecuting.value;
                 final modelQuests = state.modelQuestsState.value;
 
+                final query = searchQuery.value.trim().toLowerCase();
+
+                final filteredModelQuests = modelQuests.where((modelQuest) {
+                  return modelQuest.name.toLowerCase().contains(query);
+                }).toList();
+
+                final carouselTitle = query.isNotEmpty
+                    ? 'Modelos Encontrados'
+                    : 'Questionários Modelos';
+
                 return CardCarousel(
-                  title: 'Questionários Modelos',
-                  cards: modelQuests
+                  title: carouselTitle,
+                  cards: filteredModelQuests
                       .map(
                         (modelQuest) => QuestCard(
                           title: modelQuest.name,
                           questions: modelQuest.questions.length.toString(),
-                          onTap: () {
-                            context.pushNamed(
-                              MedQuestRouteNames.modelquest,
-                              extra: modelQuest,
-                            );
-                          },
+
+                          onTap: () => _navigateTo(
+                            MedQuestRouteNames.modelquest,
+                            extra: modelQuest,
+                          ),
+
                         ),
                       )
                       .toList(),
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
                       : Text(
-                          state.modelQuestsMessage.value ??
-                              'Nenhum questionário encontrado.',
+                          query.isNotEmpty
+                              ? 'Nenhum modelo encontrado para "$query".'
+                              : (state.modelQuestsMessage.value ??
+                                    'Nenhum questionário encontrado.'),
                         ),
                 );
               }),
@@ -100,31 +122,42 @@ class _MyHomePageState extends State<MyHomePage> {
                     .isExecuting
                     .value;
                 final researches = state.researchesState.value;
-                final recentResearches = List.of(researches)
+
+                final query = searchQuery.value.trim().toLowerCase();
+
+                final filteredResearches = researches.where((research) {
+                  return research.name.toLowerCase().contains(query);
+                }).toList();
+
+                final sortedResearches = List.of(filteredResearches)
                   ..sort((a, b) => b.date.compareTo(a.date));
 
+                final carouselTitle = query.isNotEmpty
+                    ? 'Pesquisas Encontradas'
+                    : 'Pesquisas Recentes';
+
                 return CardCarousel(
-                  title: 'Pesquisas Recentes',
-                  cards: recentResearches
+                  title: carouselTitle,
+                  cards: sortedResearches
                       .map(
                         (research) => ResearchCard(
                           title: research.name,
                           date: DateFormat('dd/MM/yy').format(research.date),
                           questionnaires: research.quests.length,
-                          onTap: () {
-                            context.pushNamed(
-                              MedQuestRouteNames.research,
-                              extra: research,
-                            );
-                          },
+                          onTap: () => _navigateTo(
+                            MedQuestRouteNames.research,
+                            extra: research,
+                          ),
                         ),
                       )
                       .toList(),
                   emptyContent: isLoading
                       ? const CircularProgressIndicator()
                       : Text(
-                          state.researchesMessage.value ??
-                              'Nenhuma pesquisa encontrada.',
+                          query.isNotEmpty
+                              ? 'Nenhuma pesquisa encontrada para "$query".'
+                              : (state.researchesMessage.value ??
+                                    'Nenhuma pesquisa encontrada.'),
                         ),
                 );
               }),
