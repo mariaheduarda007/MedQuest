@@ -7,8 +7,9 @@ import '../../../core/failure/failure.dart';
 import '../../../core/patterns/result.dart';
 import 'package:excel/excel.dart';
 import 'package:file_saver/file_saver.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:medquest/research/domain/models/score_chart_data.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 
 final class ResearchFirestoreService implements IResearchFirestore {
@@ -147,6 +148,15 @@ final class ResearchFirestoreService implements IResearchFirestore {
   @override
   Future<VoidResult> exportResearchToExcel(String researchId) async {
     try {
+      final researchDoc = await _firestore
+          .collection('Research')
+          .doc(researchId)
+          .get();
+
+      final rawResearchName =
+          researchDoc.data()?['name'] as String? ?? 'pesquisa';
+      final safeResearchName = sanitizeFileName(rawResearchName);
+
       final groupsSnapshot = await _firestore
           .collection('Research')
           .doc(researchId)
@@ -295,12 +305,13 @@ final class ResearchFirestoreService implements IResearchFirestore {
       var fileBytes = excel.save();
       if (fileBytes != null) {
         final directory = await getTemporaryDirectory();
-        String filePath =
-            '${directory.path}/relatorio_pesquisa_$researchId.xlsx';
-
+        final filePath = '${directory.path}/pesquisa_$safeResearchName.xlsx';
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
 
+        await Share.shareXFiles([
+          XFile(filePath),
+        ], text: 'Planilha da pesquisa $safeResearchName exportada pelo MedQuest');
         return Success(null);
       }
 
@@ -310,6 +321,20 @@ final class ResearchFirestoreService implements IResearchFirestore {
     } catch (e) {
       return Error(ApiLocalFailure('Erro ao exportar pesquisa para Excel: $e'));
     }
+  }
+
+  String sanitizeFileName(String rawName) {
+    return rawName
+        .toLowerCase()
+        .replaceAll(RegExp(r'[àáâãäå]'), 'a')
+        .replaceAll(RegExp(r'[èéêë]'), 'e')
+        .replaceAll(RegExp(r'[ìíîï]'), 'i')
+        .replaceAll(RegExp(r'[òóôõö]'), 'o')
+        .replaceAll(RegExp(r'[ùúûü]'), 'u')
+        .replaceAll(
+          RegExp(r'[^a-z0-9_]'),
+          '_',
+        );
   }
 
   int calculateAge(String? birthDateString) {

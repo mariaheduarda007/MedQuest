@@ -14,14 +14,17 @@ class AppRouter {
     initialLocation: MedQuestPaths.home,
     refreshListenable: injector.get<AuthViewModel>(),
     redirect: (context, state) {
-      final user = FirebaseAuth.instance.currentUser;
+
+      final authViewModel = injector.get<AuthViewModel>();
+
+      final user = authViewModel.session.session.value;
       final isLoggingIn =
           state.matchedLocation == AuthPaths.login ||
           state.matchedLocation == AuthPaths.register;
       final isSplash = state.matchedLocation == AuthPaths.splash;
 
       if (user == null && !isLoggingIn && !isSplash) return AuthPaths.login;
-      if (user != null && isLoggingIn) return '/home';
+      if (user != null && isLoggingIn) return MedQuestPaths.home;
 
       return null;
     },

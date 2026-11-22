@@ -223,11 +223,19 @@ class _ResearchViewState extends State<ResearchView> {
                         (group) => GroupCard(
                           title: group.name,
                           patients: group.patientCount.toString(),
-                          onTap: () {
-                            context.pushNamed(
+                          onTap: () async {
+                            await context.pushNamed(
                               MedQuestRouteNames.group,
                               extra: (research: widget.research, group: group),
                             );
+
+                            if (mounted) {
+                              unawaited(_loadGroups());
+                              viewModel.commands.getScoreChartDataCommand
+                                  .executeWith((
+                                    researchId: widget.research.id,
+                                  ));
+                            }
                           },
                         ),
                       )

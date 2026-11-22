@@ -4,6 +4,7 @@ import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import '../controllers/user_viewmodel.dart';
+import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -14,6 +15,7 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   late final UserViewModel _vm;
+  final AuthViewModel _authVm = injector.get<AuthViewModel>();
 
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -80,19 +82,19 @@ class _ProfileViewState extends State<ProfileView> {
                         color: context.colors.onSecondary,
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        backgroundColor: context.colors.secondary,
-                        radius: 18,
-                        child: Icon(
-                          Icons.edit,
-                          size: 18,
-                          color: context.colors.onSecondary,
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: 0,
+                    //   right: 0,
+                    //   child: CircleAvatar(
+                    //     backgroundColor: context.colors.secondary,
+                    //     radius: 18,
+                    //     child: Icon(
+                    //       Icons.edit,
+                    //       size: 18,
+                    //       color: context.colors.onSecondary,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -105,55 +107,59 @@ class _ProfileViewState extends State<ProfileView> {
                 context,
                 label: 'Nome',
                 controller: _nameController,
+                readOnly: true,
               ),
               const SizedBox(height: AppSpacing.md),
               _buildTextField(
                 context,
                 label: 'E-mail',
                 controller: _emailController,
+                readOnly: true,
               ),
 
               const SizedBox(height: AppSpacing.xl),
 
               // Segurança
-              _buildSectionTitle(context, 'Segurança'),
-              const SizedBox(height: AppSpacing.md),
-              _buildSecurityOption(
-                context,
-                Icons.lock_outline,
-                'Alterar senha',
-                () {},
-              ),
-              _buildSecurityOption(
-                context,
-                Icons.email_outlined,
-                'Alterar E-mail',
-                () {},
-              ),
-              _buildSecurityOption(
-                context,
-                Icons.person_outline,
-                'Alterar Nome',
-                () {},
-              ),
-              _buildSecurityOption(
-                context,
-                Icons.settings_outlined,
-                'Preferências',
-                () {},
-              ),
-
+              // _buildSectionTitle(context, 'Segurança'),
+              // const SizedBox(height: AppSpacing.md),
+              // _buildSecurityOption(
+              //   context,
+              //   Icons.lock_outline,
+              //   'Alterar senha',
+              //   () {},
+              // ),
+              // _buildSecurityOption(
+              //   context,
+              //   Icons.email_outlined,
+              //   'Alterar E-mail',
+              //   () {},
+              // ),
+              // _buildSecurityOption(
+              //   context,
+              //   Icons.person_outline,
+              //   'Alterar Nome',
+              //   () {},
+              // ),
+              // _buildSecurityOption(
+              //   context,
+              //   Icons.settings_outlined,
+              //   'Preferências',
+              //   () {},
+              // ),
+              const SizedBox(height: AppSpacing.xxl),
+              const SizedBox(height: AppSpacing.xxl),
+              const SizedBox(height: AppSpacing.xxl),
+              const SizedBox(height: AppSpacing.xxl),
               const SizedBox(height: AppSpacing.xxl),
 
               // Botão Sair
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () =>
-                      null, // Ajustar quando tiver o comando de logout
+                  onPressed: () => _authVm.commands.signOut(),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: context.colors.error,
-                    side: BorderSide(color: context.colors.error),
+                    foregroundColor: context.colors.secondary,
+                    side: BorderSide(color: context.colors.secondary),
                     padding: AppSpacing.verticalMd,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -184,10 +190,12 @@ class _ProfileViewState extends State<ProfileView> {
     BuildContext context, {
     required String label,
     required TextEditingController controller,
+    bool readOnly = false,
   }) => TextFormField(
     controller: controller,
     style: TextStyle(color: context.colors.onSurface),
     cursorColor: context.colors.secondary,
+    readOnly: readOnly,
     decoration: InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: context.colors.outline),

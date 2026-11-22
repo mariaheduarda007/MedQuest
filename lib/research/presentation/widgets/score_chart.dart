@@ -5,8 +5,7 @@ import 'package:medquest/research/domain/models/score_chart_data.dart';
 class ScoreChart extends StatelessWidget {
   final Map<String, List<ScoreChartData>> groupChartDataMap;
 
-  const ScoreChart({Key? key, required this.groupChartDataMap})
-      : super(key: key);
+  const ScoreChart({super.key, required this.groupChartDataMap});
 
   @override
   Widget build(BuildContext context) {
