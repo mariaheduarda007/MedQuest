@@ -1,8 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/auth/presentation/views/home_view.dart';
+import 'package:medquest/auth/presentation/views/splash_view.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/group/presentation/views/group_view.dart';
+import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
+import 'package:medquest/modelquest/presentation/views/modelquest_view.dart';
 import 'package:medquest/modelquest/presentation/views/modelquests_view.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/patient/presentation/views/patient_view.dart';
@@ -21,6 +24,7 @@ class MedQuestRouteNames {
   static const group = 'group';
   static const patient = 'patient';
   static const quests = 'quests';
+  static const modelquest = 'modelquest';
 }
 
 class MedQuestPaths {
@@ -31,6 +35,8 @@ class MedQuestPaths {
   static const group = '/group';
   static const patient = '/patient';
   static const quests = '/quests';
+  static const modelquest = '/modelquest';
+
 }
 
 final List<RouteBase> appRoutes = [
@@ -57,6 +63,7 @@ final List<RouteBase> appRoutes = [
     name: MedQuestRouteNames.researches,
     builder: (context, state) => const ResearchesView(),
   ),
+
   GoRoute(
     path: MedQuestPaths.research,
     name: MedQuestRouteNames.research,
@@ -96,8 +103,16 @@ final List<RouteBase> appRoutes = [
       if (authSession == null) {
         return const LoginPage();
       }
-      return ModelQuestsPage(session: authSession);
+      return ModelQuestsView(session: authSession);
      },
+  ),
+   GoRoute(
+    path: MedQuestPaths.modelquest,
+    name: MedQuestRouteNames.modelquest,
+    builder: (context, state) {
+      final extra = state.extra as ModelQuest;
+      return ModelQuestView(modelquest: extra);
+    },
   ),
   GoRoute(
     path: MedQuestPaths.profile,

@@ -4,6 +4,7 @@ import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/patient/presentation/commands/patient_commands.dart';
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
+import '../../../core/typedefs/type_defs.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class GroupCommandsViewModel {
@@ -17,8 +18,7 @@ class GroupCommandsViewModel {
     required DeleteGroupCommand deleteGroupCommand,
     required CreatePatientCommand createPatientCommand,
     required GetPatientsCommand getPatientsCommand,
-  }) : 
-       _getPatientsCommand = getPatientsCommand,
+  }) : _getPatientsCommand = getPatientsCommand,
        _createPatientCommand = createPatientCommand,
        _deleteGroupCommand = deleteGroupCommand {
     // Observers para cada comando
@@ -74,6 +74,10 @@ class GroupCommandsViewModel {
       _createPatientCommand,
       onSuccess: (patient) {
         state.setPatient(patient);
+        state.setPatients([
+          ...(state.patientsState.value ?? const <Patient>[]),
+          patient,
+        ]);
         state.patientSuccessEvent.value = PatientSuccessEvent.created;
       },
       onFailure: (err) {
@@ -114,19 +118,27 @@ class GroupCommandsViewModel {
   Future<void> getPatients(String researchId, String groupId) async {
     await _getPatientsCommand.executeWith((
       researchId: researchId,
-      groupId: groupId
+      groupId: groupId,
     ));
   }
 
-  // Future<void> createPatient(String researchId, String groupId) async {
-  //   await _createPatientCommand.executeWith((
-  //     researchId: researchId,
-  //     groupId: groupId
-  //   ));
-  // }
+  Future<PatientResult> createPatient({
+    required Patient patient,
+    required String researchId,
+    required String groupId,
+  }) {
+    return _createPatientCommand.executeWith((
+      patient: patient,
+      researchId: researchId,
+      groupId: groupId,
+    ));
+  }
 
-  Future<void> deleteGroup(String researchId, String groupId) async {
-    await _deleteGroupCommand.executeWith((
+  Future<VoidResult> deleteGroup({
+    required String researchId,
+    required String groupId,
+  }) {
+    return _deleteGroupCommand.executeWith((
       groupId: groupId,
       researchId: researchId,
     ));

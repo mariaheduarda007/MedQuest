@@ -11,7 +11,7 @@ class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: MedQuestPaths.home,
+    initialLocation: AuthPaths.splash,
     refreshListenable: injector.get<AuthViewModel>(),
     redirect: (context, state) {
 
@@ -30,6 +30,4 @@ class AppRouter {
     },
     routes: <RouteBase>[...authRoutes, ...appRoutes],
   );
-
-
 }

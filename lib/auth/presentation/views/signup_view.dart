@@ -73,7 +73,7 @@ class _SignupPageState extends State<SignupPage> {
         _showSnack(
           'Usuário cadastrado com sucesso! Bem-vindo, ${auth.user.name}.',
         );
-        context.go(AuthRouteNames.login);
+        context.goNamed(AuthRouteNames.login);
       }
     } catch (e) {
       _showSnack('Erro ao fazer cadastro: $e');
@@ -173,7 +173,7 @@ class _SignupPageState extends State<SignupPage> {
                         }),
                         const SizedBox(height: AppSpacing.md),
                         TextButton(
-                          onPressed: () => context.go(AuthRouteNames.login),
+                          onPressed: () => context.goNamed(AuthRouteNames.login),
                           style: TextButton.styleFrom(
                             foregroundColor: context.colors.secondary,
                           ),

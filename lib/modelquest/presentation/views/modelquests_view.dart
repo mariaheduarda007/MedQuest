@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medquest/auth/domain/models/auth_entities.dart';
 import 'package:medquest/core/di/injector.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquests_viewmodel.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/header_title.dart';
@@ -11,16 +13,16 @@ import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
 import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
-class ModelQuestsPage extends StatefulWidget {
-  const ModelQuestsPage({super.key, required this.session});
+class ModelQuestsView extends StatefulWidget {
+  const ModelQuestsView({super.key, required this.session});
 
   final AuthSession session;
 
   @override
-  State<ModelQuestsPage> createState() => _ModelQuestsPageState();
+  State<ModelQuestsView> createState() => _ModelQuestsViewState();
 }
 
-class _ModelQuestsPageState extends State<ModelQuestsPage> {
+class _ModelQuestsViewState extends State<ModelQuestsView> {
   late final ModelQuestsViewModel _viewModel;
   late final PermissionCacheService permissions;
   bool _isLoading = true;
@@ -116,6 +118,7 @@ class _ModelQuestsPageState extends State<ModelQuestsPage> {
                         icon: Icons.edit_note,
                         title: modelQuest.name,
                         subtitle: '$questionCount $questionLabel',
+                        onTap: () => context.pushNamed(MedQuestRouteNames.modelquest, extra: modelQuest),
                       );
                     },
                   ),

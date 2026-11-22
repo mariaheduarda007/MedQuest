@@ -5,8 +5,10 @@ import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
+import 'package:medquest/research/presentation/widgets/edit_research_dialog.dart';
 import 'package:medquest/research/presentation/widgets/header_route.dart';
 import 'package:medquest/core/di/injector.dart';
+import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/research/presentation/widgets/quest_card.dart';
 import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/group_card.dart';
@@ -28,10 +30,12 @@ class ResearchView extends StatefulWidget {
 
 class _ResearchViewState extends State<ResearchView> {
   late final ResearchViewModel viewModel;
+  late Research _research;
 
   @override
   void initState() {
     super.initState();
+    _research = widget.research;
     viewModel = injector.get<ResearchViewModel>();
     viewModel.researchState.setGroups([]);
     viewModel.researchState.setModelQuests([]);
@@ -45,18 +49,115 @@ class _ResearchViewState extends State<ResearchView> {
   }
 
   Future<void> _loadGroups() async {
-    await viewModel.commands.getGroups(widget.research.id);
+    await viewModel.commands.getGroups(_research.id);
   }
 
   Future<void> _loadModelQuests() async {
-    await viewModel.commands.getModelQuestsFromResearch(widget.research.id);
+
+    await viewModel.commands.getModelQuestsFromResearch(_research.id);
+  }
+
+  Future<void> _addGroup() async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(const SnackBar(content: Text('Criando grupo...')));
+
+    try {
+      final groupNumber = viewModel.researchState.groupsState.value.length + 1;
+      final result = await viewModel.commands.createGroup(
+        researchId: _research.id,
+        group: Group(name: 'Grupo ${groupNumber.toString()}'),
+      );
+
+      result.fold(
+        onSuccess: (_) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Grupo adicionado com sucesso!')),
+            );
+        },
+        onFailure: (error) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text('Erro ao adicionar grupo: ${error.msg}')),
+            );
+        },
+      );
+    } catch (error) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Erro ao adicionar grupo: $error')),
+        );
+    }
+  }
+
+  Future<Research?> _showEditResearchDialog() {
+    return showDialog<Research>(
+      context: context,
+      builder: (_) => EditResearchDialog(research: _research),
+    );
+
+  }
+
+  Future<void> _editResearch() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final updatedResearch = await _showEditResearchDialog();
+    if (updatedResearch == null) return;
+
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Salvando pesquisa...')),
+    );
+
+    try {
+      final result = await viewModel.commands.updateResearch(updatedResearch);
+      result.fold(
+        onSuccess: (savedResearch) {
+          if (mounted) {
+            setState(() => _research = savedResearch);
+          }
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Pesquisa atualizada com sucesso!')),
+            );
+        },
+        onFailure: (error) {
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text('Erro ao atualizar: ${error.msg}')),
+            );
+        },
+      );
+    } catch (error) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('Erro ao atualizar: $error')));
+    }
+  }
+
+  Future<void> deleteResearch() async {
+    try {
+      await viewModel.commands.deleteResearch(_research.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pesquisa excluída com sucesso!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao excluir: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final researchAttributes = _research.researchAttributes.entries.toList();
+
     return Scaffold(
       appBar: HeaderRoute(
-        route: [widget.research.name],
+        route: [_research.name],
         action: PopMenu(
           sections: [
             MenuSection(
@@ -65,7 +166,7 @@ class _ResearchViewState extends State<ResearchView> {
                 MenuAction(
                   label: 'Grupo',
                   icon: Icons.group_add_outlined,
-                  onTap: () {},
+                  onTap: () => unawaited(_addGroup()),
                 ),
                 MenuAction(
                   label: 'Questionário',
@@ -87,8 +188,9 @@ class _ResearchViewState extends State<ResearchView> {
             MenuSection(
               title: 'Gerenciar',
               items: [
-                widget.research.archived
-                    ? MenuAction(
+
+                _research.archived
+                    ?  MenuAction(
                         label: 'Arquivar',
                         icon: Icons.archive_outlined,
                         onTap: () {
@@ -115,9 +217,9 @@ class _ResearchViewState extends State<ResearchView> {
                         icon: Icons.archive_outlined,
                         onTap: () {
                           try {
-                            viewModel.commands.unarchiveResearch(
-                              widget.research.id,
-                            );
+
+                            viewModel.commands.unarchiveResearch(_research.id);
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -133,14 +235,14 @@ class _ResearchViewState extends State<ResearchView> {
                             );
                           }
                         },
-                      ),
+                    ),
                 MenuAction(
                   label: 'Exportar',
                   icon: Icons.download_outlined,
                   onTap: () async {
                     try {
                       await viewModel.commands.exportResearchToExcel(
-                        widget.research.id,
+                        _research.id,
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -157,7 +259,14 @@ class _ResearchViewState extends State<ResearchView> {
                 MenuAction(
                   label: 'Editar',
                   icon: Icons.edit_outlined,
-                  onTap: () {},
+                  onTap: () => unawaited(_editResearch()),
+                ),
+                MenuAction(
+                  label: 'Excluir',
+                  icon: Icons.delete_outline,
+                  onTap: () {
+                    unawaited(deleteResearch());
+                  },
                 ),
                 MenuAction(
                   label: 'Sair',
@@ -171,14 +280,23 @@ class _ResearchViewState extends State<ResearchView> {
       ),
       bottomNavigationBar: const BottomMenuBar(),
       body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
               InfoCard(
-                props: ['Nome', 'Data'],
-                info: [widget.research.name, dateFormat(widget.research.date)],
+                props: [
+                  'Nome',
+                  'Data',
+                  ...researchAttributes.map((attribute) => "Atributo"),
+                ],
+                info: [
+                  _research.name,
+                  dateFormat(_research.date),
+                  ...researchAttributes.map((attribute) => attribute.value),
+                ],
               ),
               const SizedBox(height: 20),
               Watch((context) {
@@ -226,7 +344,7 @@ class _ResearchViewState extends State<ResearchView> {
                           onTap: () async {
                             await context.pushNamed(
                               MedQuestRouteNames.group,
-                              extra: (research: widget.research, group: group),
+                              extra: (research: _research, group: group),
                             );
 
                             if (mounted) {

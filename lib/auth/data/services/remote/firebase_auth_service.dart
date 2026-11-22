@@ -215,11 +215,18 @@ class FirebaseAuthService implements IAuthService {
   }
 
   /// Logout do usuário atual
-  @override
+@override
   Future<VoidResult> signOut() async {
-    await _localSession.clear();
-    await _firebaseAuth.signOut();
-    return Success(null);
+    try {
+      _currentSessionSignal.value = null;
+      
+      await _localSession.clear();
+      await _firebaseAuth.signOut();
+      
+      return Success(null);
+    } catch (e) {
+      return Error(DefaultFailure(e.toString()));
+    }
   }
 
   /// Inicializa a sessão ao carregar o app
