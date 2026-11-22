@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class MultipleChoiceQuestion extends StatefulWidget {
@@ -9,6 +9,7 @@ class MultipleChoiceQuestion extends StatefulWidget {
   final ValueChanged<num?>? onChanged;
   final String? orientation;
   final int numeration;
+  final bool? enabled;
 
   const MultipleChoiceQuestion({
     super.key,
@@ -19,6 +20,7 @@ class MultipleChoiceQuestion extends StatefulWidget {
     this.selectedValue,
     this.orientation,
     this.onChanged,
+    this.enabled,
   }) : assert(choices.length == values.length);
 
   @override
@@ -29,6 +31,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
   num? selectedValue;
   String? orientation;
   late int numeration;
+  bool? enabled;
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
     selectedValue = widget.selectedValue;
     orientation = widget.orientation;
     numeration = widget.numeration;
+    enabled = widget.enabled;
   }
 
   @override
@@ -97,7 +101,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
             final isSelected = selectedValue == value;
 
             return GestureDetector(
-              onTap: () => selectAnswer(value),
+              onTap: () => enabled == true ? null : () => selectAnswer(value),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(14),

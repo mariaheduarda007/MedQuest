@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 enum ActionButtonVariant { filled, outlined }
@@ -51,11 +51,11 @@ class ActionButton extends StatelessWidget {
               color: foregroundColor,
             ),
           )
-        :  Text(
-              text,
-              maxLines: 1,
-              style: textStyle?.copyWith(color: foregroundColor),
-            );
+        : Text(
+            text,
+            maxLines: 1,
+            style: textStyle?.copyWith(color: foregroundColor),
+          );
 
     return Container(
       width: buttonSize.width,
@@ -70,23 +70,20 @@ class ActionButton extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                padding: AppSpacing.paddingXs
+                padding: AppSpacing.paddingXs,
               ),
               child: buttonContent,
             )
           : OutlinedButton(
               onPressed: isLoading ? null : onPressed,
-              
+
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.onPrimary,
                 side: BorderSide(color: context.colors.onPrimary, width: 2.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               ),
               child: buttonContent,
             ),

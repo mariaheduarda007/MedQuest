@@ -1,5 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/research/domain/models/score_chart_data.dart';
 
 class ScoreChart extends StatelessWidget {
@@ -53,7 +53,7 @@ class ScoreChart extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 30,
-                    interval: 1.0, 
+                    interval: 1.0,
                     getTitlesWidget: (value, meta) {
                       return SideTitleWidget(
                         meta: meta,
@@ -72,14 +72,18 @@ class ScoreChart extends StatelessWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(showTitles: true, reservedSize: 30),
                 ),
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               lineBarsData: lineBars,
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
 
         Wrap(

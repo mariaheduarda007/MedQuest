@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 

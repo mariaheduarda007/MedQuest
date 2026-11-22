@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class AppForm extends StatefulWidget {
@@ -7,7 +7,7 @@ class AppForm extends StatefulWidget {
   final String hintText;
   final bool password;
   final String title;
-    final String? Function(String?)? validator;
+  final String? Function(String?)? validator;
 
   const AppForm({
     super.key,

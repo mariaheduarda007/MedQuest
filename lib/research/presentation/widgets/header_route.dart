@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class HeaderRoute extends StatelessWidget implements PreferredSizeWidget {
@@ -43,7 +43,8 @@ class HeaderRoute extends StatelessWidget implements PreferredSizeWidget {
                         for (int i = 0; i < route.length; i++) ...[
                           Text(
                             route[i],
-                            style: context.textStyles.labelSmall?.regular.withColor(colors.outline)
+                            style: context.textStyles.labelSmall?.regular
+                                .withColor(colors.outline),
                           ),
                           if (i < route.length - 1)
                             Icon(

@@ -1,5 +1,5 @@
 import 'package:signals_flutter/signals_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../data/repositories/i_auth_repository.dart';
 import '../../domain/facades/i_auth_usecase_facade.dart';
 import '../commands/auth_commands.dart';
@@ -60,7 +60,7 @@ class AuthViewModel extends ChangeNotifier {
   SignOutCommand get signOutCommand => commands.signOutCommand;
   SignUpCommand get signUpCommand => commands.signUpCommand;
 
-@override
+  @override
   void notifyListeners() {
     super.notifyListeners();
   }

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
@@ -53,7 +53,6 @@ class _ResearchViewState extends State<ResearchView> {
   }
 
   Future<void> _loadModelQuests() async {
-
     await viewModel.commands.getModelQuestsFromResearch(_research.id);
   }
 
@@ -98,7 +97,6 @@ class _ResearchViewState extends State<ResearchView> {
       context: context,
       builder: (_) => EditResearchDialog(research: _research),
     );
-
   }
 
   Future<void> _editResearch() async {
@@ -188,9 +186,8 @@ class _ResearchViewState extends State<ResearchView> {
             MenuSection(
               title: 'Gerenciar',
               items: [
-
                 _research.archived
-                    ?  MenuAction(
+                    ? MenuAction(
                         label: 'Arquivar',
                         icon: Icons.archive_outlined,
                         onTap: () {
@@ -217,7 +214,6 @@ class _ResearchViewState extends State<ResearchView> {
                         icon: Icons.archive_outlined,
                         onTap: () {
                           try {
-
                             viewModel.commands.unarchiveResearch(_research.id);
 
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -235,7 +231,7 @@ class _ResearchViewState extends State<ResearchView> {
                             );
                           }
                         },
-                    ),
+                      ),
                 MenuAction(
                   label: 'Exportar',
                   icon: Icons.download_outlined,
@@ -316,7 +312,10 @@ class _ResearchViewState extends State<ResearchView> {
                           title: modelQuest.name,
 
                           questions: modelQuest.questions.length.toString(),
-                          onTap: () {},
+                          onTap: () => context.pushNamed(
+                            MedQuestRouteNames.modelquest,
+                            extra: modelQuest,
+                          ),
                         ),
                       )
                       .toList(),

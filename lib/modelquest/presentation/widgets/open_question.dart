@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -13,6 +13,8 @@ class OpenQuestion extends StatefulWidget {
   final PlatformFile? selectedFile;
   final AnswerType type;
   final ValueChanged<PlatformFile?>? onFileChanged;
+  final bool enabled;
+
 
   final void Function(String answer, num? value)? onChanged;
 
@@ -27,6 +29,8 @@ class OpenQuestion extends StatefulWidget {
     this.value,
     this.selectedFile,
     this.onChanged,
+    this.enabled = true,
+
   });
 
   @override
@@ -38,10 +42,10 @@ class _OpenQuestionState extends State<OpenQuestion> {
   late TextEditingController valueController;
   PlatformFile? selectedFile;
 
+
   @override
   void initState() {
     super.initState();
-
     answerController = TextEditingController(text: widget.answer ?? '');
 
     valueController = TextEditingController(
@@ -132,6 +136,7 @@ class _OpenQuestionState extends State<OpenQuestion> {
           if (widget.type == AnswerType.text)
             TextField(
               controller: answerController,
+              enabled: widget.enabled,
               minLines: 3,
               maxLines: 6,
               onChanged: (_) => notifyChanges(),
@@ -154,7 +159,7 @@ class _OpenQuestionState extends State<OpenQuestion> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 OutlinedButton.icon(
-                  onPressed: pickFile,
+                 onPressed: widget.enabled ? pickFile : null,
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
@@ -218,6 +223,7 @@ class _OpenQuestionState extends State<OpenQuestion> {
           const SizedBox(height: 8),
 
           TextField(
+            enabled: widget.enabled,
             controller: valueController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             onChanged: (_) => notifyChanges(),

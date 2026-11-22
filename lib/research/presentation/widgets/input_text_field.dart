@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class InputTextField extends StatefulWidget {
@@ -23,7 +23,6 @@ class InputTextField extends StatefulWidget {
   State<InputTextField> createState() => _InputTextFieldState();
 }
 
-
 class _InputTextFieldState extends State<InputTextField> {
   bool _isPasswordVisible = false;
 
@@ -44,19 +43,17 @@ class _InputTextFieldState extends State<InputTextField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         suffixIcon: widget.password
-                    ? IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: context.colors.onPrimary,
-                        ),
-                        onPressed: () {
-                          _togglePasswordVisibility();
-                        },
-                      )
-                    : null,
-              
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: context.colors.onPrimary,
+                ),
+                onPressed: () {
+                  _togglePasswordVisibility();
+                },
+              )
+            : null,
+
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: context.colors.outline),
         ),

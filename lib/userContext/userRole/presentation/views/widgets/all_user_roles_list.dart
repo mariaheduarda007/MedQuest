@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
@@ -18,7 +18,7 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
   void initState() {
     super.initState();
     _vm = injector.get<UserRoleViewModel>();
-    
+
     _vm.commands.fetchAllUserRoles();
   }
 
@@ -49,9 +49,17 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
             final role = roles[index];
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
-                title: Text('Usuário ID: ${role.userId}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                title: Text(
+                  'Usuário ID: ${role.userId}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -67,7 +75,8 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
                     // Botão Editar
                     IconButton(
                       icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => _showRoleDialog(context, existingRole: role),
+                      onPressed: () =>
+                          _showRoleDialog(context, existingRole: role),
                     ),
                     // Botão Excluir
                     IconButton(
@@ -92,9 +101,15 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
   }
 
   void _showRoleDialog(BuildContext context, {UserRoleModel? existingRole}) {
-    final userController = TextEditingController(text: existingRole?.userId ?? '');
-    final permissionController = TextEditingController(text: existingRole?.permissionId ?? '');
-    final researchController = TextEditingController(text: existingRole?.researchId ?? '');
+    final userController = TextEditingController(
+      text: existingRole?.userId ?? '',
+    );
+    final permissionController = TextEditingController(
+      text: existingRole?.permissionId ?? '',
+    );
+    final researchController = TextEditingController(
+      text: existingRole?.researchId ?? '',
+    );
     final isEditing = existingRole != null;
 
     showDialog(
@@ -119,7 +134,9 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
               const SizedBox(height: 12),
               TextField(
                 controller: researchController,
-                decoration: const InputDecoration(labelText: 'Research ID (Opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Research ID (Opcional)',
+                ),
               ),
             ],
           ),
@@ -135,13 +152,17 @@ class _AllUserRolesListState extends State<AllUserRolesList> {
                 await _vm.commands.updateUserRole(
                   userRoleId: existingRole.id,
                   permissionId: permissionController.text,
-                  researchId: researchController.text.isEmpty ? null : researchController.text,
+                  researchId: researchController.text.isEmpty
+                      ? null
+                      : researchController.text,
                 );
               } else {
                 await _vm.commands.createUserRole(
                   userId: userController.text,
                   permissionId: permissionController.text,
-                  researchId: researchController.text.isEmpty ? null : researchController.text,
+                  researchId: researchController.text.isEmpty
+                      ? null
+                      : researchController.text,
                 );
               }
               Navigator.pop(context);

@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class AppSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
   final String hintText;
-
 
   const AppSearchBar({
     super.key,
@@ -19,20 +18,19 @@ class AppSearchBar extends StatelessWidget {
     return SizedBox(
       width: 360,
       height: 45,
-      child:
-       TextField(
+      child: TextField(
         controller: controller,
         cursorColor: const Color(0xFF4D2855),
         onChanged: onChanged,
-        style: context.textStyles.labelMedium
-                        ?.bold
-                        .withColor(context.colors.onPrimary),
+        style: context.textStyles.labelMedium?.bold.withColor(
+          context.colors.onPrimary,
+        ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: context.textStyles.labelMedium
-                        ?.bold
-                        .withColor(context.colors.onPrimary),
-          
+          hintStyle: context.textStyles.labelMedium?.bold.withColor(
+            context.colors.onPrimary,
+          ),
+
           prefixIcon: Icon(
             Icons.search,
             size: 30,
@@ -46,24 +44,15 @@ class AppSearchBar extends StatelessWidget {
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(
-              color: context.colors.onPrimary,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: context.colors.onPrimary, width: 1.5),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(
-              color: context.colors.onPrimary,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: context.colors.onPrimary, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(
-              color: context.colors.onPrimary,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: context.colors.onPrimary, width: 2),
           ),
         ),
       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/routes/auth_routes.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
 // import 'package:medquest/under_construction_view.dart';
@@ -14,7 +14,6 @@ class AppRouter {
     initialLocation: AuthPaths.splash,
     refreshListenable: injector.get<AuthViewModel>(),
     redirect: (context, state) {
-
       final authViewModel = injector.get<AuthViewModel>();
 
       final user = authViewModel.session.session.value;

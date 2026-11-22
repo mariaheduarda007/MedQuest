@@ -1,12 +1,12 @@
 // import 'package:material_ui/material_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class CategoryChart extends StatefulWidget {
   final List<Patient> patients;
-  final List<Map<String, String>> availableAttributes; 
+  final List<Map<String, String>> availableAttributes;
 
   const CategoryChart({
     super.key,
@@ -25,12 +25,14 @@ class _CategoryChartState extends State<CategoryChart> {
   @override
   void initState() {
     super.initState();
-    selectedAttrSignal = signal<String>(widget.availableAttributes.first['key']!);
+    selectedAttrSignal = signal<String>(
+      widget.availableAttributes.first['key']!,
+    );
   }
 
   Map<String, double> calculatePercentages(String attributeKey) {
     final Map<String, int> counts = {};
-    
+
     for (var patient in widget.patients) {
       final String value = patient.getAttributeValue(attributeKey);
       counts[value] = (counts[value] ?? 0) + 1;
@@ -130,7 +132,9 @@ class _CategoryChartState extends State<CategoryChart> {
           return PieChartSectionData(
             value: entry.value,
             title: '${entry.key}: ${entry.value.toStringAsFixed(1)}%',
-            color: Colors.primaries[dataMap.keys.toList().indexOf(entry.key) % Colors.primaries.length],
+            color:
+                Colors.primaries[dataMap.keys.toList().indexOf(entry.key) %
+                    Colors.primaries.length],
           );
         }).toList(),
       ),

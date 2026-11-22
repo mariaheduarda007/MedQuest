@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';

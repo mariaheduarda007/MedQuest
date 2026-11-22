@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/theme.dart'; 
+import 'package:material_ui/material_ui.dart';
+import '../../../core/theme/theme.dart';
+
 class AuthTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -29,9 +30,7 @@ class AuthTextFormField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       cursorColor: context.colors.secondary,
-      style: TextStyle(
-        color: context.colors.onSurface,
-      ),
+      style: TextStyle(color: context.colors.onSurface),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: context.colors.outline),
@@ -54,10 +53,7 @@ class AuthTextFormField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(
-            color: context.colors.secondary,
-            width: 1.5,
-          ),
+          borderSide: BorderSide(color: context.colors.secondary, width: 1.5),
         ),
       ),
     );

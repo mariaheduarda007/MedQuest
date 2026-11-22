@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/validators/email_validator.dart';
@@ -173,7 +173,8 @@ class _SignupPageState extends State<SignupPage> {
                         }),
                         const SizedBox(height: AppSpacing.md),
                         TextButton(
-                          onPressed: () => context.goNamed(AuthRouteNames.login),
+                          onPressed: () =>
+                              context.goNamed(AuthRouteNames.login),
                           style: TextButton.styleFrom(
                             foregroundColor: context.colors.secondary,
                           ),

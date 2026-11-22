@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -18,7 +18,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             ?.withColor(context.colors.primary)
             .regular,
       ),
-      centerTitle: true, 
+      centerTitle: true,
     );
   }
 }

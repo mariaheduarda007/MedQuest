@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/modelquest/domain/models/question_entity.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/presentation/controllers/modelquest_viewmodel.dart';
-import 'package:medquest/modelquest/presentation/controllers/modelquests_viewmodel.dart';
 import 'package:medquest/modelquest/presentation/widgets/multiple_choice_question.dart';
 import 'package:medquest/modelquest/presentation/widgets/open_question.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
-import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
+import 'package:medquest/research/presentation/widgets/header_route.dart';
+import 'package:medquest/research/presentation/widgets/pop_menu.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 class ModelQuestView extends StatefulWidget {
@@ -36,6 +36,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
     switch (question.type) {
       case 'multiple-choice':
         return MultipleChoiceQuestion(
+          enabled: true,
           key: ValueKey(question.id),
           numeration: index + 1,
           title: question.text,
@@ -49,6 +50,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
 
       case 'string':
         return OpenQuestion(
+          enabled: false,
           key: ValueKey(question.id),
           type: AnswerType.text,
           title: question.text,
@@ -57,6 +59,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
 
       case 'file':
         return OpenQuestion(
+          enabled: false,
           key: ValueKey(question.id),
           type: AnswerType.file,
           title: question.text,
@@ -69,16 +72,29 @@ class _ModelQuestViewState extends State<ModelQuestView> {
   }
 
   Future<void> _loadModelQuest() async {
-    final state = _viewModel.modelQuestState;
-    // state.setModelQuest(null);
     await _viewModel.commands.getModelQuest(widget.modelquest.id);
-    // state.clearMessage();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MainAppBar(title: 'MedQuest'),
+      appBar: HeaderRoute(
+        route: [widget.modelquest.name],
+        action: PopMenu(
+          sections: [
+            MenuSection(
+              title: 'Gerenciar',
+              items: [
+                MenuAction(
+                  label: 'Excluir',
+                  icon: Icons.delete_outline_outlined,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: const BottomMenuBar(initialIndex: 2),
 
       body: Watch((context) {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 
 class MainCard extends StatelessWidget {
@@ -37,11 +37,7 @@ class MainCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: context.colors.onPrimary,
-              ),
+              Icon(icon, size: 32, color: context.colors.onPrimary),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
@@ -77,9 +73,9 @@ class MainCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ver mais',
-                    style: context.textStyles.labelMedium
-                        ?.bold
-                        .withColor(context.colors.secondary),
+                    style: context.textStyles.labelMedium?.bold.withColor(
+                      context.colors.secondary,
+                    ),
                   ),
                   Icon(
                     Icons.chevron_right,

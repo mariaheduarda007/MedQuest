@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/research/presentation/widgets/main_card.dart';
-
 
 class QuestCard extends MainCard {
   QuestCard({
@@ -9,13 +8,9 @@ class QuestCard extends MainCard {
     required this.questions,
     required super.onTap,
   }) : super(
-          icon: Icons.edit_note_rounded,
-          infoTexts:  [
-            'Perguntas: $questions',
-          ],
-        );
+         icon: Icons.edit_note_rounded,
+         infoTexts: ['Perguntas: $questions'],
+       );
 
   final String questions;
-
-  
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 
@@ -391,7 +391,6 @@ class _EditPatientDialogState extends State<EditPatientDialog> {
                             child: TextField(
                               controller: _attributeKeyControllers[index],
                               decoration: _decoration('Atributo', colors),
-                              
                             ),
                           ),
                           const SizedBox(width: 8),

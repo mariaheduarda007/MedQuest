@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/domain/models/question_entity.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
@@ -33,23 +33,33 @@ typedef AuthSessionResult = Result<AuthSession, Failure>;
 
 /// typedefs usados para modulo de autenticação
 typedef SignInParams = ({String email, String password});
-typedef SignUpParams =
-    ({String? name,String email, String password});
+typedef SignUpParams = ({String? name, String email, String password});
 
 // typedefs para parâmetros
 typedef UserParams = ({User user});
 
 // parâmetros para UserRole
 typedef UserRolesParams = ({String userId});
-typedef CreateUserRoleParams = ({String userId, String permissionId, String? researchId});
-typedef UpdateUserRoleParams = ({String userRoleId, String? permissionId, String? researchId});
+typedef CreateUserRoleParams = ({
+  String userId,
+  String permissionId,
+  String? researchId,
+});
+typedef UpdateUserRoleParams = ({
+  String userRoleId,
+  String? permissionId,
+  String? researchId,
+});
 typedef DeleteUserRoleParams = ({String userRoleId});
 typedef AllUserRolesResult = Result<List<UserRoleModel>, Failure>;
 
-
 // typedfs para parâmetros
 typedef PatientParams = ({Patient patient, String researchId, String groupId});
-typedef PatientIdParams = ({String researchId, String groupId, String patientId});
+typedef PatientIdParams = ({
+  String researchId,
+  String groupId,
+  String patientId,
+});
 typedef GroupParams = ({Group group, String researchId});
 typedef GroupIdParams = ({String researchId, String groupId});
 typedef ResearchParams = ({Research research});
@@ -76,8 +86,6 @@ typedef NoParams = ();
 // typedef ResearchId = String;
 // typedef GroupId = String;
 // typedef PatientId = String;
-
-
 
 /// typedefs para ser usados em componentes de UI
 typedef FormFieldControl = ({

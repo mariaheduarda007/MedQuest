@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
@@ -76,7 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           title: modelQuest.name,
                           questions: modelQuest.questions.length.toString(),
                           onTap: () {
-                            context.pushNamed(MedQuestRouteNames.modelquest, extra: modelQuest);
+                            context.pushNamed(
+                              MedQuestRouteNames.modelquest,
+                              extra: modelQuest,
+                            );
                           },
                         ),
                       )

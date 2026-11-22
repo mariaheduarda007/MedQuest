@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import '../../controllers/userRole_viewmodel.dart';
@@ -19,7 +19,7 @@ class _UserRolesByIdListViewState extends State<UserRolesByIdListView> {
   void initState() {
     super.initState();
     _vm = injector.get<UserRoleViewModel>();
-    
+
     _vm.commands.fetchUserRoles(widget.userId);
   }
 
@@ -64,14 +64,25 @@ class _UserRolesByIdListViewState extends State<UserRolesByIdListView> {
                 side: BorderSide(color: Colors.grey.shade200),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                  child: Icon(Icons.security, color: Theme.of(context).primaryColor),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).primaryColor.withOpacity(0.1),
+                  child: Icon(
+                    Icons.security,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
                 title: Text(
                   'Permission ID: ${role.permissionId}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 6.0),
