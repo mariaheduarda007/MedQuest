@@ -2,7 +2,7 @@ import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 
 class AnsweredQuestMapper {
   static Map<String, dynamic> toMap(AnsweredQuest answeredQuest) {
-    return {
+    return <String, dynamic>{
       'idModelQuest': answeredQuest.idModelQuest,
       'name': answeredQuest.name,
     };

@@ -23,7 +23,9 @@ final class AnsweredQuestFacadeUsecasesImpl
        _deleteAnsweredQuestUseCase = deleteAnsweredQuestUseCase;
 
   @override
-  Future<AnsweredQuestResult> createAnsweredQuest(AnsweredQuestParams params) {
+  Future<AnsweredQuestResult> createAnsweredQuest(
+    CreateAnsweredQuestParams params,
+  ) {
     return _createAnsweredQuestUseCase(params);
   }
 

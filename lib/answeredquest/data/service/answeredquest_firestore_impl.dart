@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
 import 'package:medquest/answeredquest/data/service/answeredquest_firestore_interface.dart';
+import 'package:medquest/answeredquest/domain/models/answeredquest_attachment.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_mapper.dart';
 import 'package:medquest/answeredquest/domain/models/question_mapper.dart';
+import 'package:medquest/answeredquest/domain/models/question_entity.dart'
+    as answered;
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/result.dart';
 
@@ -11,13 +15,17 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
   static const String _collection = 'AnsweredQuest';
 
   final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
 
-  AnsweredQuestFirestoreService({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  AnsweredQuestFirestoreService({
+    required FirebaseFirestore firestore,
+    required FirebaseStorage storage,
+  }) : _firestore = firestore,
+       _storage = storage;
 
   @override
   Future<AnsweredQuestResult> createAnsweredQuest(
-    AnsweredQuestParams params,
+    CreateAnsweredQuestParams params,
   ) async {
     try {
       final answeredQuest = params.answeredQuest;
@@ -40,15 +48,44 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
       String timePoint = 'T$existingCount';
       String computedName = '$timePoint ${answeredQuest.name}';
 
-      final processedQuest = answeredQuest.copyWith(name: computedName);
-
       final document = collection.doc();
-      await document.set(AnsweredQuestMapper.toMap(processedQuest));
+      final attachmentsByIndex = <int, AnsweredQuestAttachment>{
+        for (final attachment in params.attachments)
+          attachment.questionIndex: attachment,
+      };
+      final processedQuestions = <answered.Question>[];
+      for (var index = 0; index < answeredQuest.questions.length; index++) {
+        var question = answeredQuest.questions[index];
+        final attachment = attachmentsByIndex[index];
+        if (attachment != null) {
+          final fileName = Uri.encodeComponent(attachment.fileName);
+          final questionFolder = question.idModelQuestion.isEmpty
+              ? 'question_${index + 1}'
+              : question.idModelQuestion;
+          final storagePath =
+              'Research/${patientIdParams.researchId}/'
+              'Group/${patientIdParams.groupId}/'
+              'Patient/${patientIdParams.patientId}/'
+              '$_collection/${document.id}/Questions/$questionFolder/$fileName';
+          final fileReference = _storage.ref().child(storagePath);
+          await fileReference.putData(attachment.bytes);
+          question = question.copyWith(answer: fileReference.fullPath);
+        }
 
-      final questionsCollection = document.collection('Questions');
-      for (final question in processedQuest.questions) {
-        await questionsCollection.add(QuestionMapper.toMap(question));
+        processedQuestions.add(question);
       }
+
+      final processedQuest = answeredQuest.copyWith(
+        name: computedName,
+        questions: processedQuestions,
+      );
+      final batch = _firestore.batch();
+      batch.set(document, AnsweredQuestMapper.toMap(processedQuest));
+      final questionsCollection = document.collection('Questions');
+      for (final question in processedQuestions) {
+        batch.set(questionsCollection.doc(), QuestionMapper.toMap(question));
+      }
+      await batch.commit();
 
       final questCreated = await getAnsweredQuest((
         researchId: patientIdParams.researchId,
@@ -137,13 +174,17 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
         groupId: patientIdParams.groupId,
         patientId: patientIdParams.patientId,
       ).doc(answeredQuest.id);
-      await document.update(AnsweredQuestMapper.toMap(answeredQuest));
+      await document.update(
+        Map<String, dynamic>.from(AnsweredQuestMapper.toMap(answeredQuest)),
+      );
       final questionsCollection = document.collection('Questions');
       for (final question in answeredQuest.questions) {
         final questionDocument = question.id.isEmpty
             ? questionsCollection.doc()
             : questionsCollection.doc(question.id);
-        await questionDocument.set(QuestionMapper.toMap(question));
+        await questionDocument.set(
+          Map<String, dynamic>.from(QuestionMapper.toMap(question)),
+        );
       }
 
       final updated = await getAnsweredQuest((

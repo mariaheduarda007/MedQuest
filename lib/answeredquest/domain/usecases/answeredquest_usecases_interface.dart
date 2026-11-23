@@ -2,7 +2,7 @@ import '../../../core/patterns/usecases.dart';
 import '../../../core/typedefs/type_defs.dart';
 
 abstract interface class ICreateAnsweredQuestUseCase
-    implements IUseCase<AnsweredQuestResult, AnsweredQuestParams> {}
+    implements IUseCase<AnsweredQuestResult, CreateAnsweredQuestParams> {}
 
 abstract interface class IGetAnsweredQuestUseCase
     implements IUseCase<AnsweredQuestResult, AnsweredQuestIdParams> {}

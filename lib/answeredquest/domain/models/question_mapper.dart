@@ -2,7 +2,7 @@ import 'question_entity.dart';
 
 class QuestionMapper {
   static Map<String, dynamic> toMap(Question question) {
-    return {
+    return <String, dynamic>{
       'idModelQuestion': question.idModelQuestion,
       'answer': question.answer,
       'score': question.score,
@@ -17,10 +17,9 @@ class QuestionMapper {
       id: id,
       idModelQuestion: map['idModelQuestion']?.toString() ?? '',
       answer: map['answer']?.toString() ?? '',
-      score: map['score'] != null ? num.tryParse(map['score'].toString()) : null,
+      score: map['score'] != null
+          ? num.tryParse(map['score'].toString())
+          : null,
     );
   }
 }
-
-            
-

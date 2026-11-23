@@ -67,6 +67,7 @@ import 'package:medquest/research/presentation/controllers/researches_state_view
 import 'package:medquest/research/presentation/controllers/researches_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:medquest/userContext/userRole/domain/usecases/userRole_usecases_impl.dart';
 import 'package:medquest/auth/data/repositories/auth_repository_impl.dart';
 import 'package:medquest/auth/data/repositories/i_auth_repository.dart';
@@ -107,6 +108,7 @@ void setupDependencyInjection() {
   // injector.addSingleton<AppTheme>(AppTheme.new);
   injector.addSingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   injector.addSingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
+  injector.addSingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
   injector.addSingleton<IPatientFirestore>(PatientFirestoreService.new);
   injector.addSingleton<IPatientRepository>(PatientRepositoryImpl.new);
@@ -156,12 +158,16 @@ void setupDependencyInjection() {
   injector.addSingleton<IUnarchiveResearchUseCase>(
     UnarchiveResearchUseCaseImpl.new,
   );
-  injector.addSingleton<IExportResearchToExcelUseCase>(ExportResearchToExcelUseCaseImpl.new);
+  injector.addSingleton<IExportResearchToExcelUseCase>(
+    ExportResearchToExcelUseCaseImpl.new,
+  );
   injector.addSingleton<IGetScoreChartDataUseCase>(
     GetScoreChartDataUseCaseImpl.new,
   );
   injector.addSingleton<GetScoreChartDataCommand>(GetScoreChartDataCommand.new);
-  injector.addSingleton<ExportResearchToExcelCommand>(ExportResearchToExcelCommand.new);
+  injector.addSingleton<ExportResearchToExcelCommand>(
+    ExportResearchToExcelCommand.new,
+  );
   injector.addSingleton<CreateResearchCommand>(CreateResearchCommand.new);
   injector.addSingleton<GetResearchCommand>(GetResearchCommand.new);
   injector.addSingleton<GetResearchesCommand>(GetResearchesCommand.new);
@@ -220,18 +226,24 @@ void setupDependencyInjection() {
     ModelQuestCommandsViewModel.new,
   );
   injector.addSingleton<ModelQuestViewModel>(ModelQuestViewModel.new);
-  injector.addSingleton<ModelQuestsStateViewModel>(ModelQuestsStateViewModel.new);
+  injector.addSingleton<ModelQuestsStateViewModel>(
+    ModelQuestsStateViewModel.new,
+  );
   injector.addSingleton<ModelQuestsCommandsViewModel>(
     ModelQuestsCommandsViewModel.new,
   );
   injector.addSingleton<ModelQuestsViewModel>(ModelQuestsViewModel.new);
 
-
-
-  injector.addSingleton<IAnsweredQuestFirestore>(AnsweredQuestFirestoreService.new);
-  injector.addSingleton<IAnsweredQuestRepository>(AnsweredQuestRepositoryImpl.new);
-  injector.addSingleton<IAnsweredQuestFacadeUseCases>(AnsweredQuestFacadeUsecasesImpl.new);
-   injector.addSingleton<ICreateAnsweredQuestUseCase>(
+  injector.addSingleton<IAnsweredQuestFirestore>(
+    AnsweredQuestFirestoreService.new,
+  );
+  injector.addSingleton<IAnsweredQuestRepository>(
+    AnsweredQuestRepositoryImpl.new,
+  );
+  injector.addSingleton<IAnsweredQuestFacadeUseCases>(
+    AnsweredQuestFacadeUsecasesImpl.new,
+  );
+  injector.addSingleton<ICreateAnsweredQuestUseCase>(
     CreateAnsweredQuestUseCaseImpl.new,
   );
   injector.addSingleton<IGetAnsweredQuestUseCase>(
@@ -257,13 +269,15 @@ void setupDependencyInjection() {
   injector.addSingleton<DeleteAnsweredQuestCommand>(
     DeleteAnsweredQuestCommand.new,
   );
- injector.addSingleton<AnsweredQuestStateViewModel>(AnsweredQuestStateViewModel.new);
+  injector.addSingleton<AnsweredQuestStateViewModel>(
+    AnsweredQuestStateViewModel.new,
+  );
   injector.addSingleton<AnsweredQuestCommandsViewModel>(
     AnsweredQuestCommandsViewModel.new,
   );
   injector.addSingleton<AnsweredQuestViewModel>(AnsweredQuestViewModel.new);
-//--------------------------------------------------------------------------
-  
+  //--------------------------------------------------------------------------
+
   // --- AUTH ---
   // injector.addSingleton<IAccountRemoteService>(() => FirestoreAccountService());
   injector.addSingleton<ILocalSessionStore>(SharedPrefLocalSessionService.new);
@@ -313,21 +327,18 @@ void setupDependencyInjection() {
     ),
   );
 
-// --- PERMISSION ---
+  // --- PERMISSION ---
 
-injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
-  firestore: injector.get<FirebaseFirestore>(),
-));
+  injector.addSingleton<PermissionCacheService>(
+    () => PermissionCacheService(firestore: injector.get<FirebaseFirestore>()),
+  );
 
-// --- USER ---
+  // --- USER ---
 
-  
-  injector.addSingleton<IUserRemoteService>(FirestoreUserService.new); 
+  injector.addSingleton<IUserRemoteService>(FirestoreUserService.new);
 
   injector.addSingleton<IUserRepository>(
-    () => UserRepositoryImpl(
-      remoteService: injector.get<IUserRemoteService>(),
-    ),
+    () => UserRepositoryImpl(remoteService: injector.get<IUserRemoteService>()),
   );
 
   injector.addSingleton<IGetUserUseCase>(
@@ -356,29 +367,43 @@ injector.addSingleton<PermissionCacheService>(() => PermissionCacheService(
     () => UserViewModel(injector.get<IUserFacadeUseCases>()),
   );
 
-// --- USER ROLE ---
+  // --- USER ROLE ---
   injector.addSingleton<IUserRoleRemoteService>(
-    () => FirestoreUserRoleRemoteService(firestore: injector.get<FirebaseFirestore>()),
+    () => FirestoreUserRoleRemoteService(
+      firestore: injector.get<FirebaseFirestore>(),
+    ),
   );
 
   injector.addSingleton<IUserRoleRepository>(
-    () => UserRoleRepositoryImpl(remoteService: injector.get<IUserRoleRemoteService>()),
+    () => UserRoleRepositoryImpl(
+      remoteService: injector.get<IUserRoleRemoteService>(),
+    ),
   );
 
   injector.addSingleton<IGetUserRolesByUserIdUseCase>(
-    () => GetUserRolesByUserIdUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+    () => GetUserRolesByUserIdUseCaseImpl(
+      repository: injector.get<IUserRoleRepository>(),
+    ),
   );
   injector.addSingleton<IGetAllUserRolesUseCase>(
-    () => GetAllUserRolesUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+    () => GetAllUserRolesUseCaseImpl(
+      repository: injector.get<IUserRoleRepository>(),
+    ),
   );
   injector.addSingleton<ICreateUserRoleUseCase>(
-    () => CreateUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+    () => CreateUserRoleUseCaseImpl(
+      repository: injector.get<IUserRoleRepository>(),
+    ),
   );
   injector.addSingleton<IUpdateUserRoleUseCase>(
-    () => UpdateUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+    () => UpdateUserRoleUseCaseImpl(
+      repository: injector.get<IUserRoleRepository>(),
+    ),
   );
   injector.addSingleton<IDeleteUserRoleUseCase>(
-    () => DeleteUserRoleUseCaseImpl(repository: injector.get<IUserRoleRepository>()),
+    () => DeleteUserRoleUseCaseImpl(
+      repository: injector.get<IUserRoleRepository>(),
+    ),
   );
 
   injector.addSingleton<IUserRoleFacadeUseCases>(

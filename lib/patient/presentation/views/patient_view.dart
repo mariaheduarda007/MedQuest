@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/patient/presentation/controllers/patient_viewmodel.dart';
@@ -189,7 +191,17 @@ class _PatientViewState extends State<PatientView> {
                         (modelQuest) => QuestCard(
                           title: modelQuest.name,
                           questions: modelQuest.questions.length.toString(),
-                          onTap: () {},
+                          onTap: () {
+                            context.pushNamed(
+                              MedQuestRouteNames.answeredquestactive,
+                              extra: (
+                                modelQuest: modelQuest,
+                                research: widget.research,
+                                group: widget.group,
+                                patient: _patient,
+                              ),
+                            );
+                          },
                         ),
                       )
                       .toList(),

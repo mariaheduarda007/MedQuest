@@ -1,6 +1,7 @@
 import '../../../core/typedefs/type_defs.dart';
 import 'answeredquest_repository_interface.dart';
 import '../service/answeredquest_firestore_interface.dart';
+
 /// implementação do repositório para AnsweredQuest
 
 final class AnsweredQuestRepositoryImpl implements IAnsweredQuestRepository {
@@ -10,7 +11,9 @@ final class AnsweredQuestRepositoryImpl implements IAnsweredQuestRepository {
     : _firestore = firestore;
 
   @override
-  Future<AnsweredQuestResult> createAnsweredQuest(AnsweredQuestParams params) {
+  Future<AnsweredQuestResult> createAnsweredQuest(
+    CreateAnsweredQuestParams params,
+  ) {
     return _firestore.createAnsweredQuest(params);
   }
 

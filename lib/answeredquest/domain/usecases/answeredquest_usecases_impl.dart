@@ -10,7 +10,7 @@ final class CreateAnsweredQuestUseCaseImpl
     : _repository = repository;
 
   @override
-  Future<AnsweredQuestResult> call(AnsweredQuestParams params) async {
+  Future<AnsweredQuestResult> call(CreateAnsweredQuestParams params) async {
     return _repository.createAnsweredQuest(params);
   }
 }

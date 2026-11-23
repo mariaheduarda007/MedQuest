@@ -6,7 +6,12 @@ import '../../../core/typedefs/type_defs.dart';
 import '../../domain/models/answeredquest_entity.dart';
 
 final class CreateAnsweredQuestCommand
-    extends ParameterizedCommand<AnsweredQuest, Failure, AnsweredQuestParams> {
+    extends
+        ParameterizedCommand<
+          AnsweredQuest,
+          Failure,
+          CreateAnsweredQuestParams
+        > {
   final IAnsweredQuestFacadeUseCases _answeredQuestFacadeUseCases;
 
   CreateAnsweredQuestCommand(this._answeredQuestFacadeUseCases);
@@ -38,12 +43,7 @@ final class GetAnsweredQuestCommand
 }
 
 final class GetAnsweredQuestsCommand
-    extends
-        ParameterizedCommand<
-          List<AnsweredQuest>,
-          Failure,
-          PatientParams
-        > {
+    extends ParameterizedCommand<List<AnsweredQuest>, Failure, PatientParams> {
   final IAnsweredQuestFacadeUseCases _answeredQuestFacadeUseCases;
 
   GetAnsweredQuestsCommand(this._answeredQuestFacadeUseCases);

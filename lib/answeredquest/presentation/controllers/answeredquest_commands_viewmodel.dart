@@ -94,7 +94,6 @@ class AnsweredQuestCommandsViewModel {
         state.answeredQuestSuccessEvent.value =
             AnsweredQuestSuccessEvent.created;
       },
-     
     );
   }
 
@@ -105,7 +104,7 @@ class AnsweredQuestCommandsViewModel {
         state.setAnsweredQuest(answeredQuest);
         state.clearMessage();
       },
-     //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
+      //redundante, pois o generico já faz isso, mas mantido para verificar minha suposição
     );
   }
 
@@ -154,8 +153,10 @@ class AnsweredQuestCommandsViewModel {
   //   MÉTODOS PÚBLICOS QUE DISPARAM COMMANDS (CHAMADOS PELOS WIDGETS)
   // ========================================================
 
-  Future<void> createAnsweredQuest(AnsweredQuestParams params) async {
-    await _createAnsweredQuestCommand.executeWith((params));
+  Future<AnsweredQuestResult> createAnsweredQuest(
+    CreateAnsweredQuestParams params,
+  ) async {
+    return _createAnsweredQuestCommand.executeWith(params);
   }
 
   Future<void> getAnsweredQuest(AnsweredQuestIdParams params) async {

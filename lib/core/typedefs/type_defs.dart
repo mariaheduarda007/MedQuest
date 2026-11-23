@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/domain/models/question_entity.dart';
 import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
+import 'package:medquest/answeredquest/domain/models/answeredquest_attachment.dart';
 import '../failure/failure.dart';
 import '../patterns/result.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
@@ -70,6 +71,11 @@ typedef ModelQuestIdParams = ({String modelQuestId});
 typedef ModelQuestsIdParams = ({List<String> modelQuestsId});
 typedef QuestionParams = ({String modelQuestId, Question question});
 typedef QuestionIdParams = ({String modelQuestId, String questionId});
+typedef CreateAnsweredQuestParams = ({
+  AnsweredQuest answeredQuest,
+  PatientIdParams patientIdParams,
+  List<AnsweredQuestAttachment> attachments,
+});
 typedef AnsweredQuestParams = ({
   AnsweredQuest answeredQuest,
   PatientIdParams patientIdParams,

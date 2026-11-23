@@ -49,6 +49,9 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
     if (oldWidget.selectedValue != widget.selectedValue) {
       selectedValue = widget.selectedValue;
     }
+    if (oldWidget.enabled != widget.enabled) {
+      enabled = widget.enabled;
+    }
   }
 
   void selectAnswer(num value) {
@@ -101,7 +104,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
             final isSelected = selectedValue == value;
 
             return GestureDetector(
-              onTap: () => enabled == true ? null : () => selectAnswer(value),
+              onTap: enabled == false ? null : () => selectAnswer(value),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(14),
