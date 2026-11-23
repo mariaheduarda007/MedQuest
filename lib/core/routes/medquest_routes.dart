@@ -2,12 +2,12 @@ import 'package:go_router/go_router.dart';
 import 'package:medquest/answeredquest/presentation/views/answeredquest_active_view.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/auth/presentation/views/home_view.dart';
-import 'package:medquest/auth/presentation/views/splash_view.dart';
 import 'package:medquest/group/domain/models/group_entity.dart';
 import 'package:medquest/group/presentation/views/group_view.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/presentation/views/modelquest_view.dart';
 import 'package:medquest/modelquest/presentation/views/modelquests_view.dart';
+import 'package:medquest/modelquest/presentation/views/create_modelquest_view.dart';
 import 'package:medquest/patient/domain/models/patient_entity.dart';
 import 'package:medquest/patient/presentation/views/patient_view.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
@@ -28,6 +28,7 @@ class MedQuestRouteNames {
   static const patient = 'patient';
   static const quests = 'quests';
   static const modelquest = 'modelquest';
+  static const createModelquest = 'create-modelquest';
   static const answeredquestactive = 'answeredquestactive';
   static const answeredquestInactive = 'answeredquest_inactive';
 }
@@ -41,8 +42,8 @@ class MedQuestPaths {
   static const patient = '/patient';
   static const quests = '/quests';
   static const modelquest = '/modelquest';
+  static const createModelquest = '/modelquest/create';
   static const answeredquestactive = '/answeredquestactive';
-
 
   static const answeredquestInactive = '/answeredquest_inactive';
 }
@@ -105,16 +106,16 @@ final List<RouteBase> appRoutes = [
     path: MedQuestPaths.quests,
     name: MedQuestRouteNames.quests,
     builder: (context, state) {
-       final authController = injector.get<AuthViewModel>();
+      final authController = injector.get<AuthViewModel>();
       final authSession = authController.session.session.value;
 
       if (authSession == null) {
         return const LoginPage();
       }
       return ModelQuestsView(session: authSession);
-     },
+    },
   ),
-   GoRoute(
+  GoRoute(
     path: MedQuestPaths.modelquest,
     name: MedQuestRouteNames.modelquest,
     builder: (context, state) {
@@ -122,24 +123,29 @@ final List<RouteBase> appRoutes = [
       return ModelQuestView(modelquest: extra);
     },
   ),
-   GoRoute(
+  GoRoute(
+    path: MedQuestPaths.createModelquest,
+    name: MedQuestRouteNames.createModelquest,
+    builder: (context, state) => const CreateModelQuestView(),
+  ),
+  GoRoute(
     path: MedQuestPaths.answeredquestactive,
     name: MedQuestRouteNames.answeredquestactive,
     builder: (context, state) {
-       final extra =
-           state.extra
-               as ({
-                 ModelQuest modelQuest,
-                 Research research,
-                 Group group,
-                 Patient patient,
-               });
-       return AnsweredQuestActiveView(
-         modelquest: extra.modelQuest,
-         research: extra.research,
-         group: extra.group,
-         patient: extra.patient,
-       );
+      final extra =
+          state.extra
+              as ({
+                ModelQuest modelQuest,
+                Research research,
+                Group group,
+                Patient patient,
+              });
+      return AnsweredQuestActiveView(
+        modelquest: extra.modelQuest,
+        research: extra.research,
+        group: extra.group,
+        patient: extra.patient,
+      );
     },
   ),
   GoRoute(
@@ -151,13 +157,15 @@ final List<RouteBase> appRoutes = [
     path: MedQuestPaths.answeredquestInactive,
     name: MedQuestRouteNames.answeredquestInactive,
     builder: (context, state) {
-      final extra = state.extra as ({
-        AnsweredQuest answeredQuest,
-        ModelQuest modelquest,
-        String researchId,
-        String groupId,
-        String patientId,
-      });
+      final extra =
+          state.extra
+              as ({
+                AnsweredQuest answeredQuest,
+                ModelQuest modelquest,
+                String researchId,
+                String groupId,
+                String patientId,
+              });
 
       return AnsweredQuestInactiveView(
         answeredQuest: extra.answeredQuest,

@@ -7,7 +7,7 @@ enum ModelQuestSuccessEvent { created, updated, deleted }
 enum QuestionSuccessEvent { created, updated, deleted }
 
 class ModelQuestStateViewModel {
-  final modelQuestState = Signal<ModelQuest?>(null);
+  final state = Signal<ModelQuest?>(null);
   final modelQuestsState = Signal<List<ModelQuest>>([]);
   final questionState = Signal<Question?>(null);
   final questionsState = Signal<List<Question>>([]);
@@ -15,11 +15,11 @@ class ModelQuestStateViewModel {
   final modelQuestSuccessEvent = signal<ModelQuestSuccessEvent?>(null);
   final questionSuccessEvent = signal<QuestionSuccessEvent?>(null);
 
-  late final hasModelQuest = computed(() => modelQuestState.value != null);
+  late final hasModelQuest = computed(() => state.value != null);
   late final isEditing = computed(() => hasModelQuest.value);
   late final canDelete = computed(() => isEditing.value);
 
-  void setModelQuest(ModelQuest? modelQuest) => modelQuestState.value = modelQuest;
+  void setModelQuest(ModelQuest? modelQuest) => state.value = modelQuest;
   void setModelQuests(List<ModelQuest> modelQuests) => modelQuestsState.value = modelQuests;
   void setQuestion(Question? question) => questionState.value = question;
   void setQuestions(List<Question> questions) => questionsState.value = questions;

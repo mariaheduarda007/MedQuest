@@ -61,11 +61,8 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
         final attachment = attachmentsByIndex[index];
         if (attachment != null) {
           final fileName = Uri.encodeComponent(attachment.fileName);
-          final questionFolder = question.idModelQuestion.isEmpty
-              ? 'question_${index + 1}'
-              : question.idModelQuestion;
           final storagePath =
-              'gs://medquest-3bfe2.firebasestorage.app/QuestionsFilesR/$fileName';
+              'gs://medquest-3bfe2.firebasestorage.app/QuestionsFiles/$fileName';
           final path = 'gs://medquest-3bfe2.firebasestorage.app/QuestionsFiles/';
           final fileReference = _storage.ref('QuestionsFiles').child(fileName);
 

@@ -20,11 +20,18 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
   @override
   Future<ModelQuestResult> createModelQuest(ModelQuest modelQuest) async {
     try {
-      final snapshot = await _firestore
-          .collection(_collection)
-          .add(ModelQuestMapper.toMap(modelQuest));
+      final document = _firestore.collection(_collection).doc();
+      final batch = _firestore.batch();
 
-      final modelQuestCreated = await getModelQuest(snapshot.id);
+      batch.set(document, ModelQuestMapper.toMap(modelQuest));
+
+      final questionsCollection = document.collection('Questions');
+      for (final question in modelQuest.questions) {
+        batch.set(questionsCollection.doc(), QuestionMapper.toMap(question));
+      }
+      await batch.commit();
+
+      final modelQuestCreated = await getModelQuest(document.id);
 
       return modelQuestCreated;
     } catch (e) {

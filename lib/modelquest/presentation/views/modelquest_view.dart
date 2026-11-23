@@ -40,6 +40,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
           key: ValueKey(question.id),
           numeration: index + 1,
           title: question.text,
+          orientation: question.orientation,
           choices: question.alternatives
               .map((alternative) => alternative['choice'] as String)
               .toList(),
@@ -55,6 +56,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
           type: AnswerType.text,
           title: question.text,
           numeration: index + 1,
+          orientation: question.orientation,
         );
 
       case 'file':
@@ -64,6 +66,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
           type: AnswerType.file,
           title: question.text,
           numeration: index + 1,
+          orientation: question.orientation,
         );
 
       default:
@@ -98,7 +101,7 @@ class _ModelQuestViewState extends State<ModelQuestView> {
       bottomNavigationBar: const BottomMenuBar(initialIndex: 2),
 
       body: Watch((context) {
-        final modelQuest = _viewModel.modelQuestState.modelQuestState.value;
+        final modelQuest = _viewModel.modelQuestState.state.value;
 
         if (modelQuest == null) {
           return const Center(child: CircularProgressIndicator());

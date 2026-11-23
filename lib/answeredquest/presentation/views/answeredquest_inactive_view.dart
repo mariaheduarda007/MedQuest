@@ -193,7 +193,7 @@ class _AnsweredQuestInactiveViewState extends State<AnsweredQuestInactiveView> {
       bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: Watch((context) {
         final modelQuest =
-            _modelViewModel.modelQuestState.modelQuestState.value;
+            _modelViewModel.modelQuestState.state.value;
         final answeredQuest =
             _answeredViewModel.answeredQuestState.state.value ??
             widget.answeredQuest;

@@ -14,6 +14,9 @@ class QuestionMapper {
             .toList(),
       'text': question.text,
       'type': question.type,
+      if (question.orientation != null &&
+          question.orientation!.trim().isNotEmpty)
+        'orientation': question.orientation!.trim(),
     };
   }
 
@@ -37,6 +40,7 @@ class QuestionMapper {
           .toList(),
       text: map['text']?.toString() ?? '',
       type: map['type']?.toString() ?? '',
+      orientation: map['orientation']?.toString(),
     );
   }
 }

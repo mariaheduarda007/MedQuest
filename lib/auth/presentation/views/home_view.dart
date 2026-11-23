@@ -100,7 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             MedQuestRouteNames.modelquest,
                             extra: modelQuest,
                           ),
-
                         ),
                       )
                       .toList(),
@@ -187,7 +186,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
               ActionButton(
                 text: 'Novo Questionário',
-                onPressed: () {},
+                onPressed: () =>
+                    context.pushNamed(MedQuestRouteNames.createModelquest),
                 size: ActionButtonSize.xl,
                 variant: ActionButtonVariant.filled,
               ),

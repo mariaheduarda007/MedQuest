@@ -12,6 +12,7 @@ import 'package:medquest/research/presentation/widgets/list_item.dart';
 import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
 import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
 import 'package:signals_flutter/signals_flutter.dart';
+import 'package:medquest/modelquest/presentation/views/create_modelquest_view.dart';
 
 class ModelQuestsView extends StatefulWidget {
   const ModelQuestsView({super.key, required this.session});
@@ -71,7 +72,12 @@ class _ModelQuestsViewState extends State<ModelQuestsView> {
                     ? '+ Modelo'
                     : null,
 
-                onPressed: _loadModelQuests,
+                onPressed: _viewModel.modelQuestsState.canCreateModelQuest.value
+                    ? () async {
+                        await context.push('/modelquest/create');
+                        await _loadModelQuests();
+                      }
+                    : null,
               ),
             ),
             Expanded(
@@ -118,7 +124,10 @@ class _ModelQuestsViewState extends State<ModelQuestsView> {
                         icon: Icons.edit_note,
                         title: modelQuest.name,
                         subtitle: '$questionCount $questionLabel',
-                        onTap: () => context.pushNamed(MedQuestRouteNames.modelquest, extra: modelQuest),
+                        onTap: () => context.pushNamed(
+                          MedQuestRouteNames.modelquest,
+                          extra: modelQuest,
+                        ),
                       );
                     },
                   ),
