@@ -63,10 +63,7 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
               ? 'question_${index + 1}'
               : question.idModelQuestion;
           final storagePath =
-              'Research/${patientIdParams.researchId}/'
-              'Group/${patientIdParams.groupId}/'
-              'Patient/${patientIdParams.patientId}/'
-              '$_collection/${document.id}/Questions/$questionFolder/$fileName';
+              'gs://medquest-3bfe2.firebasestorage.app/QuestionsFile/$fileName';
           final fileReference = _storage.ref().child(storagePath);
           await fileReference.putData(attachment.bytes);
           question = question.copyWith(answer: fileReference.fullPath);
