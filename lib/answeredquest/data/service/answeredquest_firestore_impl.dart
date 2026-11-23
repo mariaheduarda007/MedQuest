@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:medquest/core/typedefs/type_defs.dart';
@@ -63,10 +65,12 @@ final class AnsweredQuestFirestoreService implements IAnsweredQuestFirestore {
               ? 'question_${index + 1}'
               : question.idModelQuestion;
           final storagePath =
-              'gs://medquest-3bfe2.firebasestorage.app/QuestionsFile/$fileName';
-          final fileReference = _storage.ref().child(storagePath);
+              'gs://medquest-3bfe2.firebasestorage.app/QuestionsFilesR/$fileName';
+          final path = 'gs://medquest-3bfe2.firebasestorage.app/QuestionsFiles/';
+          final fileReference = _storage.ref('QuestionsFiles').child(fileName);
+
           await fileReference.putData(attachment.bytes);
-          question = question.copyWith(answer: fileReference.fullPath);
+          question = question.copyWith(answer: storagePath);
         }
 
         processedQuestions.add(question);
