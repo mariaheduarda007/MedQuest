@@ -15,6 +15,8 @@ import 'package:medquest/research/presentation/views/researches_page.dart';
 import 'package:medquest/auth/presentation/views/signin_view.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/userContext/user/presentation/views/profile_view.dart';
+import 'package:medquest/answeredquest/presentation/views/answeredquest_inactive_view.dart';
+import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
 
 class MedQuestRouteNames {
   static const home = 'home';
@@ -25,6 +27,7 @@ class MedQuestRouteNames {
   static const patient = 'patient';
   static const quests = 'quests';
   static const modelquest = 'modelquest';
+  static const answeredquestInactive = 'answeredquest_inactive';
 }
 
 class MedQuestPaths {
@@ -36,7 +39,7 @@ class MedQuestPaths {
   static const patient = '/patient';
   static const quests = '/quests';
   static const modelquest = '/modelquest';
-
+  static const answeredquestInactive = '/answeredquest_inactive';
 }
 
 final List<RouteBase> appRoutes = [
@@ -118,5 +121,26 @@ final List<RouteBase> appRoutes = [
     path: MedQuestPaths.profile,
     name: MedQuestRouteNames.profile,
     builder: (context, state) => const ProfileView(),
+  ),
+  GoRoute(
+    path: MedQuestPaths.answeredquestInactive,
+    name: MedQuestRouteNames.answeredquestInactive,
+    builder: (context, state) {
+      final extra = state.extra as ({
+        AnsweredQuest answeredQuest,
+        ModelQuest modelquest,
+        String researchId,
+        String groupId,
+        String patientId,
+      });
+
+      return AnsweredQuestInactiveView(
+        answeredQuest: extra.answeredQuest,
+        modelquest: extra.modelquest,
+        researchId: extra.researchId,
+        groupId: extra.groupId,
+        patientId: extra.patientId,
+      );
+    },
   ),
 ];

@@ -15,6 +15,8 @@ import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/pop_menu.dart';
 import 'package:medquest/research/presentation/widgets/info_card.dart';
 import 'package:signals_flutter/signals_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medquest/core/routes/medquest_routes.dart';
 
 class PatientView extends StatefulWidget {
   const PatientView({
@@ -215,9 +217,39 @@ class _PatientViewState extends State<PatientView> {
                   cards: answeredQuests
                       .map(
                         (answeredQuest) => QuestCard(
-                          title: answeredQuest.id,
+                          title: answeredQuest.name,
                           questions: answeredQuest.questions.length.toString(),
-                          onTap: () {},
+                          onTap: () {
+                            final matchingModelQuest = state
+                                .modelQuestsState
+                                .value
+                                .where(
+                                  (m) => m.id == answeredQuest.idModelQuest,
+                                )
+                                .firstOrNull;
+
+                            if (matchingModelQuest == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Modelo do questionário não encontrado.',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            context.pushNamed(
+                              MedQuestRouteNames.answeredquestInactive,
+                              extra: (
+                                answeredQuest: answeredQuest,
+                                modelquest: matchingModelQuest,
+                                researchId: widget.research.id,
+                                groupId: widget.group.id,
+                                patientId: _patient.id,
+                              ),
+                            );
+                          },
                         ),
                       )
                       .toList(),

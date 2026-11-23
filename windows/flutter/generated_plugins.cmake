@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   cloud_firestore
   firebase_auth
+  firebase_storage
   url_launcher_windows
   share_plus
 )
