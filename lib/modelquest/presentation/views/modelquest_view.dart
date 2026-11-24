@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/modelquest/domain/models/question_entity.dart';
@@ -29,7 +31,68 @@ class _ModelQuestViewState extends State<ModelQuestView> {
   void initState() {
     super.initState();
     _viewModel = injector.get<ModelQuestViewModel>();
-    unawaited(_loadModelQuest());
+    unawaited(_loadModelData());
+  }
+
+  Future<void> _loadModelData() async {
+    await _viewModel.commands.getModelQuest(widget.modelquest.id);
+
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      await _viewModel.commands.loadUserPermissions(userId);
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Excluir questionário'),
+        content: Text(
+          'Tem certeza que deseja excluir o modelo "${widget.modelquest.name}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.secondary,
+            ),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.secondary,
+            ),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    await _viewModel.commands.deleteModelQuest(widget.modelquest.id);
+
+    if (!mounted) return;
+
+    final message = _viewModel.modelQuestState.message.value;
+    if (message != null && message.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Questionário excluído com sucesso.'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+      context.pop();
+    }
   }
 
   Widget _buildQuestion(Question question, int index) {
@@ -74,29 +137,36 @@ class _ModelQuestViewState extends State<ModelQuestView> {
     }
   }
 
-  Future<void> _loadModelQuest() async {
-    await _viewModel.commands.getModelQuest(widget.modelquest.id);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HeaderRoute(
         route: [widget.modelquest.name],
-        action: PopMenu(
-          sections: [
-            MenuSection(
-              title: 'Gerenciar',
-              items: [
-                MenuAction(
-                  label: 'Excluir',
-                  icon: Icons.delete_outline_outlined,
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ],
-        ),
+        action: Watch((context) {
+          final canDelete =
+              _viewModel.modelQuestState.canDeleteModelQuest.value;
+          final isLoadingPermissions =
+              _viewModel.modelQuestState.isLoadingPermissions.value;
+
+          if (isLoadingPermissions || !canDelete) {
+            return const SizedBox.shrink();
+          }
+
+          return PopMenu(
+            sections: [
+              MenuSection(
+                title: 'Gerenciar',
+                items: [
+                  MenuAction(
+                    label: 'Excluir',
+                    icon: Icons.delete_outline_outlined,
+                    onTap: _confirmDelete,
+                  ),
+                ],
+              ),
+            ],
+          );
+        }),
       ),
       bottomNavigationBar: const BottomMenuBar(initialIndex: 2),
 

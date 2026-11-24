@@ -1,8 +1,13 @@
+import 'package:medquest/userContext/userRole/domain/facades/i_userRole_facade_usecases.dart';
+import 'package:medquest/userContext/userRole/domain/models/userRole_model.dart';
+import 'package:medquest/userContext/userRole/presentation/commands/userRole_commands.dart';
+
 import '../../../core/failure/failure.dart';
 import '../../../core/patterns/command.dart';
 import '../../domain/models/modelquest_entity.dart';
 import '../../domain/models/question_entity.dart';
 import '../commands/modelquest_commands.dart';
+import 'package:medquest/userContext/permission/data/services/remote/permission_cache_service.dart';
 import 'modelquest_state_viewmodel.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
@@ -17,6 +22,9 @@ class ModelQuestCommandsViewModel {
   final CreateQuestionCommand _createQuestionCommand;
   final UpdateQuestionCommand _updateQuestionCommand;
   final DeleteQuestionCommand _deleteQuestionCommand;
+  final GetUserRolesByUserIdCommand _getUserRolesByUserIdCommand;
+  final PermissionCacheService _permissionCacheService;
+
 
   ModelQuestCommandsViewModel({
     required this.state,
@@ -29,6 +37,8 @@ class ModelQuestCommandsViewModel {
     required CreateQuestionCommand createQuestionCommand,
     required UpdateQuestionCommand updateQuestionCommand,
     required DeleteQuestionCommand deleteQuestionCommand,
+    required IUserRoleFacadeUseCases userRoleFacade,
+    required PermissionCacheService permissionCacheService,
   }) : _createModelQuestCommand = createModelQuestCommand,
        _getModelQuestCommand = getModelQuestCommand,
        _getAllModelQuestsCommand = getAllModelQuestsCommand,
@@ -37,7 +47,11 @@ class ModelQuestCommandsViewModel {
        _deleteModelQuestCommand = deleteModelQuestCommand,
        _createQuestionCommand = createQuestionCommand,
        _updateQuestionCommand = updateQuestionCommand,
-       _deleteQuestionCommand = deleteQuestionCommand {
+       _deleteQuestionCommand = deleteQuestionCommand,
+       _getUserRolesByUserIdCommand = GetUserRolesByUserIdCommand(
+         userRoleFacade,
+       ),
+       _permissionCacheService = permissionCacheService {
     _observeCreateModelQuest();
     _observeGetModelQuest();
     // _observeGetAllModelQuests();
@@ -47,6 +61,7 @@ class ModelQuestCommandsViewModel {
     _observeCreateQuestion();
     _observeUpdateQuestion();
     _observeDeleteQuestion();
+    _observeGetUserRolesByUserId();
   }
 
   CreateModelQuestCommand get createModelQuestCommand => _createModelQuestCommand;
@@ -57,6 +72,7 @@ class ModelQuestCommandsViewModel {
   DeleteModelQuestCommand get deleteModelQuestCommand => _deleteModelQuestCommand;
   CreateQuestionCommand get createQuestionCommand => _createQuestionCommand;
   UpdateQuestionCommand get updateQuestionCommand => _updateQuestionCommand;
+  GetUserRolesByUserIdCommand get getUserRolesByUserIdCommand => _getUserRolesByUserIdCommand;
   DeleteQuestionCommand get deleteQuestionCommand => _deleteQuestionCommand;
 
   void _observeCommand<T>(
@@ -163,6 +179,27 @@ class ModelQuestCommandsViewModel {
     );
   }
 
+  void _observeGetUserRolesByUserId() {
+    _observeCommand<List<UserRoleModel>>(
+      _getUserRolesByUserIdCommand,
+      onSuccess: (roles) {
+        state.setCanDeleteModelQuest(
+          roles.any(
+            (role) => _permissionCacheService.hasPermission(
+              role.permissionId,
+              'deleteModelQuest',
+            ),
+          ),
+        );
+        state.clearPermissionMessage();
+      },
+      onFailure: (failure) {
+        state.setCanDeleteModelQuest(false);
+        state.setPermissionMessage(failure.msg);
+      },
+    );
+  }
+
   void _observeCreateQuestion() {
     _observeCommand<Question>(
       _createQuestionCommand,
@@ -224,6 +261,29 @@ class ModelQuestCommandsViewModel {
 
   Future<void> deleteModelQuest(String modelQuestId) async {
     await _deleteModelQuestCommand.executeWith((modelQuestId: modelQuestId));
+  }
+
+  Future<void> loadUserPermissions(String userId) async {
+    state.setLoadingPermissions(true);
+    state.clearPermissionMessage();
+    state.setCanDeleteModelQuest(false);
+
+    try {
+      await _permissionCacheService.loadPermissions();
+      await _getUserRolesByUserIdCommand.executeWith((userId: userId));
+    } on Exception catch (error) {
+      state.setPermissionMessage(
+        'Não foi possível carregar as permissões: $error',
+      );
+    } finally {
+      state.setLoadingPermissions(false);
+    }
+  }
+
+  Future<void> loadModelQuests(String userId) async {
+    await Future.wait([
+      loadUserPermissions(userId),
+    ]);
   }
 
   Future<void> createQuestion(String modelQuestId, Question question) async {

@@ -153,7 +153,7 @@ class _AnsweredQuestInactiveViewState extends State<AnsweredQuestInactiveView> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
                       imageUrl,
-                      height: 250,
+                      height: 500,
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>

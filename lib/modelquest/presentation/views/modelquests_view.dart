@@ -62,24 +62,24 @@ class _ModelQuestsViewState extends State<ModelQuestsView> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: HeaderTitle(
-                title: 'Seus Modelos',
+            Watch((context) {
+              final canCreate =
+                  _viewModel.modelQuestsState.canCreateModelQuest.value;
 
-                buttonTitle:
-                    _viewModel.modelQuestsState.canCreateModelQuest.value
-                    ? '+ Modelo'
-                    : null,
-
-                onPressed: _viewModel.modelQuestsState.canCreateModelQuest.value
-                    ? () async {
-                        await context.push('/modelquest/create');
-                        await _loadModelQuests();
-                      }
-                    : null,
-              ),
-            ),
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: HeaderTitle(
+                  title: 'Seus Modelos',
+                  buttonTitle: canCreate ? '+ Modelo' : null,
+                  onPressed: canCreate
+                      ? () async {
+                          await context.push('/modelquest/create');
+                          await _loadModelQuests();
+                        }
+                      : null,
+                ),
+              );
+            }),
             Expanded(
               child: Watch((context) {
                 final state = _viewModel.modelQuestsState;
@@ -124,10 +124,13 @@ class _ModelQuestsViewState extends State<ModelQuestsView> {
                         icon: Icons.edit_note,
                         title: modelQuest.name,
                         subtitle: '$questionCount $questionLabel',
-                        onTap: () => context.pushNamed(
-                          MedQuestRouteNames.modelquest,
-                          extra: modelQuest,
-                        ),
+                        onTap: () async {
+                          await context.pushNamed(
+                            MedQuestRouteNames.modelquest,
+                            extra: modelQuest,
+                          );
+                          await _loadModelQuests();
+                        },
                       );
                     },
                   ),

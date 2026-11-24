@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await context.pushNamed(routeName, extra: extra);
     searchController.clear();
     searchQuery.value = '';
+    await homeController.commands.loadHome(widget.session.user.uid);
   }
 
   @override
@@ -187,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ActionButton(
                 text: 'Novo Questionário',
                 onPressed: () =>
-                    context.pushNamed(MedQuestRouteNames.createModelquest),
+                    _navigateTo(MedQuestRouteNames.createModelquest),
                 size: ActionButtonSize.xl,
                 variant: ActionButtonVariant.filled,
               ),

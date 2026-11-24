@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
+import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/edit_research_dialog.dart';
@@ -139,13 +140,25 @@ class _ResearchViewState extends State<ResearchView> {
   Future<void> deleteResearch() async {
     try {
       await viewModel.commands.deleteResearch(_research.id);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pesquisa excluída com sucesso!')),
+        SnackBar(
+          content: const Text('Pesquisa excluída com sucesso!'),
+          backgroundColor: context.colors.secondary,
+        ),
       );
+
+      context.pop();
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao excluir: $e')));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao excluir: $e'),
+          backgroundColor: context.colors.secondary,
+        ),
+      );
     }
   }
 
