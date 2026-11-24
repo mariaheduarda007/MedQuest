@@ -40,7 +40,7 @@ class _ProfileViewState extends State<ProfileView> {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: MainAppBar(
-        title: 'Profile'
+        title: 'Perfil',
 
       ),
       bottomNavigationBar: const BottomMenuBar(initialIndex: 3),

@@ -130,9 +130,46 @@ class HomeCommandsViewModel {
     );
   }
 
-  Future<void> getResearches() async {
+  Future<void> getResearches(String userId) async {
     state.clearResearchesMessage();
-    await _getResearchesCommand.executeWith((researchesId: <String>[]));
+
+    final rolesResult = await _getUserRolesByUserIdCommand.executeWith((
+      userId: userId,
+    ));
+
+    if (rolesResult.isFailure) {
+      state.setResearchesMessage(rolesResult.failureValueOrNull!.msg);
+      return;
+    }
+
+    final roles = rolesResult.successValueOrNull!;
+    final isAdmin = roles.any((role) {
+      final roleName =
+          _permissionCacheService
+              .allPermissions?[role.permissionId]?['roleName']
+              ?.toString()
+              .toLowerCase() ??
+          '';
+      return roleName == 'administrator';
+    });
+
+    final researchIds = isAdmin
+        ? <String>[]
+        : roles
+              .map((role) => role.researchId)
+              .whereType<String>()
+              .map((id) => id.trim())
+              .where((id) => id.isNotEmpty)
+              .toSet()
+              .toList();
+
+    if (!isAdmin && researchIds.isEmpty) {
+      state.setResearches([]);
+      state.setResearchesMessage('Nenhuma pesquisa vinculada aos seus papéis.');
+      return;
+    }
+
+    await _getResearchesCommand.executeWith((researchesId: researchIds));
   }
 
   Future<Result<Research, Failure>> createResearch(Research research) {
@@ -162,10 +199,7 @@ class HomeCommandsViewModel {
   }
 
   Future<void> loadHome(String userId) async {
-    await Future.wait([
-      getResearches(),
-      getAllModelQuests(),
-      loadUserPermissions(userId),
-    ]);
+    await loadUserPermissions(userId);
+    await Future.wait([getResearches(userId), getAllModelQuests()]);
   }
 }

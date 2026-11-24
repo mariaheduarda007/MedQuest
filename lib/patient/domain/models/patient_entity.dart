@@ -11,11 +11,11 @@ enum SmokingLevel {
       case SmokingLevel.never:
         return 'Never';
       case SmokingLevel.former:
-        return 'Ex-smoker';
+        return 'Former';
       case SmokingLevel.occasional:
-        return 'Ocasional';
+        return 'Occasional';
       case SmokingLevel.daily:
-        return 'Diary';
+        return 'Daily';
      
     }
   }

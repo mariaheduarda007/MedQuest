@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ..showSnackBar(
             const SnackBar(content: Text('Pesquisa criada com sucesso!')),
           );
-        await homeController.commands.getResearches();
+        await homeController.commands.getResearches(widget.session.user.uid);
       },
       onFailure: (failure) {
         messenger
