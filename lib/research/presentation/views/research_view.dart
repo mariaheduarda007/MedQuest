@@ -6,6 +6,7 @@ import 'package:medquest/auth/domain/models/auth_entities.dart';
 import 'package:medquest/auth/presentation/controllers/auth_session_viewmodel.dart';
 import 'package:medquest/core/functions/ui_functions.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
+import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/research/presentation/widgets/edit_research_dialog.dart';
@@ -435,15 +436,26 @@ class _ResearchViewState extends State<ResearchView> {
   Future<void> deleteResearch() async {
     try {
       await viewModel.commands.deleteResearch(_research.id);
+
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pesquisa excluída com sucesso!')),
+        SnackBar(
+          content: const Text('Pesquisa excluída com sucesso!'),
+          backgroundColor: context.colors.secondary,
+        ),
       );
+
+      context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao excluir: $e')));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao excluir: $e'),
+          backgroundColor: context.colors.secondary,
+        ),
+      );
     }
   }
 
@@ -563,7 +575,7 @@ class _ResearchViewState extends State<ResearchView> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomMenuBar(),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Center(

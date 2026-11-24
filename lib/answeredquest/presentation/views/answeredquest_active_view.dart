@@ -254,7 +254,7 @@ class _AnsweredQuestActiveViewState extends State<AnsweredQuestActiveView> {
 
     return Scaffold(
       appBar: const MainAppBar(title: 'MedQuest'),
-      bottomNavigationBar: const BottomMenuBar(initialIndex: 2),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: SafeArea(
         child: _showScore
             ? Center(

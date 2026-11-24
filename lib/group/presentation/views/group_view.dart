@@ -179,7 +179,7 @@ class _GroupViewState extends State<GroupView> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomMenuBar(),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

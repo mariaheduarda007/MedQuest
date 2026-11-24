@@ -187,6 +187,20 @@ final class ModelQuestFirestoreService implements IModelQuestFirestore {
   @override
   Future<VoidResult> deleteModelQuest(String modelQuestId) async {
     try {
+      final linkedResearches = await _firestore
+          .collection('Research')
+          .where('quests', arrayContains: modelQuestId)
+          .limit(1)
+          .get();
+
+      if (linkedResearches.docs.isNotEmpty) {
+        return Error(
+          ApiLocalFailure(
+            'Não é possível excluir: este questionário está vinculado a uma ou mais pesquisas.',
+          ),
+        );
+      }
+
       await _firestore.collection(_collection).doc(modelQuestId).delete();
 
       return Success(null);

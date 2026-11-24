@@ -9,13 +9,13 @@ enum SmokingLevel {
   String get displayName {
     switch (this) {
       case SmokingLevel.never:
-        return 'Nunca';
+        return 'Never';
       case SmokingLevel.former:
-        return 'Ex-fumante';
+        return 'Ex-smoker';
       case SmokingLevel.occasional:
         return 'Ocasional';
       case SmokingLevel.daily:
-        return 'Diariamente';
+        return 'Diary';
      
     }
   }

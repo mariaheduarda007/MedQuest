@@ -28,6 +28,7 @@ class _ResearchesPageState extends State<ResearchesView> {
   late final PermissionCacheService _permissionService;
   Map<String, String> _roleNameByResearch = {};
   Set<String> _researchIdsWithRole = {};
+  bool _isAdmin = false;
   bool _isLoading = true;
   String? _loadError;
   String? _permissionLoadError;
@@ -95,6 +96,19 @@ class _ResearchesPageState extends State<ResearchesView> {
     final userRoles = userRoleState.state.value
         .where((role) => role.userId == userId)
         .toList();
+
+    for (final role in userRoles) {
+      final roleName =
+          permissions?[role.permissionId]?['roleName']
+              ?.toString()
+              .toLowerCase() ??
+          '';
+      if (roleName == 'administrator') {
+        _isAdmin = true;
+        break;
+      }
+    }
+
     final researchIds = userRoles
         .map((role) => role.researchId)
         .whereType<String>()
@@ -120,7 +134,7 @@ class _ResearchesPageState extends State<ResearchesView> {
     }
     _roleNameByResearch = roleNameByResearch;
 
-    if (researchIds.isEmpty) {
+    if (!_isAdmin && researchIds.isEmpty) {
       _viewModel.researchesState.setResearches([]);
       _viewModel.researchesState.clearMessage();
       if (mounted) {
@@ -133,7 +147,9 @@ class _ResearchesPageState extends State<ResearchesView> {
     }
 
     _viewModel.researchesState.clearMessage();
-    await _viewModel.commands.getResearches(researchesId: researchIds);
+    await _viewModel.commands.getResearches(
+      researchesId: _isAdmin ? [] : researchIds,
+    );
 
     if (mounted) {
       setState(() {
@@ -151,25 +167,33 @@ class _ResearchesPageState extends State<ResearchesView> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: HeaderTitle(
-                title: 'Suas Pesquisas',
-                buttonTitle: '+ Pesquisa',
-                onPressed: _loadResearches,
-              ),
-            ),
+            Watch((context) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: HeaderTitle(
+                  title: 'Suas Pesquisas',
+                  buttonTitle: _isAdmin ? '+ Pesquisa' : null,
+                  onPressed: _isAdmin
+                      ? () async {
+                          await _loadResearches();
+                        }
+                      : null,
+                ),
+              );
+            }),
             Expanded(
               child: Watch((context) {
                 final state = _viewModel.researchesState;
                 final isLoading =
                     _isLoading ||
                     _viewModel.getResearchesCommand.isExecuting.value;
+
                 final researches =
                     List.of(state.researchesState.value)
                         .where(
                           (research) =>
-                              _researchIdsWithRole.contains(research.id) &&
+                              (_isAdmin ||
+                                  _researchIdsWithRole.contains(research.id)) &&
                               !research.archived,
                         )
                         .toList()
@@ -203,7 +227,9 @@ class _ResearchesPageState extends State<ResearchesView> {
                       final roleName =
                           _permissionLoadError ??
                           _roleNameByResearch[research.id] ??
-                          'Sem papel nesta pesquisa';
+                          (_isAdmin
+                              ? 'Administrador'
+                              : 'Sem papel nesta pesquisa');
 
                       return ListItem(
                         icon: Icons.science_outlined,
@@ -231,11 +257,13 @@ class _ResearchesPageState extends State<ResearchesView> {
                 final isLoading =
                     _isLoading ||
                     _viewModel.getResearchesCommand.isExecuting.value;
+
                 final researches =
                     List.of(state.researchesState.value)
                         .where(
                           (research) =>
-                              _researchIdsWithRole.contains(research.id) &&
+                              (_isAdmin ||
+                                  _researchIdsWithRole.contains(research.id)) &&
                               research.archived,
                         )
                         .toList()
@@ -269,17 +297,22 @@ class _ResearchesPageState extends State<ResearchesView> {
                       final roleName =
                           _permissionLoadError ??
                           _roleNameByResearch[research.id] ??
-                          'Sem papel nesta pesquisa';
+                          (_isAdmin
+                              ? 'Administrador'
+                              : 'Sem papel nesta pesquisa');
 
                       return ListItem(
                         icon: Icons.science_outlined,
                         title: research.name,
                         subtitle: roleName,
-                        onTap: () {
-                          context.pushNamed(
+                        onTap: () async {
+                          await context.pushNamed(
                             MedQuestRouteNames.research,
                             extra: research,
                           );
+                          if (mounted) {
+                            await _loadResearches();
+                          }
                         },
                       );
                     },

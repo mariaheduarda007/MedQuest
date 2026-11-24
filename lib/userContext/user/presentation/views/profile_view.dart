@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:medquest/research/presentation/widgets/main_app_bar.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import 'package:medquest/core/di/injector.dart';
 import 'package:medquest/core/theme/theme.dart';
@@ -38,11 +39,9 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        centerTitle: true,
-        backgroundColor: context.colors.secondary,
-        foregroundColor: context.colors.onSecondary,
+      appBar: MainAppBar(
+        title: 'Profile'
+
       ),
       bottomNavigationBar: const BottomMenuBar(initialIndex: 3),
       body: Watch((context) {

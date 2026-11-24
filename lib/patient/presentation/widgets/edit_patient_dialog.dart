@@ -254,6 +254,7 @@ class _EditPatientDialogState extends State<EditPatientDialog> {
               key: _formKey,
               child: Column(
                 children: [
+                  SizedBox(height: 10),
                   textField('Nome', _name, validator: _requiredText),
                   textField(
                     'Idade no início do tratamento',

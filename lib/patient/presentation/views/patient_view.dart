@@ -127,7 +127,7 @@ class _PatientViewState extends State<PatientView> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomMenuBar(),
+      bottomNavigationBar: const BottomMenuBar(initialIndex: 1),
       body: SingleChildScrollView(
         child: Center(
           child: Column(

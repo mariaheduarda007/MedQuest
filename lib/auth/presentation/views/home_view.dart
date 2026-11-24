@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await context.pushNamed(routeName, extra: extra);
     searchController.clear();
     searchQuery.value = '';
+    await homeController.commands.loadHome(widget.session.user.uid);
   }
 
   Future<void> _createResearch() async {
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MainAppBar(title: 'MedQuest'),
+      appBar: const MainAppBar(title: 'MedQuest', showBackButton: false),
       bottomNavigationBar: const BottomMenuBar(),
       body: SingleChildScrollView(
         child: Center(
@@ -220,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ActionButton(
                 text: 'Novo Questionário',
                 onPressed: () =>
-                    context.pushNamed(MedQuestRouteNames.createModelquest),
+                    _navigateTo(MedQuestRouteNames.createModelquest),
                 size: ActionButtonSize.xl,
                 variant: ActionButtonVariant.filled,
               ),
