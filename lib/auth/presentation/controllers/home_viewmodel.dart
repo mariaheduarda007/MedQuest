@@ -19,4 +19,7 @@ class HomeViewModel {
 
   GetUserRolesByUserIdCommand get getUserRolesByUserIdCommand =>
       commands.getUserRolesByUserIdCommand;
+
+  CreateResearchCommand get createResearchCommand =>
+      commands.createResearchCommand;
 }

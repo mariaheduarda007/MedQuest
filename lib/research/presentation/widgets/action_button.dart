@@ -79,6 +79,7 @@ class ActionButton extends StatelessWidget {
 
               style: OutlinedButton.styleFrom(
                 foregroundColor: context.colors.onPrimary,
+                backgroundColor: context.colors.primary,
                 side: BorderSide(color: context.colors.onPrimary, width: 2.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),

@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:medquest/core/routes/medquest_routes.dart';
-import 'package:medquest/answeredquest/data/service/answeredquest_firestore_impl.dart';
 import 'package:medquest/research/presentation/widgets/bottom_menu.dart';
 import 'package:medquest/core/di/injector.dart';
 import '../../domain/models/auth_entities.dart';
@@ -17,7 +15,8 @@ import 'package:medquest/research/presentation/widgets/card_carousel.dart';
 import 'package:medquest/research/presentation/widgets/research_card.dart';
 import 'package:medquest/research/presentation/widgets/app_search_bar.dart';
 import 'package:signals_flutter/signals_flutter.dart';
-import 'package:medquest/answeredquest/domain/models/answeredquest_entity.dart';
+import 'package:medquest/research/domain/models/research_entity.dart';
+import 'package:medquest/research/presentation/widgets/edit_research_dialog.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title, required this.session});
@@ -54,6 +53,40 @@ class _MyHomePageState extends State<MyHomePage> {
     await context.pushNamed(routeName, extra: extra);
     searchController.clear();
     searchQuery.value = '';
+  }
+
+  Future<void> _createResearch() async {
+    final research = await showDialog<Research>(
+      context: context,
+      builder: (_) => const EditResearchDialog(),
+    );
+    if (!mounted || research == null) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Criando pesquisa...')),
+    );
+
+    final result = await homeController.commands.createResearch(research);
+
+    if (!mounted) return;
+    result.fold(
+      onSuccess: (_) async {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Pesquisa criada com sucesso!')),
+          );
+        await homeController.commands.getResearches();
+      },
+      onFailure: (failure) {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text('Erro ao criar pesquisa: ${failure.msg}')),
+          );
+      },
+    );
   }
 
   @override
@@ -173,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (state.canCreateResearch.value) ...[
                       ActionButton(
                         text: 'Nova Pesquisa',
-                        onPressed: () {},
+                        onPressed: _createResearch,
                         size: ActionButtonSize.xl,
                         variant: ActionButtonVariant.outlined,
                       ),

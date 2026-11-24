@@ -269,7 +269,7 @@ class _AnsweredQuestActiveViewState extends State<AnsweredQuestActiveView> {
                     FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: context.colors.onPrimary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: context.colors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -331,10 +331,22 @@ class _AnsweredQuestActiveViewState extends State<AnsweredQuestActiveView> {
                           onPressed: _currentQuestionIndex > 0
                               ? _showPreviousQuestion
                               : null,
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: context.colors.primary,
+                            foregroundColor: context.colors.onPrimary,
+                            side: BorderSide(
+                              color: context.colors.onPrimary,
+                              width: 2,
+                            ),
+                          ),
                           icon: const Icon(Icons.arrow_back),
                           label: const Text('Anterior'),
                         ),
                         FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: context.colors.onPrimary,
+                            foregroundColor: context.colors.primary,
+                          ),
                           onPressed:
                               _currentQuestionIndex < questions.length - 1
                               ? _showNextQuestion

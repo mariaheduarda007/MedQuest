@@ -6,6 +6,7 @@ class Research extends Equatable {
   final DateTime date;
   final List<String> quests;
   final Map<String, String> researchAttributes;
+  final String interval;
   final bool archived;
 
   Research({
@@ -14,6 +15,7 @@ class Research extends Equatable {
     DateTime? date,
     this.quests = const [],
     this.researchAttributes = const {},
+    this.interval = '',
     this.archived = false,
   }) : date = date ?? DateTime.now();
 
@@ -23,6 +25,7 @@ class Research extends Equatable {
     DateTime? date,
     List<String>? quests,
     Map<String, String>? researchAttributes,
+    String? interval,
     bool? archived,
   }) {
     return Research(
@@ -31,6 +34,7 @@ class Research extends Equatable {
       date: date ?? this.date,
       quests: quests ?? this.quests,
       researchAttributes: researchAttributes ?? this.researchAttributes,
+      interval: interval ?? this.interval,
       archived: archived ?? this.archived,
     );
   }
@@ -42,6 +46,7 @@ class Research extends Equatable {
     date,
     quests,
     researchAttributes,
+    interval,
     archived,
   ];
 
@@ -53,7 +58,6 @@ class Research extends Equatable {
         'date: $date, '
         'quests: $quests, '
         'researchAttributes: $researchAttributes, '
-        
         ')';
   }
 }

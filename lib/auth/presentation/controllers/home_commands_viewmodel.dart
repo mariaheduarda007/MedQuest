@@ -1,5 +1,6 @@
 import 'package:medquest/core/failure/failure.dart';
 import 'package:medquest/core/patterns/command.dart';
+import 'package:medquest/core/patterns/result.dart';
 import 'package:medquest/modelquest/domain/facade/modelquest_facade_usecases_interface.dart';
 import 'package:medquest/modelquest/domain/models/modelquest_entity.dart';
 import 'package:medquest/modelquest/presentation/commands/modelquest_commands.dart';
@@ -17,7 +18,7 @@ import 'home_state_viewmodel.dart';
 class HomeCommandsViewModel {
   final HomeStateViewModel state;
   final GetResearchesCommand _getResearchesCommand;
-  // final CreateResearchCommand _createResearchCommand;
+  final CreateResearchCommand _createResearchCommand;
   final GetAllModelQuestsCommand _getAllModelQuestsCommand;
   final GetUserRolesByUserIdCommand _getUserRolesByUserIdCommand;
   final PermissionCacheService _permissionCacheService;
@@ -29,17 +30,21 @@ class HomeCommandsViewModel {
     required IUserRoleFacadeUseCases userRoleFacade,
     required PermissionCacheService permissionCacheService,
   }) : _getResearchesCommand = GetResearchesCommand(researchFacade),
+       _createResearchCommand = CreateResearchCommand(researchFacade),
        _getAllModelQuestsCommand = GetAllModelQuestsCommand(modelQuestFacade),
        _getUserRolesByUserIdCommand = GetUserRolesByUserIdCommand(
          userRoleFacade,
        ),
        _permissionCacheService = permissionCacheService {
     _observeGetResearches();
+    _observeCreateResearch();
     _observeGetAllModelQuests();
     _observeGetUserRolesByUserId();
   }
 
   GetResearchesCommand get getResearchesCommand => _getResearchesCommand;
+
+  CreateResearchCommand get createResearchCommand => _createResearchCommand;
 
   GetAllModelQuestsCommand get getAllModelQuestsCommand =>
       _getAllModelQuestsCommand;
@@ -82,6 +87,17 @@ class HomeCommandsViewModel {
     );
   }
 
+  void _observeCreateResearch() {
+    _observeCommand<Research>(
+      _createResearchCommand,
+      onSuccess: (research) {
+        state.setResearches([research, ...state.researchesState.value]);
+        state.clearResearchesMessage();
+      },
+      onFailure: (failure) => state.setResearchesMessage(failure.msg),
+    );
+  }
+
   void _observeGetAllModelQuests() {
     _observeCommand<List<ModelQuest>>(
       _getAllModelQuestsCommand,
@@ -117,6 +133,10 @@ class HomeCommandsViewModel {
   Future<void> getResearches() async {
     state.clearResearchesMessage();
     await _getResearchesCommand.executeWith((researchesId: <String>[]));
+  }
+
+  Future<Result<Research, Failure>> createResearch(Research research) {
+    return _createResearchCommand.executeWith((research: research));
   }
 
   Future<void> getAllModelQuests() async {

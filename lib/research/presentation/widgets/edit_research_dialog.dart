@@ -3,9 +3,9 @@ import 'package:medquest/core/theme/theme.dart';
 import 'package:medquest/research/domain/models/research_entity.dart';
 
 class EditResearchDialog extends StatefulWidget {
-  const EditResearchDialog({super.key, required this.research});
+  const EditResearchDialog({super.key, this.research});
 
-  final Research research;
+  final Research? research;
 
   @override
   State<EditResearchDialog> createState() => _EditResearchDialogState();
@@ -14,21 +14,27 @@ class EditResearchDialog extends StatefulWidget {
 class _EditResearchDialogState extends State<EditResearchDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
+  late final TextEditingController _intervalController;
   final List<TextEditingController> _attributeControllers = [];
   final List<TextEditingController> _retiredControllers = [];
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.research.name);
-    for (final attribute in widget.research.researchAttributes.entries) {
-      _attributeControllers.add(TextEditingController(text: attribute.key));
+    final research = widget.research;
+    _nameController = TextEditingController(text: research?.name ?? '');
+    _intervalController = TextEditingController(text: research?.interval ?? '');
+    if (research != null) {
+      for (final attribute in research.researchAttributes.entries) {
+        _attributeControllers.add(TextEditingController(text: attribute.key));
+      }
     }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _intervalController.dispose();
     for (final controller in [
       ..._attributeControllers,
       ..._retiredControllers,
@@ -76,10 +82,12 @@ class _EditResearchDialogState extends State<EditResearchDialog> {
       attributes[attribute] = attribute;
     }
 
+    final research = widget.research;
     Navigator.of(context).pop(
-      widget.research.copyWith(
+      (research ?? Research()).copyWith(
         name: _nameController.text.trim(),
         researchAttributes: attributes,
+        interval: _intervalController.text.trim(),
       ),
     );
   }
@@ -87,6 +95,9 @@ class _EditResearchDialogState extends State<EditResearchDialog> {
   InputDecoration _decoration(String label, ColorScheme colors) {
     return InputDecoration(
       labelText: label,
+      labelStyle: context.textStyles.labelLarge?.withColor(
+        context.colors.onPrimary,
+      ),
       filled: true,
       fillColor: colors.primary,
       enabledBorder: OutlineInputBorder(
@@ -101,11 +112,12 @@ class _EditResearchDialogState extends State<EditResearchDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final isEditing = widget.research != null;
 
     return AlertDialog(
       backgroundColor: colors.primary,
       title: Text(
-        'Editar pesquisa',
+        isEditing ? 'Editar pesquisa' : 'Criar pesquisa',
         style: context.textStyles.titleLarge?.copyWith(color: colors.onSurface),
       ),
       content: SizedBox(
@@ -125,6 +137,14 @@ class _EditResearchDialogState extends State<EditResearchDialog> {
                     decoration: _decoration('Nome da pesquisa', colors),
                     validator: (value) => value == null || value.trim().isEmpty
                         ? 'Informe o nome da pesquisa.'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _intervalController,
+                    decoration: _decoration('Intervalo', colors),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Informe o intervalo da pesquisa.'
                         : null,
                   ),
                   const SizedBox(height: 20),
@@ -202,7 +222,7 @@ class _EditResearchDialogState extends State<EditResearchDialog> {
             backgroundColor: colors.onPrimary,
             foregroundColor: colors.primary,
           ),
-          child: const Text('Salvar'),
+          child: Text(isEditing ? 'Salvar' : 'Criar'),
         ),
       ],
     );
